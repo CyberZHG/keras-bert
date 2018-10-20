@@ -3,6 +3,10 @@ import keras.backend as K
 
 
 class Attention(keras.layers.Layer):
+    """Self-attention layer.
+
+    See: https://arxiv.org/pdf/1706.03762.pdf
+    """
 
     def __init__(self, **kwargs):
         self.supports_masking = True

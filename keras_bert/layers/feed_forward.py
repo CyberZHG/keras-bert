@@ -3,7 +3,10 @@ import keras.backend as K
 
 
 class FeedForward(keras.layers.Layer):
-    """Position-wise feed-forward layer"""
+    """Position-wise feed-forward layer.
+
+    See: https://arxiv.org/pdf/1706.03762.pdf
+    """
 
     def __init__(self, hidden_dim, **kwargs):
         self.supports_masking = True

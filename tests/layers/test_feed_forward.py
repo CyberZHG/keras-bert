@@ -46,5 +46,5 @@ class TestAttention(unittest.TestCase):
         model.summary()
         inputs = np.array([[[0.2, 0.1, 0.3]]])
         predict = model.predict(inputs)
-        expected = np.asarray([[[ 0.036,  0.044, -0.092]]])
+        expected = np.asarray([[[0.036, 0.044, -0.092]]])
         self.assertTrue(np.allclose(expected, predict))
