@@ -102,3 +102,12 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# System thumbnail
+.DS_Store
+
+# IDE
+.idea
+
+# Temporary README
+README.rst
