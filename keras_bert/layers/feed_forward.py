@@ -1,5 +1,6 @@
 import keras
 import keras.backend as K
+from keras_bert.activations import gelu
 
 
 class FeedForward(keras.layers.Layer):
@@ -45,4 +46,4 @@ class FeedForward(keras.layers.Layer):
         super(FeedForward, self).build(input_shape)
 
     def call(self, x, mask=None):
-        return K.dot(K.maximum(0.0, K.dot(x, self.W1) + self.b1), self.W2) + self.b2
+        return K.dot(gelu(K.dot(x, self.W1) + self.b1), self.W2) + self.b2

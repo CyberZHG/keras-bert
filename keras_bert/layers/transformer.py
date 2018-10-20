@@ -19,6 +19,7 @@ def get_transformer(inputs, head_num, hidden_dim, name, dropout=0.1):
     multi_head_layer = get_multi_head_attention(
         inputs=inputs,
         head_num=head_num,
+        dropout=dropout,
         name='%s-MultiHead' % name,
     )
     multi_head_norm = LayerNormalization(
