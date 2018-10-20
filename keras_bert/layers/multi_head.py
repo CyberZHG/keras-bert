@@ -16,6 +16,7 @@ def get_multi_head_attention(inputs, head_num, name):
     for i in range(head_num):
         dense_layer = keras.layers.Dense(
             units=input_dim // head_num,
+            use_bias=False,
             name='%s-Dense_%d' % (name, i + 1),
         )(inputs)
         att_layer = Attention(name='%s-Attention_%d' % (name, i + 1))(dense_layer)
@@ -23,6 +24,7 @@ def get_multi_head_attention(inputs, head_num, name):
     concat_layer = keras.layers.Concatenate(name='%s-Concat' % name)(outputs)
     dense_layer = keras.layers.Dense(
         units=input_dim,
+        use_bias=False,
         name='%s-Dense_O' % name,
     )(concat_layer)
     return dense_layer
