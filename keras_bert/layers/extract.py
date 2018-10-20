@@ -11,6 +11,7 @@ class Extract(keras.layers.Layer):
 
     def __init__(self, index, **kwargs):
         self.index = index
+        self.supports_masking = True
         super(Extract, self).__init__(**kwargs)
 
     def get_config(self):
@@ -22,6 +23,9 @@ class Extract(keras.layers.Layer):
 
     def compute_output_shape(self, input_shape):
         return input_shape[:1] + input_shape[2:]
+
+    def compute_mask(self, inputs, mask=None):
+        return None
 
     def call(self, x, mask=None):
         return x[:, self.index]
