@@ -1,6 +1,6 @@
 import unittest
 import keras
-from keras_bert.layers import Attention, get_multi_head
+from keras_bert.layers import get_multi_head_attention
 
 
 class TestMultiHead(unittest.TestCase):
@@ -16,11 +16,9 @@ class TestMultiHead(unittest.TestCase):
             mask_zero=True,
             name='Embedding',
         )(input_layer)
-        output_layer = get_multi_head(
+        output_layer = get_multi_head_attention(
             inputs=embed_layer,
-            layer=Attention(name='Attention'),
             head_num=12,
-            hidden_dim=768 // 12,
             name='Multi-Head',
         )
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)

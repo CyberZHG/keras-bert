@@ -1,24 +1,28 @@
-import copy
 import keras
+from .attention import Attention
 
 
-def get_multi_head(inputs, layer, head_num, hidden_dim, name):
-    """Generate multi-head layers.
+def get_multi_head_attention(inputs, head_num, name):
+    """Generate multi-head attention layers.
 
     :param inputs: Input layer.
-    :param layer: Layers to be duplicated.
     :param head_num: Number of heads.
-    :param hidden_dim: Input dimension for each duplicated layer.
     :param name: Name for multi-head.
     :return: Output layer.
     """
+    input_dim = inputs.get_shape().as_list()[-1]
+    assert input_dim % head_num == 0
     outputs = []
     for i in range(head_num):
         dense_layer = keras.layers.Dense(
-            units=hidden_dim,
+            units=input_dim // head_num,
             name='%s-Dense_%d' % (name, i + 1),
         )(inputs)
-        dup_layer = copy.deepcopy(layer)
-        dup_layer.name = dup_layer.name + '_%d' % (i + 1)
-        outputs.append(dup_layer(dense_layer))
-    return keras.layers.Concatenate(name='%s-Concat' % name)(outputs)
+        att_layer = Attention(name='%s-Attention_%d' % (name, i + 1))(dense_layer)
+        outputs.append(att_layer)
+    concat_layer = keras.layers.Concatenate(name='%s-Concat' % name)(outputs)
+    dense_layer = keras.layers.Dense(
+        units=input_dim,
+        name='%s-Dense_O' % name,
+    )(concat_layer)
+    return dense_layer
