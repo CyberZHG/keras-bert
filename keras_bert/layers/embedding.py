@@ -4,6 +4,8 @@ import keras
 def get_embedding(inputs, token_num, pos_num, embed_dim, dropout=0.1):
     """Get embedding layer.
 
+    See: https://arxiv.org/pdf/1810.04805.pdf
+
     :param inputs: Input layers.
     :param token_num: Number of tokens.
     :param pos_num: Maximum position.
