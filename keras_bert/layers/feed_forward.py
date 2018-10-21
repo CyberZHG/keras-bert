@@ -1,6 +1,6 @@
 import keras
 import keras.backend as K
-from keras_bert.activations import gelu
+from ..activations import gelu
 
 
 class FeedForward(keras.layers.Layer):

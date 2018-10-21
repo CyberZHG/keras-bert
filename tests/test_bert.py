@@ -37,20 +37,24 @@ class TestBERT(unittest.TestCase):
                 if token not in token_dict:
                     token_dict[token] = len(token_dict)
         token_list = list(token_dict.keys())
-        model = get_model(
-            token_num=len(token_dict),
-            head_num=5,
-            transformer_num=12,
-            embed_dim=25,
-            feed_forward_dim=100,
-            seq_len=20,
-            pos_num=20,
-            dropout=0.05,
-            lr=1e-3,
-        )
-        model.summary()
         if os.path.exists(model_path):
-            model.load_weights(model_path)
+            model = keras.models.load_model(
+                model_path,
+                custom_objects=get_custom_objects(),
+            )
+        else:
+            model = get_model(
+                token_num=len(token_dict),
+                head_num=5,
+                transformer_num=12,
+                embed_dim=25,
+                feed_forward_dim=100,
+                seq_len=20,
+                pos_num=20,
+                dropout_rate=0.05,
+                lr=1e-3,
+            )
+        model.summary()
 
         def _generator():
             while True:
@@ -70,10 +74,10 @@ class TestBERT(unittest.TestCase):
             validation_data=_generator(),
             validation_steps=100,
             callbacks=[
-                keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+                keras.callbacks.EarlyStopping(monitor='val_MLM_loss', patience=5)
             ],
         )
-        model.save_weights(model_path)
+        model.save(model_path)
         for inputs, outputs in _generator():
             predicts = model.predict(inputs)
             outputs = list(map(lambda x: np.squeeze(x, axis=-1), outputs))

@@ -1,15 +1,15 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
     name='keras-bert',
-    version='0.1',
-    packages=['keras_bert'],
+    version='0.6.0',
+    packages=find_packages(),
     url='https://github.com/CyberZHG/keras-bert',
     license='MIT',
     author='CyberZHG',
     author_email='CyberZHG@gmail.com',
-    description='',
-    long_description='',
+    description='BERT implemented in Keras',
+    long_description=open('README.rst', 'r').read(),
     install_requires=[
         'numpy',
         'keras',

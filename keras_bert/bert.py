@@ -1,9 +1,9 @@
 import random
 import keras
 import numpy as np
-from keras_bert.layers import (get_inputs, get_embedding, get_transformer,
-                               Attention, FeedForward, Masked, Extract, LayerNormalization)
-from keras_bert.activations import gelu
+from .layers import (get_inputs, Embeddings, Transformer, Attention, MultiHeadAttention,
+                     FeedForward, Masked, Extract, LayerNormalization)
+from .activations import gelu
 
 
 TOKEN_PAD = ''  # Token for padding
@@ -20,7 +20,7 @@ def get_model(token_num,
               transformer_num=12,
               head_num=12,
               feed_forward_dim=3072,
-              dropout=0.1,
+              dropout_rate=0.1,
               lr=1e-4):
     """Get BERT model.
 
@@ -33,27 +33,26 @@ def get_model(token_num,
     :param transformer_num: Number of transformers.
     :param head_num: Number of heads in multi-head attention in each transformer.
     :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
-    :param dropout: Dropout rate.
+    :param dropout_rate: Dropout rate.
     :param lr: Learning rate.
     :return: The compiled model.
     """
     inputs = get_inputs(seq_len=seq_len)
-    embed_layer = get_embedding(
-        inputs=inputs,
-        token_num=token_num,
-        pos_num=pos_num,
-        embed_dim=embed_dim,
-        dropout=dropout,
-    )
+    embed_layer = Embeddings(
+        input_dim=token_num,
+        output_dim=embed_dim,
+        position_dim=pos_num,
+        dropout_rate=dropout_rate,
+        name='Embeddings',
+    )(inputs[:3])
     transformed = embed_layer
     for i in range(transformer_num):
-        transformed = get_transformer(
-            inputs=transformed,
+        transformed = Transformer(
             head_num=head_num,
             hidden_dim=feed_forward_dim,
+            dropout_rate=dropout_rate,
             name='Transformer-%d' % (i + 1),
-            dropout=dropout,
-        )
+        )(transformed)
     mlm_pred_layer = keras.layers.Dense(
         units=token_num,
         activation='softmax',
@@ -78,9 +77,12 @@ def get_model(token_num,
 def get_custom_objects():
     """Get all custom objects for loading saved models."""
     return {
+        'Embeddings': Embeddings,
         'Attention': Attention,
+        'MultiHeadAttention': MultiHeadAttention,
         'FeedForward': FeedForward,
         'LayerNormalization': LayerNormalization,
+        'Transformer': Transformer,
         'Masked': Masked,
         'Extract': Extract,
         'gelu': gelu,

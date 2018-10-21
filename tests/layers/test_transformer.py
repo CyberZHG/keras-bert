@@ -1,7 +1,7 @@
 import unittest
 import keras
 import numpy as np
-from keras_bert.layers import get_transformer
+from keras_bert.layers import Transformer
 
 
 class TestMultiHead(unittest.TestCase):
@@ -17,12 +17,11 @@ class TestMultiHead(unittest.TestCase):
             mask_zero=True,
             name='Embedding',
         )(input_layer)
-        output_layer = get_transformer(
-            inputs=embed_layer,
+        output_layer = Transformer(
             head_num=12,
             hidden_dim=768 * 4,
             name='Transformer',
-        )
+        )(embed_layer)
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
         model.compile(
             optimizer='adam',
@@ -38,20 +37,18 @@ class TestMultiHead(unittest.TestCase):
             name='Input',
         )
         dense_layer = keras.layers.Dense(units=3, name='Dense-1')(input_layer)
-        transformer_layer = get_transformer(
-            inputs=dense_layer,
+        transformer_layer = Transformer(
             head_num=3,
             hidden_dim=12,
-            dropout=0.001,
+            dropout_rate=0.001,
             name='Transformer-1',
-        )
-        transformer_layer = get_transformer(
-            inputs=transformer_layer,
+        )(dense_layer)
+        transformer_layer = Transformer(
             head_num=3,
             hidden_dim=12,
-            dropout=0.001,
+            dropout_rate=0.001,
             name='Transformer-2',
-        )
+        )(transformer_layer)
         dense_layer = keras.layers.Dense(units=3, name='Dense-2')(transformer_layer)
         model = keras.models.Model(
             inputs=input_layer,

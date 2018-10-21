@@ -1,7 +1,7 @@
 import unittest
 import keras
 import numpy as np
-from keras_bert.layers import LayerNormalization, get_multi_head_attention
+from keras_bert.layers import LayerNormalization, MultiHeadAttention
 
 
 class TestLayerNorm(unittest.TestCase):
@@ -40,12 +40,11 @@ class TestLayerNorm(unittest.TestCase):
             shape=(2, 3),
             name='Input',
         )
-        att_layer = get_multi_head_attention(
-            input_layer,
+        att_layer = MultiHeadAttention(
             head_num=3,
-            dropout=1e-5,
+            dropout_rate=1e-5,
             name='MH'
-        )
+        )(input_layer)
         dense_layer = keras.layers.Dense(units=3, name='Dense-1')(att_layer)
         norm_layer = LayerNormalization(
             name='Layer-Normalization',

@@ -2,14 +2,14 @@ import unittest
 import random
 import keras
 import numpy as np
-from keras_bert.layers import get_inputs, get_embedding, get_transformer, Masked
+from keras_bert.layers import get_inputs, Embeddings, Transformer, Masked
 
 
 class TestMasked(unittest.TestCase):
 
     def test_sample(self):
         inputs = get_inputs(seq_len=512)
-        embed_layer = get_embedding(inputs, token_num=12, pos_num=512, embed_dim=768)
+        embed_layer = Embeddings(input_dim=12, output_dim=768, position_dim=512)(inputs)
         masked_layer = Masked(name='Masked')([embed_layer, inputs[-1]])
         model = keras.models.Model(inputs=inputs, outputs=masked_layer)
         model.compile(
@@ -37,13 +37,12 @@ class TestMasked(unittest.TestCase):
             mask_zero=True,
             name='Embedding',
         )(input_layer)
-        transformer_layer = get_transformer(
-            inputs=embed_layer,
+        transformer_layer = Transformer(
             head_num=1,
             hidden_dim=12,
-            dropout=0.1,
+            dropout_rate=0.1,
             name='Transformer',
-        )
+        )(embed_layer)
         dense_layer = keras.layers.Dense(
             units=12,
             activation='softmax',

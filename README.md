@@ -9,7 +9,7 @@ Language Understanding](https://arxiv.org/pdf/1810.04805.pdf)
 ## Install
 
 ```bash
-pip install -e .
+pip install keras-bert
 ```
 
 ## Usage

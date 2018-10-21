@@ -1,7 +1,7 @@
 import unittest
 import keras
 import numpy as np
-from keras_bert.layers import get_multi_head_attention
+from keras_bert.layers import MultiHeadAttention
 
 
 class TestMultiHead(unittest.TestCase):
@@ -17,11 +17,10 @@ class TestMultiHead(unittest.TestCase):
             mask_zero=True,
             name='Embedding',
         )(input_layer)
-        output_layer = get_multi_head_attention(
-            inputs=embed_layer,
+        output_layer = MultiHeadAttention(
             head_num=12,
             name='Multi-Head',
-        )
+        )(embed_layer)
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
         model.compile(
             optimizer='adam',
@@ -37,30 +36,27 @@ class TestMultiHead(unittest.TestCase):
                 shape=(2, 3),
                 name='Input',
             )
-            get_multi_head_attention(
-                inputs=input_layer,
+            MultiHeadAttention(
                 head_num=2,
-                dropout=0.01,
+                dropout_rate=0.01,
                 name='Multi-Head',
-            )
+            )(input_layer)
 
     def test_fit(self):
         input_layer = keras.layers.Input(
             shape=(2, 3),
             name='Input',
         )
-        att_layer = get_multi_head_attention(
-            inputs=input_layer,
+        att_layer = MultiHeadAttention(
             head_num=3,
-            dropout=0.01,
+            dropout_rate=0.01,
             name='Multi-Head-1',
-        )
+        )(input_layer)
         dense_layer = keras.layers.Dense(units=3, name='Dense-1')(att_layer)
-        att_layer = get_multi_head_attention(
-            inputs=dense_layer,
+        att_layer = MultiHeadAttention(
             head_num=3,
             name='Multi-Head-2',
-        )
+        )(dense_layer)
         output_layer = keras.layers.Dense(units=3, name='Dense-2')(att_layer)
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
         model.compile(
