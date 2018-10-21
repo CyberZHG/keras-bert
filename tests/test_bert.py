@@ -77,7 +77,7 @@ class TestBERT(unittest.TestCase):
                 keras.callbacks.EarlyStopping(monitor='val_MLM_loss', patience=5)
             ],
         )
-        model.save(model_path)
+        # model.save(model_path)
         for inputs, outputs in _generator():
             predicts = model.predict(inputs)
             outputs = list(map(lambda x: np.squeeze(x, axis=-1), outputs))
@@ -89,3 +89,23 @@ class TestBERT(unittest.TestCase):
                         self.assertEqual(outputs[0][i][j], predicts[0][i][j])
             self.assertTrue(np.allclose(outputs[1], predicts[1]))
             break
+
+    def test_get_layers(self):
+
+        def _custom_layers(x):
+            return keras.layers.LSTM(units=768, name='LSTM')(x)
+
+        inputs, output_layer = get_model(
+            token_num=200,
+            embed_dim=768,
+            custom_layers=_custom_layers,
+            training=False,
+        )
+        model = keras.models.Model(inputs=inputs, outputs=output_layer)
+        model.compile(
+            optimizer='adam',
+            loss='mse',
+            metrics={},
+        )
+        model.summary()
+        self.assertTrue(model is not None)

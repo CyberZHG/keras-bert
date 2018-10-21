@@ -21,6 +21,8 @@ def get_model(token_num,
               head_num=12,
               feed_forward_dim=3072,
               dropout_rate=0.1,
+              custom_layers=None,
+              training=True,
               lr=1e-4):
     """Get BERT model.
 
@@ -34,6 +36,11 @@ def get_model(token_num,
     :param head_num: Number of heads in multi-head attention in each transformer.
     :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
     :param dropout_rate: Dropout rate.
+    :param custom_layers: A function that takes the embedding tensor and returns the tensor after feature extraction.
+                          Arguments such as `transformer_num` and `head_num` will be ignored if `custom_layer` is not
+                          `None`.
+    :param training: The built model will be returned if it is `True`, otherwise the input layers and the last feature
+                     extraction layer will be returned.
     :param lr: Learning rate.
     :return: The compiled model.
     """
@@ -46,13 +53,18 @@ def get_model(token_num,
         name='Embeddings',
     )(inputs[:3])
     transformed = embed_layer
-    for i in range(transformer_num):
-        transformed = Transformer(
-            head_num=head_num,
-            hidden_dim=feed_forward_dim,
-            dropout_rate=dropout_rate,
-            name='Transformer-%d' % (i + 1),
-        )(transformed)
+    if custom_layers is not None:
+        transformed = custom_layers(transformed)
+    else:
+        for i in range(transformer_num):
+            transformed = Transformer(
+                head_num=head_num,
+                hidden_dim=feed_forward_dim,
+                dropout_rate=dropout_rate,
+                name='Transformer-%d' % (i + 1),
+            )(transformed)
+    if not training:
+        return inputs, transformed
     mlm_pred_layer = keras.layers.Dense(
         units=token_num,
         activation='softmax',
@@ -107,7 +119,8 @@ def gen_batch_inputs(sentence_pairs,
                      mask_rate=0.15,
                      mask_mask_rate=0.8,
                      mask_random_rate=0.1,
-                     swap_sentence_rate=0.5):
+                     swap_sentence_rate=0.5,
+                     force_mask=True):
     """Generate a batch of inputs and outputs for training.
 
     :param sentence_pairs: A list of pairs containing lists of tokens.
@@ -118,6 +131,7 @@ def gen_batch_inputs(sentence_pairs,
     :param mask_mask_rate: The rate of replacing the token to `TOKEN_MASK`.
     :param mask_random_rate: The rate of replacing the token to a random word.
     :param swap_sentence_rate: The rate of swapping the second sentences.
+    :param force_mask: At least one position will be masked.
     :return: All the inputs and outputs.
     """
     batch_size = len(sentence_pairs)
@@ -165,7 +179,7 @@ def gen_batch_inputs(sentence_pairs,
             else:
                 masked_input.append(0)
                 token_input.append(token_dict.get(token, unknown_index))
-        if not has_mask:  # Used to prevent nan loss
+        if force_mask and not has_mask:
             masked_input[1] = 1
         token_inputs.append(token_input)
         masked_inputs.append(masked_input)
