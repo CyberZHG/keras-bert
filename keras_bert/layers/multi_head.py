@@ -49,13 +49,41 @@ class MultiHeadAttention(Wrapper):
                 activation=gelu,
                 use_bias=False,
                 trainable=self.trainable,
-                name='%s-Dense_%d' % (self.name, i + 1),
+                name='%s-Dense-Q_%d' % (self.name, i + 1),
+            )
+            self.layers[layer.name] = layer
+            layer = keras.layers.Dense(
+                units=feature_dim // self.head_num,
+                activation=gelu,
+                use_bias=False,
+                trainable=self.trainable,
+                name='%s-Dense-K_%d' % (self.name, i + 1),
+            )
+            self.layers[layer.name] = layer
+            layer = keras.layers.Dense(
+                units=feature_dim // self.head_num,
+                activation=gelu,
+                use_bias=False,
+                trainable=self.trainable,
+                name='%s-Dense-V_%d' % (self.name, i + 1),
             )
             self.layers[layer.name] = layer
             layer = keras.layers.Dropout(
                 rate=self.dropout_rate,
                 trainable=self.trainable,
-                name='%s-Dense-Dropout_%d' % (self.name, i + 1),
+                name='%s-Dense-Dropout-Q_%d' % (self.name, i + 1),
+            )
+            self.layers[layer.name] = layer
+            layer = keras.layers.Dropout(
+                rate=self.dropout_rate,
+                trainable=self.trainable,
+                name='%s-Dense-Dropout-K_%d' % (self.name, i + 1),
+            )
+            self.layers[layer.name] = layer
+            layer = keras.layers.Dropout(
+                rate=self.dropout_rate,
+                trainable=self.trainable,
+                name='%s-Dense-Dropout-V_%d' % (self.name, i + 1),
             )
             self.layers[layer.name] = layer
             layer = Attention(
@@ -91,9 +119,17 @@ class MultiHeadAttention(Wrapper):
     def call(self, inputs, mask=None):
         outputs = []
         for i in range(self.head_num):
-            dense_layer = self.layers['%s-Dense_%d' % (self.name, i + 1)](inputs)
-            dropout_layer = self.layers['%s-Dense-Dropout_%d' % (self.name, i + 1)](dense_layer)
-            att_layer = self.layers['%s-Attention_%d' % (self.name, i + 1)](dropout_layer)
+            query_layer = self.layers['%s-Dense-Q_%d' % (self.name, i + 1)](inputs)
+            key_layer = self.layers['%s-Dense-K_%d' % (self.name, i + 1)](inputs)
+            value_layer = self.layers['%s-Dense-V_%d' % (self.name, i + 1)](inputs)
+            query_dropout_layer = self.layers['%s-Dense-Dropout-Q_%d' % (self.name, i + 1)](query_layer)
+            key_dropout_layer = self.layers['%s-Dense-Dropout-K_%d' % (self.name, i + 1)](key_layer)
+            value_dropout_layer = self.layers['%s-Dense-Dropout-V_%d' % (self.name, i + 1)](value_layer)
+            att_layer = self.layers['%s-Attention_%d' % (self.name, i + 1)]([
+                query_dropout_layer,
+                key_dropout_layer,
+                value_dropout_layer,
+            ])
             dropout_layer = self.layers['%s-Attention-Dropout_%d' % (self.name, i + 1)](att_layer)
             outputs.append(dropout_layer)
         if self.head_num == 1:

@@ -70,7 +70,7 @@ class TestMultiHead(unittest.TestCase):
         model.fit_generator(
             generator=_generator(),
             steps_per_epoch=1000,
-            epochs=30,
+            epochs=10,
             validation_data=_generator(),
             validation_steps=100,
             callbacks=[

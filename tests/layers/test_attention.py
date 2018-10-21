@@ -7,8 +7,11 @@ from keras_bert.layers import Attention
 class TestAttention(unittest.TestCase):
 
     def test_sample(self):
-        model = keras.models.Sequential()
-        model.add(keras.layers.Embedding(
+        input_layer = keras.layers.Input(
+            shape=(5,),
+            name='Input',
+        )
+        embed_layer = keras.layers.Embedding(
             input_dim=4,
             output_dim=5,
             mask_zero=True,
@@ -21,8 +24,11 @@ class TestAttention(unittest.TestCase):
                 ]),
             ],
             name='Embedding',
-        ))
-        model.add(Attention(name='Attention'))
+        )(input_layer)
+        att_layer = Attention(
+            name='Attention',
+        )([embed_layer, embed_layer, embed_layer])
+        model = keras.models.Model(inputs=input_layer, outputs=att_layer)
         model.compile(
             optimizer='adam',
             loss='mse',

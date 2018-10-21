@@ -40,7 +40,6 @@ class Wrapper(keras.layers.Layer):
     @classmethod
     def from_config(cls, config, custom_objects=None):
         layers = {}
-        print(config)
         keys = list(filter(lambda key: key.startswith(Wrapper.CONFIG_PREFIX), config.keys()))
         for key in keys:
             if key.startswith(Wrapper.CONFIG_PREFIX):
