@@ -26,6 +26,63 @@ class TestMasked(unittest.TestCase):
         ])
         self.assertEqual((None, 512, 768), model.layers[-1].output_shape)
 
+    def test_mask_result(self):
+        input_layer = keras.layers.Input(
+            shape=(None,),
+            name='Input',
+        )
+        embed_layer = keras.layers.Embedding(
+            input_dim=12,
+            output_dim=9,
+            mask_zero=True,
+            name='Embedding',
+        )(input_layer)
+        transformer_layer = get_transformer(
+            inputs=embed_layer,
+            head_num=1,
+            hidden_dim=12,
+            dropout=0.1,
+            name='Transformer',
+        )
+        dense_layer = keras.layers.Dense(
+            units=12,
+            activation='softmax',
+            name='Dense',
+        )(transformer_layer)
+        mask_layer = keras.layers.Input(
+            shape=(None,),
+            name='Mask',
+        )
+        masked_layer, mask_result = Masked(
+            return_masked=True,
+            name='Masked',
+        )([dense_layer, mask_layer])
+        model = keras.models.Model(
+            inputs=[input_layer, mask_layer],
+            outputs=[masked_layer, mask_result],
+        )
+        model.compile(
+            optimizer='adam',
+            loss='mse',
+            metrics=['mse'],
+        )
+        model.summary(line_length=150)
+        predicts = model.predict([
+            np.asarray([
+                [1, 2, 3, 4, 5, 6, 7, 8, 0, 0],
+                [1, 2, 3, 4, 0, 0, 0, 0, 0, 0],
+            ]),
+            np.asarray([
+                [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+            ]),
+        ])
+        expect = np.asarray([
+            [0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
+        ])
+        self.assertTrue(np.allclose(expect, predicts[1]))
+
     def test_fit(self):
         input_layer = keras.layers.Input(
             shape=(15,),
@@ -53,7 +110,9 @@ class TestMasked(unittest.TestCase):
             shape=(None,),
             name='Mask',
         )
-        masked_layer = Masked()([dense_layer, mask_layer])
+        masked_layer = Masked(
+            name='Masked',
+        )([dense_layer, mask_layer])
         model = keras.models.Model(
             inputs=[input_layer, mask_layer],
             outputs=masked_layer,
@@ -61,7 +120,7 @@ class TestMasked(unittest.TestCase):
         model.compile(
             optimizer=keras.optimizers.Adam(lr=1e-3),
             loss=keras.losses.sparse_categorical_crossentropy,
-            metrics=[keras.metrics.sparse_categorical_accuracy],
+            metrics=[keras.metrics.sparse_categorical_crossentropy],
         )
         model.summary(line_length=150)
 

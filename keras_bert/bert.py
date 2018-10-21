@@ -121,6 +121,7 @@ def gen_batch_inputs(sentence_pairs,
     unknown_index = token_dict[TOKEN_UNK]
     # Generate sentence swapping mapping
     nsp_outputs = np.ones((batch_size,))
+    mapping = {}
     if swap_sentence_rate > 0.0:
         indices = [index for index in range(batch_size) if random.random() < swap_sentence_rate]
         mapped = indices[:]
@@ -129,8 +130,6 @@ def gen_batch_inputs(sentence_pairs,
             if indices[i] != mapped[i]:
                 nsp_outputs[indices[i]] = 0.0
         mapping = {indices[i]: mapped[i] for i in range(len(indices))}
-    else:
-        mapping = {}
     position_inputs = [[i for i in range(seq_len)] for _ in range(batch_size)]
     # Generate MLM
     token_inputs, segment_inputs, masked_inputs = [], [], []
@@ -139,10 +138,8 @@ def gen_batch_inputs(sentence_pairs,
         first, second = sentence_pairs[i][0], sentence_pairs[mapping.get(i, i)][1]
         segment_inputs.append([0] * (len(first) + 2) + [1] * (seq_len - (len(first) + 2)))
         tokens = [TOKEN_CLS] + first + [TOKEN_SEP] + second + [TOKEN_SEP]
-        if len(tokens) > seq_len:
-            tokens = tokens[:seq_len]
-        else:
-            tokens += [TOKEN_PAD] * (seq_len - len(tokens))
+        tokens = tokens[:seq_len]
+        tokens += [TOKEN_PAD] * (seq_len - len(tokens))
         token_input, masked_input, mlm_output = [], [], []
         has_mask = False
         for token in tokens:
