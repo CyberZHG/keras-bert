@@ -1,6 +1,4 @@
 import keras
-import keras.backend as K
-from keras_bert.activations import gelu
 
 
 class Extract(keras.layers.Layer):

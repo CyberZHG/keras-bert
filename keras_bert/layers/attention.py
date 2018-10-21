@@ -19,19 +19,10 @@ class Attention(keras.layers.Layer):
         return mask
 
     def call(self, inputs, mask=None, **kwargs):
-        input_shape = K.shape(inputs)
-        input_len, feature_dim = input_shape[1], input_shape[2]
-        e = K.batch_dot(inputs, K.permute_dimensions(inputs, (0, 2, 1))) / K.sqrt(K.cast(feature_dim, dtype=K.floatx()))
-        e = K.exp(e)
+        feature_dim = K.shape(inputs)[-1]
+        e = K.batch_dot(inputs, inputs, axes=2) / K.sqrt(K.cast(feature_dim, dtype=K.floatx()))
         if mask is not None:
-            mask = K.cast(mask, K.floatx())
-            mask = K.expand_dims(mask)
-            e = K.permute_dimensions(K.permute_dimensions(e * mask, (0, 2, 1)) * mask, (0, 2, 1))
-
-        s = K.sum(e, axis=-1)
-        s = K.tile(K.expand_dims(s, axis=-1), K.stack([1, 1, input_len]))
-        a = e / (s + K.epsilon())
-
-        inputs = K.permute_dimensions(inputs, (0, 2, 1))
-        v = K.permute_dimensions(K.batch_dot(inputs, K.permute_dimensions(a, (0, 2, 1))), (0, 2, 1))
+            e -= (1.0 - K.cast(K.expand_dims(mask), K.floatx())) * 1e9
+        a = keras.activations.softmax(e)
+        v = K.batch_dot(a, inputs)
         return v

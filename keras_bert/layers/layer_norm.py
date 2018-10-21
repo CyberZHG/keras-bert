@@ -20,10 +20,10 @@ class LayerNormalization(keras.layers.Layer):
         return input_mask
 
     def build(self, input_shape):
-        self.gamma = self.add_weight(shape=input_shape[1:],
+        self.gamma = self.add_weight(shape=input_shape[-1:],
                                      name='{}_gamma'.format(self.name),
                                      initializer=keras.initializers.get('ones'))
-        self.beta = self.add_weight(shape=input_shape[1:],
+        self.beta = self.add_weight(shape=input_shape[-1:],
                                     name='{}_beta'.format(self.name),
                                     initializer=keras.initializers.get('zeros'))
         super(LayerNormalization, self).build(input_shape)
