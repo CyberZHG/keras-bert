@@ -71,22 +71,25 @@ class TestAttention(unittest.TestCase):
         def _generator(batch_size=32):
             while True:
                 inputs = np.random.random((batch_size, 1, 3))
-                outputs = inputs - 0.5
+                outputs = inputs * 0.8 + 0.3
                 yield inputs, outputs
 
-        model.fit_generator(
-            generator=_generator(),
-            steps_per_epoch=1000,
-            epochs=30,
-            validation_data=_generator(),
-            validation_steps=100,
-            callbacks=[
-                keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
-            ],
-        )
-        for inputs, _ in _generator(batch_size=3):
-            predicts = model.predict(inputs)
-            expect = np.round(inputs - 0.5, decimals=1)
-            actual = np.round(predicts, decimals=1)
-            self.assertTrue(np.allclose(expect, actual), (expect, actual))
-            break
+        for _ in range(3):
+            model.fit_generator(
+                generator=_generator(),
+                steps_per_epoch=1000,
+                epochs=30,
+                validation_data=_generator(),
+                validation_steps=100,
+                callbacks=[
+                    keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+                ],
+            )
+            for inputs, _ in _generator(batch_size=3):
+                predicts = model.predict(inputs)
+                expect = np.round(inputs * 0.8 + 0.3, decimals=1)
+                actual = np.round(predicts, decimals=1)
+                if np.allclose(expect, actual):
+                    return
+                break
+        self.assertTrue(np.allclose(expect, actual), (expect, actual))

@@ -90,22 +90,19 @@ class TestMasked(unittest.TestCase):
         )
         embed_layer = keras.layers.Embedding(
             input_dim=12,
-            output_dim=9,
+            output_dim=24,
             mask_zero=True,
             name='Embedding',
         )(input_layer)
-        transformer_layer = get_transformer(
-            inputs=embed_layer,
-            head_num=3,
-            hidden_dim=12,
-            dropout=0.1,
-            name='Transformer',
-        )
+        rnn_layer = keras.layers.Bidirectional(
+            keras.layers.LSTM(units=100, return_sequences=True),
+            name='Bi-LSTM',
+        )(embed_layer)
         dense_layer = keras.layers.Dense(
             units=12,
             activation='softmax',
             name='Dense',
-        )(transformer_layer)
+        )(rnn_layer)
         mask_layer = keras.layers.Input(
             shape=(None,),
             name='Mask',
@@ -118,7 +115,7 @@ class TestMasked(unittest.TestCase):
             outputs=masked_layer,
         )
         model.compile(
-            optimizer=keras.optimizers.Adam(lr=1e-3),
+            optimizer=keras.optimizers.Adam(lr=1e-4),
             loss=keras.losses.sparse_categorical_crossentropy,
             metrics=[keras.metrics.sparse_categorical_crossentropy],
         )
@@ -135,7 +132,7 @@ class TestMasked(unittest.TestCase):
                     for i in range(1, 11):
                         inputs[-1].append(i)
                         outputs[-1].append([i])
-                        if random.random() < 0.2:
+                        if random.random() < 0.3:
                             has_mask = True
                             inputs[-1][-1] = 11
                             masked[-1].append(1)
@@ -151,15 +148,18 @@ class TestMasked(unittest.TestCase):
         model.fit_generator(
             generator=_generator(),
             steps_per_epoch=1000,
-            epochs=30,
+            epochs=10,
             validation_data=_generator(),
             validation_steps=100,
             callbacks=[
-                keras.callbacks.EarlyStopping(monitor='val_loss', patience=5)
+                keras.callbacks.EarlyStopping(monitor='val_loss', patience=2)
             ],
         )
-        for inputs, outputs in _generator(batch_size=3):
+        for inputs, outputs in _generator(batch_size=32):
             predicts = model.predict(inputs)
             actual = np.argmax(predicts, axis=-1)
-            print(actual)
+            for i in range(32):
+                for j in range(15):
+                    if inputs[1][i][j]:
+                        self.assertEqual(j + 1, actual[i][j])
             break

@@ -31,6 +31,19 @@ class TestMultiHead(unittest.TestCase):
         model.summary()
         self.assertEqual((None, 512, 768), model.layers[-1].output_shape)
 
+    def test_invalid_head_num(self):
+        with self.assertRaises(IndexError):
+            input_layer = keras.layers.Input(
+                shape=(2, 3),
+                name='Input',
+            )
+            get_multi_head_attention(
+                inputs=input_layer,
+                head_num=2,
+                dropout=0.01,
+                name='Multi-Head',
+            )
+
     def test_fit(self):
         input_layer = keras.layers.Input(
             shape=(2, 3),

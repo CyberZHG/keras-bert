@@ -111,3 +111,9 @@ venv.bak/
 
 # Temporary README
 README.rst
+
+# Images
+*.png
+
+# Models
+*.h5

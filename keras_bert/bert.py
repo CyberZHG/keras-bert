@@ -20,7 +20,8 @@ def get_model(token_num,
               transformer_num=12,
               head_num=12,
               feed_forward_dim=3072,
-              dropout=0.1):
+              dropout=0.1,
+              lr=1e-4):
     """Get BERT model.
 
     See: https://arxiv.org/pdf/1810.04805.pdf
@@ -33,6 +34,7 @@ def get_model(token_num,
     :param head_num: Number of heads in multi-head attention in each transformer.
     :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
     :param dropout: Dropout rate.
+    :param lr: Learning rate.
     :return: The compiled model.
     """
     inputs = get_inputs(seq_len=seq_len)
@@ -66,9 +68,9 @@ def get_model(token_num,
     )(extract_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
     model.compile(
-        optimizer=keras.optimizers.Adam(lr=1e-4),
+        optimizer=keras.optimizers.Adam(lr=lr),
         loss=keras.losses.sparse_categorical_crossentropy,
-        metrics=[keras.metrics.sparse_categorical_crossentropy],
+        metrics=[],
     )
     return model
 

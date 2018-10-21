@@ -15,7 +15,8 @@ def get_multi_head_attention(inputs, head_num, name, dropout=0.1):
     :return: Output layer.
     """
     input_dim = inputs.get_shape().as_list()[-1]
-    assert input_dim % head_num == 0
+    if input_dim % head_num != 0:
+        raise IndexError('Invalid head number %d with the given input dim %d' % (head_num, input_dim))
     outputs = []
     for i in range(head_num):
         dense_layer = keras.layers.Dense(
@@ -33,7 +34,7 @@ def get_multi_head_attention(inputs, head_num, name, dropout=0.1):
         )(dropout_layer)
         dropout_layer = keras.layers.Dropout(
             rate=dropout,
-            name='%s-Attention_-Dropout_%d' % (name, i + 1),
+            name='%s-Attention-Dropout_%d' % (name, i + 1),
         )(att_layer)
         outputs.append(dropout_layer)
     if len(outputs) == 1:
