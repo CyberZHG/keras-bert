@@ -50,17 +50,22 @@ def get_model(token_num,
         output_dim=embed_dim,
         position_dim=pos_num,
         dropout_rate=dropout_rate,
+        trainable=training,
         name='Embeddings',
     )(inputs[:3])
     transformed = embed_layer
     if custom_layers is not None:
-        transformed = custom_layers(transformed)
+        kwargs = {}
+        if keras.utils.generic_utils.has_arg(custom_layers, 'trainable'):
+            kwargs['trainable'] = training
+        transformed = custom_layers(transformed, **kwargs)
     else:
         for i in range(transformer_num):
             transformed = Transformer(
                 head_num=head_num,
                 hidden_dim=feed_forward_dim,
                 dropout_rate=dropout_rate,
+                trainable=training,
                 name='Transformer-%d' % (i + 1),
             )(transformed)
     if not training:
@@ -68,6 +73,7 @@ def get_model(token_num,
     mlm_pred_layer = keras.layers.Dense(
         units=token_num,
         activation='softmax',
+        trainable=training,
         name='Dense-MLM',
     )(transformed)
     masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
@@ -75,6 +81,7 @@ def get_model(token_num,
     nsp_pred_layer = keras.layers.Dense(
         units=2,
         activation='softmax',
+        trainable=training,
         name='NSP',
     )(extract_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])

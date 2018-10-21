@@ -92,8 +92,12 @@ class TestBERT(unittest.TestCase):
 
     def test_get_layers(self):
 
-        def _custom_layers(x):
-            return keras.layers.LSTM(units=768, name='LSTM')(x)
+        def _custom_layers(x, trainable=True):
+            return keras.layers.LSTM(
+                units=768,
+                trainable=trainable,
+                name='LSTM',
+            )(x)
 
         inputs, output_layer = get_model(
             token_num=200,

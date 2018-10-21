@@ -90,8 +90,12 @@ inputs, output_layer = get_model(  # `output_layer` is the last feature extracti
 ### Custom Feature Extraction
 
 ```python
-def _custom_layers(inputs):
-    return keras.layers.LSTM(units=768, name='LSTM')(inputs)
+def _custom_layers(x, trainable=True):
+    return keras.layers.LSTM(
+        units=768,
+        trainable=trainable,
+        name='LSTM',
+    )(x)
 
 model = get_model(
     token_num=200,
