@@ -1,8 +1,9 @@
 import keras
-from .multi_head import MultiHeadAttention
+from keras_multi_head import MultiHeadAttention
 from .layer_norm import LayerNormalization
 from .feed_forward import FeedForward
 from .wrapper import Wrapper
+from ..activations import gelu
 
 
 class Transformer(Wrapper):
@@ -46,8 +47,8 @@ class Transformer(Wrapper):
     def build(self, input_shape):
         layer = MultiHeadAttention(
             head_num=self.head_num,
-            dropout_rate=self.dropout_rate,
             trainable=self.trainable,
+            kernel_activation=gelu,
             name='%s-MultiHead' % self.name,
         )
         self.layers[layer.name] = layer

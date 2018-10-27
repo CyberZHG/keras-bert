@@ -1,4 +1,4 @@
 numpy
 tensorflow
 Keras
-keras-self-attention==0.30.0
+keras-multi-head==0.7.0

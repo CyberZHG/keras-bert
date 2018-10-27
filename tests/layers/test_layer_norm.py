@@ -1,7 +1,9 @@
 import unittest
 import keras
 import numpy as np
-from keras_bert.layers import LayerNormalization, MultiHeadAttention
+from keras_multi_head import MultiHeadAttention
+from keras_bert.activations import gelu
+from keras_bert.layers import LayerNormalization
 
 
 class TestLayerNorm(unittest.TestCase):
@@ -42,8 +44,8 @@ class TestLayerNorm(unittest.TestCase):
         )
         att_layer = MultiHeadAttention(
             head_num=3,
-            dropout_rate=1e-5,
-            name='MH'
+            kernel_activation=gelu,
+            name='Multi-Head-Attentions'
         )(input_layer)
         dense_layer = keras.layers.Dense(units=3, name='Dense-1')(att_layer)
         norm_layer = LayerNormalization(
@@ -58,7 +60,7 @@ class TestLayerNorm(unittest.TestCase):
         model.compile(
             optimizer=keras.optimizers.Adam(lr=1e-3),
             loss='mse',
-            metrics=['mse'],
+            metrics={},
         )
         model.summary()
 

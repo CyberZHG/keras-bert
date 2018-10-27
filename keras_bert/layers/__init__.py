@@ -1,7 +1,6 @@
 from .wrapper import Wrapper
 from .inputs import get_inputs
 from .embedding import Embeddings
-from .multi_head import MultiHeadAttention
 from .feed_forward import FeedForward
 from .layer_norm import LayerNormalization
 from .transformer import Transformer

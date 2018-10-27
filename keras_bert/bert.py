@@ -1,8 +1,8 @@
 import random
 import keras
 import numpy as np
-from keras_self_attention import ScaledDotProductAttention
-from .layers import (get_inputs, Embeddings, Transformer, MultiHeadAttention,
+from keras_multi_head import MultiHeadAttention
+from .layers import (get_inputs, Embeddings, Transformer,
                      FeedForward, Masked, Extract, LayerNormalization)
 from .activations import gelu
 
@@ -98,7 +98,6 @@ def get_custom_objects():
     """Get all custom objects for loading saved models."""
     return {
         'Embeddings': Embeddings,
-        'ScaledDotProductAttention': ScaledDotProductAttention,
         'MultiHeadAttention': MultiHeadAttention,
         'FeedForward': FeedForward,
         'LayerNormalization': LayerNormalization,

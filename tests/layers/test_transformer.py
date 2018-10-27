@@ -4,7 +4,7 @@ import numpy as np
 from keras_bert.layers import Transformer
 
 
-class TestMultiHead(unittest.TestCase):
+class TestTransfomer(unittest.TestCase):
 
     def test_sample(self):
         input_layer = keras.layers.Input(
@@ -20,6 +20,7 @@ class TestMultiHead(unittest.TestCase):
         output_layer = Transformer(
             head_num=12,
             hidden_dim=768 * 4,
+            dropout_rate=0.001,
             name='Transformer',
         )(embed_layer)
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
