@@ -12,7 +12,7 @@ class TestEmbedding(unittest.TestCase):
         model.compile(
             optimizer='adam',
             loss='mse',
-            metrics=['mse'],
+            metrics={},
         )
         model.summary(line_length=120)
         self.assertEqual((None, 512, 768), model.layers[-1].output_shape)

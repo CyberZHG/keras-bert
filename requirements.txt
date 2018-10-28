@@ -1,4 +1,3 @@
 numpy
-tensorflow
 Keras
-keras-multi-head==0.7.0
+keras-transformer==0.4.0

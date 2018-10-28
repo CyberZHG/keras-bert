@@ -1,7 +1,8 @@
 import unittest
 import keras
 import numpy as np
-from keras_bert.layers import get_inputs, Embeddings, Transformer, Masked
+from keras_transformer import gelu, get_encoders
+from keras_bert.layers import get_inputs, Embeddings, Masked
 
 
 class TestMasked(unittest.TestCase):
@@ -36,12 +37,14 @@ class TestMasked(unittest.TestCase):
             mask_zero=True,
             name='Embedding',
         )(input_layer)
-        transformer_layer = Transformer(
+        transformer_layer = get_encoders(
+            encoder_num=1,
+            input_layer=embed_layer,
             head_num=1,
             hidden_dim=12,
+            activation=gelu,
             dropout_rate=0.1,
-            name='Transformer',
-        )(embed_layer)
+        )
         dense_layer = keras.layers.Dense(
             units=12,
             activation='softmax',

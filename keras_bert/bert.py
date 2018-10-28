@@ -1,10 +1,9 @@
 import random
 import keras
 import numpy as np
-from keras_multi_head import MultiHeadAttention
-from .layers import (get_inputs, Embeddings, Transformer,
-                     FeedForward, Masked, Extract, LayerNormalization)
-from .activations import gelu
+from keras_transformer import gelu, get_encoders
+from keras_transformer import get_custom_objects as get_encoder_custom_objects
+from .layers import (get_inputs, Embeddings, Masked, Extract)
 
 
 TOKEN_PAD = ''  # Token for padding
@@ -61,14 +60,14 @@ def get_model(token_num,
             kwargs['trainable'] = training
         transformed = custom_layers(transformed, **kwargs)
     else:
-        for i in range(transformer_num):
-            transformed = Transformer(
-                head_num=head_num,
-                hidden_dim=feed_forward_dim,
-                dropout_rate=dropout_rate,
-                trainable=training,
-                name='Transformer-%d' % (i + 1),
-            )(transformed)
+        transformed = get_encoders(
+            encoder_num=transformer_num,
+            input_layer=transformed,
+            head_num=head_num,
+            hidden_dim=feed_forward_dim,
+            activation=gelu,
+            dropout_rate=dropout_rate,
+        )
     if not training:
         return inputs, transformed
     mlm_pred_layer = keras.layers.Dense(
@@ -96,16 +95,12 @@ def get_model(token_num,
 
 def get_custom_objects():
     """Get all custom objects for loading saved models."""
-    return {
-        'Embeddings': Embeddings,
-        'MultiHeadAttention': MultiHeadAttention,
-        'FeedForward': FeedForward,
-        'LayerNormalization': LayerNormalization,
-        'Transformer': Transformer,
-        'Masked': Masked,
-        'Extract': Extract,
-        'gelu': gelu,
-    }
+    custom_objects = get_encoder_custom_objects()
+    custom_objects['Embeddings'] = Embeddings
+    custom_objects['Masked'] = Masked
+    custom_objects['Extract'] = Extract
+    custom_objects['gelu'] = gelu
+    return custom_objects
 
 
 def get_base_dict():

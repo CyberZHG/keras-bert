@@ -22,7 +22,7 @@ class TestExtract(unittest.TestCase):
         model.compile(
             optimizer='adam',
             loss='mse',
-            metrics=['mse'],
+            metrics={},
         )
         model.summary()
         inputs = np.asarray([[
