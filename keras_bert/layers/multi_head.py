@@ -1,5 +1,5 @@
 import keras
-from .attention import Attention
+from keras_self_attention import ScaledDotProductAttention
 from ..activations.gelu import gelu
 from .wrapper import Wrapper
 
@@ -86,7 +86,7 @@ class MultiHeadAttention(Wrapper):
                 name='%s-Dense-Dropout-V_%d' % (self.name, i + 1),
             )
             self.layers[layer.name] = layer
-            layer = Attention(
+            layer = ScaledDotProductAttention(
                 trainable=self.trainable,
                 name='%s-Attention_%d' % (self.name, i + 1),
             )
