@@ -23,7 +23,7 @@ class TestBERT(unittest.TestCase):
         )
         model.summary(line_length=200)
 
-    def test_fit(self):
+    def _test_fit(self):
         current_path = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(current_path, 'test_bert_fit.h5')
         sentence_pairs = [
@@ -70,14 +70,14 @@ class TestBERT(unittest.TestCase):
         model.fit_generator(
             generator=_generator(),
             steps_per_epoch=1000,
-            epochs=1,
+            epochs=30,
             validation_data=_generator(),
             validation_steps=100,
             callbacks=[
                 keras.callbacks.EarlyStopping(monitor='val_MLM_loss', patience=5)
             ],
         )
-        # model.save(model_path)
+        model.save(model_path)
         for inputs, outputs in _generator():
             predicts = model.predict(inputs)
             outputs = list(map(lambda x: np.squeeze(x, axis=-1), outputs))

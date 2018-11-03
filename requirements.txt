@@ -1,3 +1,4 @@
 numpy
+tensorflow
 Keras
-keras-transformer==0.4.0
+keras-transformer==0.10.0

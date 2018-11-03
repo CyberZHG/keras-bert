@@ -1,13 +1,13 @@
 import unittest
 import keras
-from keras_bert.layers import get_inputs, Embeddings
+from keras_bert.layers import get_inputs, get_embedding
 
 
 class TestEmbedding(unittest.TestCase):
 
     def test_sample(self):
         inputs = get_inputs(seq_len=512)
-        embed_layer = Embeddings(input_dim=12, output_dim=768, position_dim=512)(inputs)
+        embed_layer = get_embedding(inputs, token_num=12, embed_dim=768, pos_num=512)
         model = keras.models.Model(inputs=inputs, outputs=embed_layer)
         model.compile(
             optimizer='adam',

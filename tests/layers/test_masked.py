@@ -2,14 +2,14 @@ import unittest
 import keras
 import numpy as np
 from keras_transformer import gelu, get_encoders
-from keras_bert.layers import get_inputs, Embeddings, Masked
+from keras_bert.layers import get_inputs, get_embedding, Masked
 
 
 class TestMasked(unittest.TestCase):
 
     def test_sample(self):
         inputs = get_inputs(seq_len=512)
-        embed_layer = Embeddings(input_dim=12, output_dim=768, position_dim=512)(inputs)
+        embed_layer = get_embedding(inputs, token_num=12, embed_dim=768, pos_num=512)
         masked_layer = Masked(name='Masked')([embed_layer, inputs[-1]])
         model = keras.models.Model(inputs=inputs, outputs=masked_layer)
         model.compile(
@@ -42,7 +42,8 @@ class TestMasked(unittest.TestCase):
             input_layer=embed_layer,
             head_num=1,
             hidden_dim=12,
-            activation=gelu,
+            attention_activation=None,
+            feed_forward_activation=gelu,
             dropout_rate=0.1,
         )
         dense_layer = keras.layers.Dense(

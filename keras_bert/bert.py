@@ -1,9 +1,10 @@
 import random
 import keras
 import numpy as np
-from keras_transformer import gelu, get_encoders
+import tensorflow as tf
+from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
-from .layers import (get_inputs, Embeddings, Masked, Extract)
+from .layers import (get_inputs, get_embedding, Masked, Extract)
 
 
 TOKEN_PAD = ''  # Token for padding
@@ -11,6 +12,10 @@ TOKEN_UNK = '<UNK>'  # Token for unknown words
 TOKEN_CLS = '<CLS>'  # Token for classification
 TOKEN_SEP = '<SEP>'  # Token for separation
 TOKEN_MASK = '<MASK>'  # Token for masking
+
+
+def gelu(x):
+    return 0.5 * x * (1.0 + tf.erf(x / tf.sqrt(2.0)))
 
 
 def get_model(token_num,
@@ -45,14 +50,13 @@ def get_model(token_num,
     :return: The compiled model.
     """
     inputs = get_inputs(seq_len=seq_len)
-    embed_layer = Embeddings(
-        input_dim=token_num,
-        output_dim=embed_dim,
-        position_dim=pos_num,
+    embed_layer = get_embedding(
+        inputs,
+        token_num=token_num,
+        embed_dim=embed_dim,
+        pos_num=pos_num,
         dropout_rate=dropout_rate,
-        trainable=training,
-        name='Embeddings',
-    )(inputs[:3])
+    )
     transformed = embed_layer
     if custom_layers is not None:
         kwargs = {}
@@ -65,15 +69,15 @@ def get_model(token_num,
             input_layer=transformed,
             head_num=head_num,
             hidden_dim=feed_forward_dim,
-            activation=gelu,
+            attention_activation=None,
+            feed_forward_activation=gelu,
             dropout_rate=dropout_rate,
         )
     if not training:
-        return inputs, transformed
+        return inputs[:3], transformed
     mlm_pred_layer = keras.layers.Dense(
         units=token_num,
         activation='softmax',
-        trainable=training,
         name='Dense-MLM',
     )(transformed)
     masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
@@ -81,7 +85,6 @@ def get_model(token_num,
     nsp_pred_layer = keras.layers.Dense(
         units=2,
         activation='softmax',
-        trainable=training,
         name='NSP',
     )(extract_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
@@ -96,7 +99,6 @@ def get_model(token_num,
 def get_custom_objects():
     """Get all custom objects for loading saved models."""
     custom_objects = get_encoder_custom_objects()
-    custom_objects['Embeddings'] = Embeddings
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
     custom_objects['gelu'] = gelu
