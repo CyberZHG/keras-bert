@@ -8,7 +8,7 @@ def get_inputs(seq_len):
 
     :param seq_len: Length of the sequence or None.
     """
-    names = ['Token', 'Segment', 'Position', 'Masked']
+    names = ['Token', 'Segment', 'Masked']
     return [keras.layers.Input(
         shape=(seq_len,),
         name='Input-%s' % name,

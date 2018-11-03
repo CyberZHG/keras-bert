@@ -2,6 +2,7 @@ import random
 import keras
 import numpy as np
 import tensorflow as tf
+from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
@@ -79,7 +80,7 @@ def get_model(token_num,
             dropout_rate=dropout_rate,
         )
     if not training:
-        return inputs[:3], transformed
+        return inputs[:2], transformed
     mlm_dense_layer = keras.layers.Dense(
         units=embed_dim,
         activation=feed_forward_activation,
@@ -111,6 +112,7 @@ def get_model(token_num,
 def get_custom_objects():
     """Get all custom objects for loading saved models."""
     custom_objects = get_encoder_custom_objects()
+    custom_objects['PositionEmbedding'] = PositionEmbedding
     custom_objects['TokenEmbedding'] = TokenEmbedding
     custom_objects['EmbeddingSimilarity'] = EmbeddingSimilarity
     custom_objects['Masked'] = Masked
@@ -166,7 +168,6 @@ def gen_batch_inputs(sentence_pairs,
             if indices[i] != mapped[i]:
                 nsp_outputs[indices[i]] = 1.0
         mapping = {indices[i]: mapped[i] for i in range(len(indices))}
-    position_inputs = [[i for i in range(seq_len)] for _ in range(batch_size)]
     # Generate MLM
     token_inputs, segment_inputs, masked_inputs = [], [], []
     mlm_outputs = []
@@ -202,6 +203,6 @@ def gen_batch_inputs(sentence_pairs,
         token_inputs.append(token_input)
         masked_inputs.append(masked_input)
         mlm_outputs.append(mlm_output)
-    inputs = [np.asarray(x) for x in [token_inputs, segment_inputs, position_inputs, masked_inputs]]
+    inputs = [np.asarray(x) for x in [token_inputs, segment_inputs, masked_inputs]]
     outputs = [np.asarray(np.expand_dims(x, axis=-1)) for x in [mlm_outputs, nsp_outputs]]
     return inputs, outputs

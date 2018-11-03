@@ -22,11 +22,10 @@ with codecs.open(dict_path, 'r', 'utf8') as reader:
 
 token_input = np.asarray([[token_dict[token] for token in tokens] + [0] * (512 - len(tokens))])
 seg_input = np.asarray([[0] * len(tokens) + [0] * (512 - len(tokens))])
-pos_input = np.asarray([list(range(len(tokens))) + [0] * (512 - len(tokens))])
 
 print(token_input[0][:len(tokens)])
 
-predicts = model.predict([token_input, seg_input, pos_input])[0]
+predicts = model.predict([token_input, seg_input])[0]
 for i, token in enumerate(tokens):
     print(token, predicts[i].tolist()[:5])
 

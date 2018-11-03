@@ -1,5 +1,6 @@
 import keras
 import keras.backend as K
+from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 
 
@@ -40,14 +41,15 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1):
             output_dim=embed_dim,
             name='Embedding-Segment',
         )(inputs[1]),
-        keras.layers.Embedding(
-            input_dim=pos_num,
-            output_dim=embed_dim,
-            name='Embedding-Position',
-        )(inputs[2]),
     ]
     embeddings[0], embed_weights = embeddings[0]
-    embed_layer = keras.layers.Add(name='Embedding')(embeddings)
+    embed_layer = keras.layers.Add(name='Embedding-Token-Segment')(embeddings)
+    embed_layer = PositionEmbedding(
+        input_dim=pos_num,
+        output_dim=embed_dim,
+        mode=PositionEmbedding.MODE_ADD,
+        name='Embedding-Position',
+    )(embed_layer)
     if dropout_rate > 0.0:
         dropout_layer = keras.layers.Dropout(
             rate=dropout_rate,

@@ -6,5 +6,5 @@ class TestInputs(unittest.TestCase):
 
     def test_name(self):
         inputs = get_inputs(seq_len=512)
-        self.assertEqual(4, len(inputs))
+        self.assertEqual(3, len(inputs))
         self.assertTrue('Segment' in inputs[1].name)

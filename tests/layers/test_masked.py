@@ -21,7 +21,6 @@ class TestMasked(unittest.TestCase):
         model.predict([
             np.asarray([[1] + [0] * 511]),
             np.asarray([[0] * 512]),
-            np.asarray([[0] * 512]),
             np.asarray([[1] + [0] * 511]),
         ])
         self.assertEqual((None, 512, 768), model.layers[-1].output_shape)
