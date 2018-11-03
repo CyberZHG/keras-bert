@@ -1,13 +1,14 @@
 import json
 import keras
+import numpy as np
 import tensorflow as tf
 from .bert import get_model
 
 
-def load_trained_model_from_checkpoint(config_file, checkpoint_file):
+def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=False):
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
-    inputs, outputs = get_model(
+    model = get_model(
         token_num=config['vocab_size'],
         pos_num=config['max_position_embeddings'],
         seq_len=config['max_position_embeddings'],
@@ -15,9 +16,11 @@ def load_trained_model_from_checkpoint(config_file, checkpoint_file):
         transformer_num=config['num_hidden_layers'],
         head_num=config['num_attention_heads'],
         feed_forward_dim=config['intermediate_size'],
-        training=False,
+        training=training,
     )
-    model = keras.models.Model(inputs=inputs, outputs=outputs)
+    if not training:
+        inputs, outputs = model
+        model = keras.models.Model(inputs=inputs, outputs=outputs)
     model.compile(optimizer='adam', loss='mse', metrics={})
     model.get_layer(name='Embedding-Token').set_weights([
         tf.train.load_variable(checkpoint_file, 'bert/embeddings/word_embeddings'),
@@ -61,5 +64,26 @@ def load_trained_model_from_checkpoint(config_file, checkpoint_file):
             tf.train.load_variable(checkpoint_file, 'bert/encoder/layer_%d/output/LayerNorm/gamma' % i),
             tf.train.load_variable(checkpoint_file, 'bert/encoder/layer_%d/output/LayerNorm/beta' % i),
         ])
-    model.trainable = False
+    if training:
+        model.get_layer(name='MLM-Dense').set_weights([
+            tf.train.load_variable(checkpoint_file, 'cls/predictions/transform/dense/kernel'),
+            tf.train.load_variable(checkpoint_file, 'cls/predictions/transform/dense/bias'),
+        ])
+        model.get_layer(name='MLM-Norm').set_weights([
+            tf.train.load_variable(checkpoint_file, 'cls/predictions/transform/LayerNorm/gamma'),
+            tf.train.load_variable(checkpoint_file, 'cls/predictions/transform/LayerNorm/beta'),
+        ])
+        model.get_layer(name='MLM-Sim').set_weights([
+            tf.train.load_variable(checkpoint_file, 'cls/predictions/output_bias'),
+        ])
+        model.get_layer(name='NSP-Dense').set_weights([
+            tf.train.load_variable(checkpoint_file, 'bert/pooler/dense/kernel'),
+            tf.train.load_variable(checkpoint_file, 'bert/pooler/dense/bias'),
+        ])
+        model.get_layer(name='NSP').set_weights([
+            np.transpose(tf.train.load_variable(checkpoint_file, 'cls/seq_relationship/output_weights')),
+            tf.train.load_variable(checkpoint_file, 'cls/seq_relationship/output_bias'),
+        ])
+    else:
+        model.trainable = False
     return model

@@ -82,7 +82,7 @@ def get_model(token_num,
         return inputs[:3], transformed
     mlm_dense_layer = keras.layers.Dense(
         units=embed_dim,
-        activation='softmax',
+        activation=gelu,
         name='MLM-Dense',
     )(transformed)
     mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
