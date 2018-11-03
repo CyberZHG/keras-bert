@@ -1,0 +1,15 @@
+[PAD]
+[UNK]
+[CLS]
+[SEP]
+[MASK]
+all
+work
+and
+no
+play
+makes
+jack
+a
+dull
+boy

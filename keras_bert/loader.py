@@ -61,4 +61,5 @@ def load_trained_model_from_checkpoint(config_file, checkpoint_file):
             tf.train.load_variable(checkpoint_file, 'bert/encoder/layer_%d/output/LayerNorm/gamma' % i),
             tf.train.load_variable(checkpoint_file, 'bert/encoder/layer_%d/output/LayerNorm/beta' % i),
         ])
+    model.trainable = False
     return model
