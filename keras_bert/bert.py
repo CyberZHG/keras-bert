@@ -2,9 +2,10 @@ import random
 import keras
 import numpy as np
 import tensorflow as tf
+from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
-from .layers import (get_inputs, get_embedding, Masked, Extract)
+from .layers import (get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract)
 
 
 TOKEN_PAD = ''  # Token for padding
@@ -26,6 +27,8 @@ def get_model(token_num,
               head_num=12,
               feed_forward_dim=3072,
               dropout_rate=0.1,
+              attention_activation=None,
+              feed_forward_activation=gelu,
               custom_layers=None,
               training=True,
               lr=1e-4):
@@ -41,6 +44,8 @@ def get_model(token_num,
     :param head_num: Number of heads in multi-head attention in each transformer.
     :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
     :param dropout_rate: Dropout rate.
+    :param attention_activation: Activation for attention layers.
+    :param feed_forward_activation: Activation for feed-forward layers.
     :param custom_layers: A function that takes the embedding tensor and returns the tensor after feature extraction.
                           Arguments such as `transformer_num` and `head_num` will be ignored if `custom_layer` is not
                           `None`.
@@ -50,7 +55,7 @@ def get_model(token_num,
     :return: The compiled model.
     """
     inputs = get_inputs(seq_len=seq_len)
-    embed_layer = get_embedding(
+    embed_layer, embed_weights = get_embedding(
         inputs,
         token_num=token_num,
         embed_dim=embed_dim,
@@ -69,24 +74,31 @@ def get_model(token_num,
             input_layer=transformed,
             head_num=head_num,
             hidden_dim=feed_forward_dim,
-            attention_activation=None,
-            feed_forward_activation=gelu,
+            attention_activation=attention_activation,
+            feed_forward_activation=feed_forward_activation,
             dropout_rate=dropout_rate,
         )
     if not training:
         return inputs[:3], transformed
-    mlm_pred_layer = keras.layers.Dense(
-        units=token_num,
+    mlm_dense_layer = keras.layers.Dense(
+        units=embed_dim,
         activation='softmax',
-        name='Dense-MLM',
+        name='MLM-Dense',
     )(transformed)
+    mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
+    mlm_pred_layer = EmbeddingSimilarity(name='MLM-Sim')([mlm_norm_layer, embed_weights])
     masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
     extract_layer = Extract(index=0, name='Extract')(transformed)
+    nsp_dense_layer = keras.layers.Dense(
+        units=embed_dim,
+        activation='tanh',
+        name='NSP-Dense',
+    )(extract_layer)
     nsp_pred_layer = keras.layers.Dense(
         units=2,
         activation='softmax',
         name='NSP',
-    )(extract_layer)
+    )(nsp_dense_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
     model.compile(
         optimizer=keras.optimizers.Adam(lr=lr),
@@ -99,6 +111,8 @@ def get_model(token_num,
 def get_custom_objects():
     """Get all custom objects for loading saved models."""
     custom_objects = get_encoder_custom_objects()
+    custom_objects['TokenEmbedding'] = TokenEmbedding
+    custom_objects['EmbeddingSimilarity'] = EmbeddingSimilarity
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
     custom_objects['gelu'] = gelu

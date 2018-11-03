@@ -9,7 +9,7 @@ class TestMasked(unittest.TestCase):
 
     def test_sample(self):
         inputs = get_inputs(seq_len=512)
-        embed_layer = get_embedding(inputs, token_num=12, embed_dim=768, pos_num=512)
+        embed_layer, _ = get_embedding(inputs, token_num=12, embed_dim=768, pos_num=512)
         masked_layer = Masked(name='Masked')([embed_layer, inputs[-1]])
         model = keras.models.Model(inputs=inputs, outputs=masked_layer)
         model.compile(

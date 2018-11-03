@@ -4,7 +4,7 @@ import tempfile
 import random
 import keras
 import numpy as np
-from keras_bert import get_model, get_custom_objects, get_base_dict, gen_batch_inputs
+from keras_bert import gelu, get_model, get_custom_objects, get_base_dict, gen_batch_inputs
 
 
 class TestBERT(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestBERT(unittest.TestCase):
         )
         model.summary(line_length=200)
 
-    def _test_fit(self):
+    def test_fit(self):
         current_path = os.path.dirname(os.path.abspath(__file__))
         model_path = os.path.join(current_path, 'test_bert_fit.h5')
         sentence_pairs = [
@@ -52,6 +52,7 @@ class TestBERT(unittest.TestCase):
                 seq_len=20,
                 pos_num=20,
                 dropout_rate=0.05,
+                attention_activation=gelu,
                 lr=1e-3,
             )
         model.summary()
@@ -70,14 +71,15 @@ class TestBERT(unittest.TestCase):
         model.fit_generator(
             generator=_generator(),
             steps_per_epoch=1000,
-            epochs=30,
+            epochs=1,
             validation_data=_generator(),
             validation_steps=100,
             callbacks=[
+                keras.callbacks.ReduceLROnPlateau(monitor='val_MLM_loss', factor=0.5, patience=3),
                 keras.callbacks.EarlyStopping(monitor='val_MLM_loss', patience=5)
             ],
         )
-        model.save(model_path)
+        # model.save(model_path)
         for inputs, outputs in _generator():
             predicts = model.predict(inputs)
             outputs = list(map(lambda x: np.squeeze(x, axis=-1), outputs))
