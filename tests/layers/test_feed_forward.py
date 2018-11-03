@@ -4,7 +4,7 @@ import numpy as np
 from keras_bert.layers import FeedForward
 
 
-class TestAttention(unittest.TestCase):
+class TestFeedForward(unittest.TestCase):
 
     def test_sample(self):
         input_layer = keras.layers.Input(
@@ -46,7 +46,7 @@ class TestAttention(unittest.TestCase):
         model.summary()
         inputs = np.array([[[0.2, 0.1, 0.3]]])
         predict = model.predict(inputs)
-        expected = np.asarray([[[0.03814463, 0.03196599, -0.15434355]]])
+        expected = np.asarray([[[0.0381447, 0.03196586, -0.15434185]]])
         self.assertTrue(np.allclose(expected, predict), predict)
 
     def test_fit(self):
