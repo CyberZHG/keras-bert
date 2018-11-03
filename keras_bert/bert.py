@@ -82,7 +82,7 @@ def get_model(token_num,
         return inputs[:3], transformed
     mlm_dense_layer = keras.layers.Dense(
         units=embed_dim,
-        activation=gelu,
+        activation=feed_forward_activation,
         name='MLM-Dense',
     )(transformed)
     mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
@@ -156,7 +156,7 @@ def gen_batch_inputs(sentence_pairs,
     base_dict = get_base_dict()
     unknown_index = token_dict[TOKEN_UNK]
     # Generate sentence swapping mapping
-    nsp_outputs = np.ones((batch_size,))
+    nsp_outputs = np.zeros((batch_size,))
     mapping = {}
     if swap_sentence_rate > 0.0:
         indices = [index for index in range(batch_size) if random.random() < swap_sentence_rate]
@@ -164,7 +164,7 @@ def gen_batch_inputs(sentence_pairs,
         random.shuffle(mapped)
         for i in range(len(mapped)):
             if indices[i] != mapped[i]:
-                nsp_outputs[indices[i]] = 0.0
+                nsp_outputs[indices[i]] = 1.0
         mapping = {indices[i]: mapped[i] for i in range(len(indices))}
     position_inputs = [[i for i in range(seq_len)] for _ in range(batch_size)]
     # Generate MLM
