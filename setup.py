@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='keras-bert',
-    version='0.20.0',
+    version='0.21.0',
     packages=find_packages(),
     url='https://github.com/CyberZHG/keras-bert',
     license='MIT',
@@ -14,7 +14,7 @@ setup(
         'numpy',
         'keras',
         'keras-pos-embd==0.6.0',
-        'keras-transformer==0.10.0',
+        'keras-transformer==0.11.0',
     ],
     classifiers=(
         "Programming Language :: Python :: 2.7",

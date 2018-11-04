@@ -17,7 +17,7 @@ class TokenEmbedding(keras.layers.Embedding):
         return [super(TokenEmbedding, self).call(inputs), self.embeddings]
 
 
-def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1):
+def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1, trainable=True):
     """Get embedding layer.
 
     See: https://arxiv.org/pdf/1810.04805.pdf
@@ -27,6 +27,7 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1):
     :param pos_num: Maximum position.
     :param embed_dim: The dimension of all embedding layers.
     :param dropout_rate: Dropout rate.
+    :param trainable: Whether the layers are trainable.
     :return: The merged embedding layer and weights of token embedding.
     """
     embeddings = [
@@ -34,11 +35,13 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1):
             input_dim=token_num,
             output_dim=embed_dim,
             mask_zero=True,
+            trainable=trainable,
             name='Embedding-Token',
         )(inputs[0]),
         keras.layers.Embedding(
             input_dim=2,
             output_dim=embed_dim,
+            trainable=trainable,
             name='Embedding-Segment',
         )(inputs[1]),
     ]
@@ -48,6 +51,7 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1):
         input_dim=pos_num,
         output_dim=embed_dim,
         mode=PositionEmbedding.MODE_ADD,
+        trainable=trainable,
         name='Embedding-Position',
     )(embed_layer)
     if dropout_rate > 0.0:
@@ -57,7 +61,10 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1):
         )(embed_layer)
     else:
         dropout_layer = embed_layer
-    norm_layer = LayerNormalization(name='Embedding-Norm')(dropout_layer)
+    norm_layer = LayerNormalization(
+        trainable=trainable,
+        name='Embedding-Norm',
+    )(dropout_layer)
     return norm_layer, embed_weights
 
 

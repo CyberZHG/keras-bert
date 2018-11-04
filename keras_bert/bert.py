@@ -62,6 +62,7 @@ def get_model(token_num,
         embed_dim=embed_dim,
         pos_num=pos_num,
         dropout_rate=dropout_rate,
+        trainable=training,
     )
     transformed = embed_layer
     if custom_layers is not None:
@@ -78,6 +79,7 @@ def get_model(token_num,
             attention_activation=attention_activation,
             feed_forward_activation=feed_forward_activation,
             dropout_rate=dropout_rate,
+            trainable=training,
         )
     if not training:
         return inputs[:2], transformed

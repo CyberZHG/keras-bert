@@ -2,4 +2,4 @@ numpy
 tensorflow
 Keras
 keras-pos-embd==0.6.0
-keras-transformer==0.10.0
+keras-transformer==0.11.0

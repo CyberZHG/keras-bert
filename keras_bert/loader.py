@@ -84,6 +84,4 @@ def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=Fa
             np.transpose(tf.train.load_variable(checkpoint_file, 'cls/seq_relationship/output_weights')),
             tf.train.load_variable(checkpoint_file, 'cls/seq_relationship/output_bias'),
         ])
-    else:
-        model.trainable = False
     return model
