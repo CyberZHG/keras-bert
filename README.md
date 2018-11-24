@@ -49,7 +49,7 @@ model = get_model(
     feed_forward_dim=100,
     seq_len=20,
     pos_num=20,
-    dropout=0.05,
+    dropout_rate=0.05,
 )
 model.summary()
 
@@ -85,7 +85,7 @@ inputs, output_layer = get_model(  # `output_layer` is the last feature extracti
     feed_forward_dim=100,
     seq_len=20,
     pos_num=20,
-    dropout=0.05,
+    dropout_rate=0.05,
     training=False,  # The input layers and output layer will be returned if `training` is `False`
 )
 ```
