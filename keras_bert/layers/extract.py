@@ -8,9 +8,9 @@ class Extract(keras.layers.Layer):
     """
 
     def __init__(self, index, **kwargs):
+        super(Extract, self).__init__(**kwargs)
         self.index = index
         self.supports_masking = True
-        super(Extract, self).__init__(**kwargs)
 
     def get_config(self):
         config = {

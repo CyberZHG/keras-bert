@@ -18,9 +18,9 @@ class Masked(keras.layers.Layer):
         :param return_masked: Whether to return the merged mask.
         :param kwargs: Arguments for parent class.
         """
+        super(Masked, self).__init__(**kwargs)
         self.supports_masking = True
         self.return_masked = return_masked
-        super(Masked, self).__init__(**kwargs)
 
     def get_config(self):
         config = {

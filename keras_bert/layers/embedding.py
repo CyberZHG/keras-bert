@@ -84,12 +84,12 @@ class EmbeddingSimilarity(keras.layers.Layer):
         :param constraint: Constraint for bias.
         :param kwargs: Arguments for parent class.
         """
+        super(EmbeddingSimilarity, self).__init__(**kwargs)
         self.supports_masking = True
         self.initializer = keras.initializers.get(initializer)
         self.regularizer = keras.regularizers.get(regularizer)
         self.constraint = keras.constraints.get(constraint)
         self.bias = None
-        super(EmbeddingSimilarity, self).__init__(**kwargs)
 
     def get_config(self):
         config = {
