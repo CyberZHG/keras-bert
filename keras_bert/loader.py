@@ -6,6 +6,14 @@ from .bert import get_model
 
 
 def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=False):
+    """Load trained official model from checkpoint.
+
+    :param config_file: The path to the JSON configuration file.
+    :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
+    :param training: If training, the whole model will be returned.
+                     Otherwise, the MLM and NSP parts will be ignored.
+    :return:
+    """
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
     model = get_model(
