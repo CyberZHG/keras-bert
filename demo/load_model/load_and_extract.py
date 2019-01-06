@@ -6,6 +6,10 @@ from keras_bert import load_trained_model_from_checkpoint
 
 if len(sys.argv) != 4:
     print('python load_model.py CONFIG_PATH CHECKPOINT_PATH DICT_PATH')
+    print('CONFIG_PATH:     $UNZIPPED_MODEL_PATH/bert_config.json')
+    print('CHECKPOINT_PATH: $UNZIPPED_MODEL_PATH/bert_model.ckpt')
+    print('DICT_PATH:       $UNZIPPED_MODEL_PATH/vocab.txt')
+    sys.exit(-1)
 
 config_path, checkpoint_path, dict_path = tuple(sys.argv[1:])
 
