@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='keras-bert',
-    version='0.24.0',
+    version='0.25.0',
     packages=find_packages(),
     url='https://github.com/CyberZHG/keras-bert',
     license='MIT',

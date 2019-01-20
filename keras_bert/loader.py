@@ -5,21 +5,30 @@ import tensorflow as tf
 from .bert import get_model
 
 
-def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=False):
+def load_trained_model_from_checkpoint(config_file,
+                                       checkpoint_file,
+                                       training=False,
+                                       seq_len=None):
     """Load trained official model from checkpoint.
 
     :param config_file: The path to the JSON configuration file.
     :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
     :param training: If training, the whole model will be returned.
                      Otherwise, the MLM and NSP parts will be ignored.
+    :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
+                    position embeddings will be sliced to fit the new length.
     :return:
     """
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
+    if seq_len is None:
+        seq_len = config['max_position_embeddings']
+    else:
+        seq_len = min(seq_len, config['max_position_embeddings'])
     model = get_model(
         token_num=config['vocab_size'],
-        pos_num=config['max_position_embeddings'],
-        seq_len=config['max_position_embeddings'],
+        pos_num=seq_len,
+        seq_len=seq_len,
         embed_dim=config['hidden_size'],
         transformer_num=config['num_hidden_layers'],
         head_num=config['num_attention_heads'],
@@ -34,7 +43,7 @@ def load_trained_model_from_checkpoint(config_file, checkpoint_file, training=Fa
         tf.train.load_variable(checkpoint_file, 'bert/embeddings/word_embeddings'),
     ])
     model.get_layer(name='Embedding-Position').set_weights([
-        tf.train.load_variable(checkpoint_file, 'bert/embeddings/position_embeddings'),
+        tf.train.load_variable(checkpoint_file, 'bert/embeddings/position_embeddings')[:seq_len, :],
     ])
     model.get_layer(name='Embedding-Segment').set_weights([
         tf.train.load_variable(checkpoint_file, 'bert/embeddings/token_type_embeddings'),
