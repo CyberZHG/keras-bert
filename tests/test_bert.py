@@ -115,3 +115,13 @@ class TestBERT(unittest.TestCase):
         )
         model.summary()
         self.assertTrue(model is not None)
+
+    def test_save_load_json(self):
+        model = get_model(
+            token_num=200,
+            head_num=3,
+            transformer_num=2,
+        )
+        data = model.to_json()
+        model = keras.models.model_from_json(data, custom_objects=get_custom_objects())
+        model.summary()
