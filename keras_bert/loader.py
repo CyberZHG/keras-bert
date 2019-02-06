@@ -38,7 +38,10 @@ def load_trained_model_from_checkpoint(config_file,
     if not training:
         inputs, outputs = model
         model = keras.models.Model(inputs=inputs, outputs=outputs)
-    model.compile(optimizer='adam', loss='mse', metrics={})
+        model.compile(
+            optimizer=keras.optimizers.Adam(),
+            loss=keras.losses.sparse_categorical_crossentropy,
+        )
     model.get_layer(name='Embedding-Token').set_weights([
         tf.train.load_variable(checkpoint_file, 'bert/embeddings/word_embeddings'),
     ])
