@@ -11,6 +11,8 @@ if len(sys.argv) != 4:
     print('DICT_PATH:       $UNZIPPED_MODEL_PATH/vocab.txt')
     sys.exit(-1)
 
+print('This demo demonstrates how to load the pre-trained model and extract word embeddings')
+
 config_path, checkpoint_path, dict_path = tuple(sys.argv[1:])
 
 model = load_trained_model_from_checkpoint(config_path, checkpoint_path)
