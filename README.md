@@ -97,6 +97,7 @@ def _custom_layers(x, trainable=True):
     return keras.layers.LSTM(
         units=768,
         trainable=trainable,
+        return_sequences=True,
         name='LSTM',
     )(x)
 

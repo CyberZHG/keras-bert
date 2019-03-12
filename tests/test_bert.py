@@ -98,6 +98,7 @@ class TestBERT(unittest.TestCase):
             return keras.layers.LSTM(
                 units=768,
                 trainable=trainable,
+                return_sequences=True,
                 name='LSTM',
             )(x)
 
