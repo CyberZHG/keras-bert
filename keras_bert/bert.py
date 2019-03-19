@@ -10,10 +10,10 @@ from .layers import (get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilar
 
 
 TOKEN_PAD = ''  # Token for padding
-TOKEN_UNK = '<UNK>'  # Token for unknown words
-TOKEN_CLS = '<CLS>'  # Token for classification
-TOKEN_SEP = '<SEP>'  # Token for separation
-TOKEN_MASK = '<MASK>'  # Token for masking
+TOKEN_UNK = '[UNK]'  # Token for unknown words
+TOKEN_CLS = '[CLS]'  # Token for classification
+TOKEN_SEP = '[SEP]'  # Token for separation
+TOKEN_MASK = '[MASK]'  # Token for masking
 
 
 def gelu(x):

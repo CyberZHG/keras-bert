@@ -2,7 +2,7 @@ import sys
 import codecs
 import numpy as np
 import keras
-from keras_bert import load_trained_model_from_checkpoint
+from keras_bert import load_trained_model_from_checkpoint, Tokenizer
 from keras_bert.layers import MaskedGlobalMaxPool1D
 
 
@@ -22,18 +22,17 @@ pool_layer = MaskedGlobalMaxPool1D(name='Pooling')(model.output)
 model = keras.models.Model(inputs=model.inputs, outputs=pool_layer)
 model.summary(line_length=120)
 
-tokens = ['[CLS]', '语', '言', '模', '型', '[SEP]']
-
 token_dict = {}
 with codecs.open(dict_path, 'r', 'utf8') as reader:
     for line in reader:
         token = line.strip()
         token_dict[token] = len(token_dict)
 
-token_input = np.asarray([[token_dict[token] for token in tokens] + [0] * (512 - len(tokens))])
-seg_input = np.asarray([[0] * len(tokens) + [0] * (512 - len(tokens))])
+tokenizer = Tokenizer(token_dict)
+text = '语言模型'
+tokens = tokenizer.tokenize(text)
+print('Tokens:', tokens)
+indices, segments = tokenizer.encode(first='语言模型', max_len=512)
 
-print('Inputs:', token_input[0][:len(tokens)])
-
-predicts = model.predict([token_input, seg_input])[0]
+predicts = model.predict([np.array([indices]), np.array([segments])])[0]
 print('Pooled:', predicts.tolist()[:5])
