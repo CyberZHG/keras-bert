@@ -35,6 +35,6 @@ class TestPooling(TestCase):
         model = keras.models.Model(inputs=input_layer, outputs=dense_layer)
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy')
         model.summary()
-        x = np.random.randint(0, 10, (32, 7))
-        y = np.random.randint(0, 1, (32,))
+        x = np.random.randint(0, 11, (32, 7))
+        y = np.random.randint(0, 2, (32,))
         model.fit(x, y)
