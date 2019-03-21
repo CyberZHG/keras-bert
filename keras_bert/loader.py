@@ -48,21 +48,21 @@ def build_model_from_config(config_file,
     return model, config
 
 
-def load_trained_model_from_checkpoint(config_file,
+def load_model_weights_from_checkpoint(model,
+                                       config,
                                        checkpoint_file,
                                        training=False,
                                        seq_len=None):
     """Load trained official model from checkpoint.
 
-    :param config_file: The path to the JSON configuration file.
+    :param model: Built keras model.
+    :param config: Loaded configuration file.
     :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
     :param training: If training, the whole model will be returned.
                      Otherwise, the MLM and NSP parts will be ignored.
     :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
                     position embeddings will be sliced to fit the new length.
-    :return: model
     """
-    model, config = build_model_from_config(config_file, training=training, seq_len=seq_len)
     loader = checkpoint_loader(checkpoint_file)
 
     model.get_layer(name='Embedding-Token').set_weights([
@@ -127,4 +127,23 @@ def load_trained_model_from_checkpoint(config_file,
             np.transpose(loader('cls/seq_relationship/output_weights')),
             loader('cls/seq_relationship/output_bias'),
         ])
+
+
+def load_trained_model_from_checkpoint(config_file,
+                                       checkpoint_file,
+                                       training=False,
+                                       seq_len=None):
+    """Load trained official model from checkpoint.
+
+    :param config_file: The path to the JSON configuration file.
+    :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
+    :param training: If training, the whole model will be returned.
+                     Otherwise, the MLM and NSP parts will be ignored.
+    :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
+                    position embeddings will be sliced to fit the new length.
+    :return: model
+    """
+    model, config = build_model_from_config(config_file, training=training, seq_len=seq_len)
+    load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training, seq_len=seq_len)
+
     return model
