@@ -32,6 +32,16 @@ class TestTokenizer(TestCase):
         token_dict = {token: i for i, token in enumerate(tokens)}
         tokenizer = Tokenizer(token_dict)
         text = u'\u535A\u63A8'
+        # single
+        indices, segments = tokenizer.encode(first=text, max_len=100)
+        expected = [2, 1, 1, 3] + [0] * 96
+        self.assertEqual(expected, indices)
+        expected = [0] * 100
+        self.assertEqual(expected, segments)
+        indices, segments = tokenizer.encode(first=text, max_len=3)
+        self.assertEqual([2, 1, 3], indices)
+        self.assertEqual([0, 0, 0], segments)
+        # paired
         indices, segments = tokenizer.encode(first=text, second=text, max_len=100)
         expected = [2, 1, 1, 3, 1, 1, 3] + [0] * 93
         self.assertEqual(expected, indices)
