@@ -5,6 +5,13 @@ import tensorflow as tf
 from .bert import get_model
 
 
+__all__ = [
+    'build_model_from_config',
+    'load_model_weights_from_checkpoint',
+    'load_trained_model_from_checkpoint',
+]
+
+
 def checkpoint_loader(checkpoint_file):
     def _loader(name):
         return tf.train.load_variable(checkpoint_file, name)
