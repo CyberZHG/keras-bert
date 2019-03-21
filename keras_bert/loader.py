@@ -11,19 +11,16 @@ def checkpoint_loader(checkpoint_file):
     return _loader
 
 
-def load_trained_model_from_checkpoint(config_file,
-                                       checkpoint_file,
-                                       training=False,
-                                       seq_len=None):
-    """Load trained official model from checkpoint.
+def build_model_from_config(config_file,
+                            training=False,
+                            seq_len=None):
+    """Build the model from config file.
 
     :param config_file: The path to the JSON configuration file.
-    :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
     :param training: If training, the whole model will be returned.
-                     Otherwise, the MLM and NSP parts will be ignored.
     :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
                     position embeddings will be sliced to fit the new length.
-    :return:
+    :return: model and config
     """
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
@@ -31,7 +28,6 @@ def load_trained_model_from_checkpoint(config_file,
         seq_len = config['max_position_embeddings']
     else:
         seq_len = min(seq_len, config['max_position_embeddings'])
-    loader = checkpoint_loader(checkpoint_file)
     model = get_model(
         token_num=config['vocab_size'],
         pos_num=seq_len,
@@ -49,6 +45,26 @@ def load_trained_model_from_checkpoint(config_file,
             optimizer=keras.optimizers.Adam(),
             loss=keras.losses.sparse_categorical_crossentropy,
         )
+    return model, config
+
+
+def load_trained_model_from_checkpoint(config_file,
+                                       checkpoint_file,
+                                       training=False,
+                                       seq_len=None):
+    """Load trained official model from checkpoint.
+
+    :param config_file: The path to the JSON configuration file.
+    :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
+    :param training: If training, the whole model will be returned.
+                     Otherwise, the MLM and NSP parts will be ignored.
+    :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
+                    position embeddings will be sliced to fit the new length.
+    :return: model
+    """
+    model, config = build_model_from_config(config_file, training=training, seq_len=seq_len)
+    loader = checkpoint_loader(checkpoint_file)
+
     model.get_layer(name='Embedding-Token').set_weights([
         loader('bert/embeddings/word_embeddings'),
     ])
