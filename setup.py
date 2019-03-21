@@ -1,7 +1,6 @@
 import codecs
 from setuptools import setup, find_packages
 
-
 with codecs.open('README.md', 'r', 'utf8') as reader:
     long_description = reader.read()
 
@@ -12,7 +11,7 @@ with codecs.open('requirements.txt', 'r', 'utf8') as reader:
 
 setup(
     name='keras-bert',
-    version='0.33.0',
+    version='0.34.0',
     packages=find_packages(),
     url='https://github.com/CyberZHG/keras-bert',
     license='MIT',

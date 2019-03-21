@@ -24,14 +24,12 @@ def build_model_from_config(config_file,
     """
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
-    if seq_len is None:
-        seq_len = config['max_position_embeddings']
-    else:
-        seq_len = min(seq_len, config['max_position_embeddings'])
+    if seq_len is not None:
+        config['max_position_embeddings'] = min(seq_len, config['max_position_embeddings'])
     model = get_model(
         token_num=config['vocab_size'],
-        pos_num=seq_len,
-        seq_len=seq_len,
+        pos_num=config['max_position_embeddings'],
+        seq_len=config['max_position_embeddings'],
         embed_dim=config['hidden_size'],
         transformer_num=config['num_hidden_layers'],
         head_num=config['num_attention_heads'],
@@ -51,8 +49,7 @@ def build_model_from_config(config_file,
 def load_model_weights_from_checkpoint(model,
                                        config,
                                        checkpoint_file,
-                                       training=False,
-                                       seq_len=None):
+                                       training=False):
     """Load trained official model from checkpoint.
 
     :param model: Built keras model.
@@ -60,8 +57,6 @@ def load_model_weights_from_checkpoint(model,
     :param checkpoint_file: The path to the checkpoint files, should end with '.ckpt'.
     :param training: If training, the whole model will be returned.
                      Otherwise, the MLM and NSP parts will be ignored.
-    :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
-                    position embeddings will be sliced to fit the new length.
     """
     loader = checkpoint_loader(checkpoint_file)
 
@@ -69,7 +64,7 @@ def load_model_weights_from_checkpoint(model,
         loader('bert/embeddings/word_embeddings'),
     ])
     model.get_layer(name='Embedding-Position').set_weights([
-        loader('bert/embeddings/position_embeddings')[:seq_len, :],
+        loader('bert/embeddings/position_embeddings')[:config['max_position_embeddings'], :],
     ])
     model.get_layer(name='Embedding-Segment').set_weights([
         loader('bert/embeddings/token_type_embeddings'),
@@ -144,6 +139,5 @@ def load_trained_model_from_checkpoint(config_file,
     :return: model
     """
     model, config = build_model_from_config(config_file, training=training, seq_len=seq_len)
-    load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training, seq_len=seq_len)
-
+    load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model
