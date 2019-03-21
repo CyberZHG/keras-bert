@@ -35,11 +35,11 @@ class TestTokenizer(TestCase):
         indices, segments = tokenizer.encode(first=text, second=text, max_len=100)
         expected = [2, 1, 1, 3, 1, 1, 3] + [0] * 93
         self.assertEqual(expected, indices)
-        expected = [0, 0, 0, 0, 1, 1, 1] + [1] * 93
+        expected = [0, 0, 0, 0, 1, 1, 1] + [0] * 93
         self.assertEqual(expected, segments)
         indices, segments = tokenizer.encode(first=text, second=text, max_len=4)
-        self.assertEqual([2, 1, 1, 3], indices)
-        self.assertEqual([0, 0, 0, 0], segments)
+        self.assertEqual([2, 1, 3, 3], indices)
+        self.assertEqual([0, 0, 0, 1], segments)
 
     def test_empty(self):
         tokens = ['[PAD]', '[UNK]', '[CLS]', '[SEP]']
