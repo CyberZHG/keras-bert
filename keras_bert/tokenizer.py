@@ -9,12 +9,23 @@ class Tokenizer(object):
                  token_cls=TOKEN_CLS,
                  token_sep=TOKEN_SEP,
                  token_unk=TOKEN_UNK,
-                 pad_index=0):
+                 pad_index=0,
+                 cased=False):
+        """Initialize tokenizer.
+
+        :param token_dict: A dict maps tokens to indices.
+        :param token_cls: The token represents classification.
+        :param token_sep: The token represents separator.
+        :param token_unk: The token represents unknown token.
+        :param pad_index: The index to pad.
+        :param cased: Whether to keep the case.
+        """
         self._token_dict = token_dict
         self._token_cls = token_cls
         self._token_sep = token_sep
         self._token_unk = token_unk
         self._pad_index = pad_index
+        self._cased = cased
 
     @staticmethod
     def _truncate(first_tokens, second_tokens=None, max_len=None):
@@ -68,9 +79,10 @@ class Tokenizer(object):
         return token_ids, segment_ids
 
     def _tokenize(self, text):
-        text = unicodedata.normalize('NFD', text)
-        text = ''.join([ch for ch in text if unicodedata.category(ch) != 'Mn'])
-        text = text.lower()
+        if not self._cased:
+            text = unicodedata.normalize('NFD', text)
+            text = ''.join([ch for ch in text if unicodedata.category(ch) != 'Mn'])
+            text = text.lower()
         spaced = ''
         for ch in text:
             if self._is_punctuation(ch) or self._is_cjk_character(ch):

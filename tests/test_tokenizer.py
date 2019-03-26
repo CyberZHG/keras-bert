@@ -5,7 +5,7 @@ from keras_bert import Tokenizer
 
 class TestTokenizer(TestCase):
 
-    def test_case(self):
+    def test_uncased(self):
         tokens = [
             '[UNK]', '[CLS]', '[SEP]', 'want', '##want',
             '##ed', 'wa', 'un', 'runn', '##ing', ',',
@@ -60,3 +60,20 @@ class TestTokenizer(TestCase):
         indices, segments = tokenizer.encode(text)
         self.assertEqual([2, 3], indices)
         self.assertEqual([0, 0], segments)
+
+    def test_cased(self):
+        tokens = [
+            '[UNK]', u'[CLS]', '[SEP]', 'want', '##want',
+            u'##\u00E9d', 'wa', 'UN', 'runn', '##ing', ',',
+        ]
+        token_dict = {token: i for i, token in enumerate(tokens)}
+        tokenizer = Tokenizer(token_dict, cased=True)
+        text = u"UNwant\u00E9d, running"
+        tokens = tokenizer.tokenize(text)
+        expected = ['[CLS]', 'UN', '##want', u'##\u00E9d', ',', 'runn', '##ing', '[SEP]']
+        self.assertEqual(expected, tokens)
+        indices, segments = tokenizer.encode(text)
+        expected = [1, 7, 4, 5, 10, 8, 9, 2]
+        self.assertEqual(expected, indices)
+        expected = [0, 0, 0, 0, 0, 0, 0, 0]
+        self.assertEqual(expected, segments)
