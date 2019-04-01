@@ -2,6 +2,7 @@
 
 [![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert?ref=badge_shield)
 
 Implementation of the [BERT](https://arxiv.org/pdf/1810.04805.pdf). Official pre-trained models could be loaded for feature extraction and prediction.
 
