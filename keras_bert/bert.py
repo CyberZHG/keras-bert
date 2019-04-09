@@ -38,6 +38,7 @@ def get_model(token_num,
               feed_forward_activation=gelu,
               custom_layers=None,
               training=True,
+              trainable=None,
               lr=1e-4):
     """Get BERT model.
 
@@ -58,9 +59,12 @@ def get_model(token_num,
                           `None`.
     :param training: The built model will be returned if it is `True`, otherwise the input layers and the last feature
                      extraction layer will be returned.
+    :param trainable: Whether the model is trainable.
     :param lr: Learning rate.
     :return: The compiled model.
     """
+    if trainable is None:
+        trainable = training
     inputs = get_inputs(seq_len=seq_len)
     embed_layer, embed_weights = get_embedding(
         inputs,
@@ -68,13 +72,13 @@ def get_model(token_num,
         embed_dim=embed_dim,
         pos_num=pos_num,
         dropout_rate=dropout_rate,
-        trainable=training,
+        trainable=trainable,
     )
     transformed = embed_layer
     if custom_layers is not None:
         kwargs = {}
         if keras.utils.generic_utils.has_arg(custom_layers, 'trainable'):
-            kwargs['trainable'] = training
+            kwargs['trainable'] = trainable
         transformed = custom_layers(transformed, **kwargs)
     else:
         transformed = get_encoders(
@@ -85,13 +89,14 @@ def get_model(token_num,
             attention_activation=attention_activation,
             feed_forward_activation=feed_forward_activation,
             dropout_rate=dropout_rate,
-            trainable=training,
+            trainable=trainable,
         )
     if not training:
         return inputs[:2], transformed
     mlm_dense_layer = keras.layers.Dense(
         units=embed_dim,
         activation=feed_forward_activation,
+        trainable=trainable,
         name='MLM-Dense',
     )(transformed)
     mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
@@ -101,11 +106,13 @@ def get_model(token_num,
     nsp_dense_layer = keras.layers.Dense(
         units=embed_dim,
         activation='tanh',
+        trainable=trainable,
         name='NSP-Dense',
     )(extract_layer)
     nsp_pred_layer = keras.layers.Dense(
         units=2,
         activation='softmax',
+        trainable=trainable,
         name='NSP',
     )(nsp_dense_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])

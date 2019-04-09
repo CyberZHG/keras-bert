@@ -16,7 +16,7 @@ pip install keras-bert
 
 ### Load Official Pre-trained Models
 
-In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction result as the official model. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
+In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction result as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
 
 
 ### Tokenizer
@@ -116,7 +116,8 @@ inputs, output_layer = get_model(  # `output_layer` is the last feature extracti
     seq_len=20,
     pos_num=20,
     dropout_rate=0.05,
-    training=False,  # The input layers and output layer will be returned if `training` is `False`
+    training=False,   # The input layers and output layer will be returned if `training` is `False`
+    trainable=False,  # Whether the model is trainable. The default value is the same with `training`
 )
 ```
 
