@@ -1,7 +1,7 @@
-import random
+import math
 import keras
+import keras.backend as K
 import numpy as np
-import tensorflow as tf
 from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders
@@ -23,7 +23,9 @@ TOKEN_MASK = '[MASK]'  # Token for masking
 
 
 def gelu(x):
-    return 0.5 * x * (1.0 + tf.erf(x / tf.sqrt(2.0)))
+    if K.backend() == 'tensorflow':
+        return 0.5 * x * (1.0 + K.tf.erf(x / K.tf.sqrt(2.0)))
+    return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * K.pow(x, 3))))
 
 
 def get_model(token_num,
@@ -175,9 +177,9 @@ def gen_batch_inputs(sentence_pairs,
     nsp_outputs = np.zeros((batch_size,))
     mapping = {}
     if swap_sentence_rate > 0.0:
-        indices = [index for index in range(batch_size) if random.random() < swap_sentence_rate]
+        indices = [index for index in range(batch_size) if np.random.random() < swap_sentence_rate]
         mapped = indices[:]
-        random.shuffle(mapped)
+        np.random.shuffle(mapped)
         for i in range(len(mapped)):
             if indices[i] != mapped[i]:
                 nsp_outputs[indices[i]] = 1.0
@@ -195,15 +197,15 @@ def gen_batch_inputs(sentence_pairs,
         has_mask = False
         for token in tokens:
             mlm_output.append(token_dict.get(token, unknown_index))
-            if token not in base_dict and random.random() < mask_rate:
+            if token not in base_dict and np.random.random() < mask_rate:
                 has_mask = True
                 masked_input.append(1)
-                r = random.random()
+                r = np.random.random()
                 if r < mask_mask_rate:
                     token_input.append(token_dict[TOKEN_MASK])
                 elif r < mask_mask_rate + mask_random_rate:
                     while True:
-                        token = random.choice(token_list)
+                        token = np.random.choice(token_list)
                         if token not in base_dict:
                             token_input.append(token_dict[token])
                             break

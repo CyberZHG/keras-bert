@@ -1,7 +1,6 @@
 import unittest
 import os
 import tempfile
-import random
 import keras
 import numpy as np
 from keras_bert import gelu, get_model, get_custom_objects, get_base_dict, gen_batch_inputs
@@ -15,7 +14,7 @@ class TestBERT(unittest.TestCase):
             head_num=3,
             transformer_num=2,
         )
-        model_path = os.path.join(tempfile.gettempdir(), 'keras_bert_%f.h5' % random.random())
+        model_path = os.path.join(tempfile.gettempdir(), 'keras_bert_%f.h5' % np.random.random())
         model.save(model_path)
         model = keras.models.load_model(
             model_path,
@@ -109,11 +108,7 @@ class TestBERT(unittest.TestCase):
             training=False,
         )
         model = keras.models.Model(inputs=inputs, outputs=output_layer)
-        model.compile(
-            optimizer='adam',
-            loss='mse',
-            metrics={},
-        )
+        model.compile(optimizer='adam', loss='mse')
         model.summary()
         self.assertTrue(model is not None)
 
