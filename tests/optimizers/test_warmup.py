@@ -17,10 +17,10 @@ class TestWarmup(TestCase):
             activation='softmax',
         ))
         model.compile(
-            optimizer=AdamWarmup(decay_steps=10000, warmup_steps=5000, amsgrad=True),
+            optimizer=AdamWarmup(decay_steps=10000, warmup_steps=5000, lr=1e-3, min_lr=1e-4, amsgrad=True),
             loss='sparse_categorical_crossentropy',
         )
-        model.fit(x, y, batch_size=10, epochs=100)
+        model.fit(x, y, batch_size=10, epochs=110)
         results = model.predict(x).argmax(axis=-1)
         diff = np.sum(np.abs(y - results))
         self.assertLess(diff, 100)

@@ -20,13 +20,14 @@ class AdamWarmup(keras.optimizers.Optimizer):
             Beyond".
     """
 
-    def __init__(self, decay_steps, warmup_steps,
+    def __init__(self, decay_steps, warmup_steps, min_lr=0.0,
                  lr=0.001, beta_1=0.9, beta_2=0.999,
                  epsilon=None, amsgrad=False, **kwargs):
         super(AdamWarmup, self).__init__(**kwargs)
         with K.name_scope(self.__class__.__name__):
             self.decay_steps = K.variable(decay_steps, name='decay_steps')
             self.warmup_steps = K.variable(warmup_steps, name='warmup_steps')
+            self.min_lr = K.variable(min_lr, name='min_lr')
             self.iterations = K.variable(0, dtype='int64', name='iterations')
             self.lr = K.variable(lr, name='lr')
             self.beta_1 = K.variable(beta_1, name='beta_1')
@@ -45,7 +46,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
         lr = K.switch(
             t <= self.warmup_steps,
             self.lr * (t / self.warmup_steps),
-            self.lr * (1.0 - t / self.decay_steps),
+            self.lr * (1.0 - K.minimum(t, self.decay_steps) / self.decay_steps),
         )
 
         lr_t = lr * (K.sqrt(1. - K.pow(self.beta_2, t)) /
@@ -83,6 +84,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
         config = {
             'decay_steps': float(K.get_value(self.decay_steps)),
             'warmup_steps': float(K.get_value(self.warmup_steps)),
+            'min_lr': float(K.get_value(self.min_lr)),
             'lr': float(K.get_value(self.lr)),
             'beta_1': float(K.get_value(self.beta_1)),
             'beta_2': float(K.get_value(self.beta_2)),
