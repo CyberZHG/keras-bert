@@ -36,6 +36,7 @@ def get_model(token_num,
               head_num=12,
               feed_forward_dim=3072,
               dropout_rate=0.1,
+              weight_decay=0.01,
               attention_activation=None,
               feed_forward_activation=gelu,
               custom_layers=None,
@@ -54,6 +55,7 @@ def get_model(token_num,
     :param head_num: Number of heads in multi-head attention in each transformer.
     :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
     :param dropout_rate: Dropout rate.
+    :param weight_decay: Weight decay rate.
     :param attention_activation: Activation for attention layers.
     :param feed_forward_activation: Activation for feed-forward layers.
     :param custom_layers: A function that takes the embedding tensor and returns the tensor after feature extraction.
@@ -118,6 +120,13 @@ def get_model(token_num,
         name='NSP',
     )(nsp_dense_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
+    if weight_decay:
+        weight_decay *= 0.5
+        for layer in model.layers:
+            if hasattr(layer, 'embeddings_regularizer'):
+                layer.embeddings_regularizer = keras.regularizers.l2(weight_decay)
+            if hasattr(layer, 'kernel_regularizer'):
+                layer.kernel_regularizer = keras.regularizers.l2(weight_decay)
     model.compile(
         optimizer=keras.optimizers.Adam(lr=lr),
         loss=keras.losses.sparse_categorical_crossentropy,
