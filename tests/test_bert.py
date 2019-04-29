@@ -53,6 +53,8 @@ class TestBERT(unittest.TestCase):
                 dropout_rate=0.05,
                 attention_activation=gelu,
                 lr=1e-3,
+                decay_steps=30000,
+                warmup_steps=10000,
             )
         model.summary()
 
@@ -73,10 +75,6 @@ class TestBERT(unittest.TestCase):
             epochs=1,
             validation_data=_generator(),
             validation_steps=100,
-            callbacks=[
-                keras.callbacks.ReduceLROnPlateau(monitor='val_MLM_loss', factor=0.5, patience=3),
-                keras.callbacks.EarlyStopping(monitor='val_MLM_loss', patience=5)
-            ],
         )
         # model.save(model_path)
         for inputs, outputs in _generator():

@@ -6,7 +6,8 @@ from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
-from .layers import (get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract)
+from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract
+from .optimizers import AdamWarmup
 
 
 __all__ = [
@@ -42,6 +43,8 @@ def get_model(token_num,
               custom_layers=None,
               training=True,
               trainable=None,
+              decay_steps=100000,
+              warmup_steps=10000,
               lr=1e-4):
     """Get BERT model.
 
@@ -64,6 +67,8 @@ def get_model(token_num,
     :param training: The built model will be returned if it is `True`, otherwise the input layers and the last feature
                      extraction layer will be returned.
     :param trainable: Whether the model is trainable.
+    :param decay_steps: Learning rate will decay linearly to zero in decay steps.
+    :param warmup_steps: Learning rate will increase linearly to lr in first warmup steps.
     :param lr: Learning rate.
     :return: The compiled model.
     """
@@ -128,7 +133,7 @@ def get_model(token_num,
             if hasattr(layer, 'kernel_regularizer'):
                 layer.kernel_regularizer = keras.regularizers.l2(weight_decay)
     model.compile(
-        optimizer=keras.optimizers.Adam(lr=lr),
+        optimizer=AdamWarmup(decay_steps=decay_steps, warmup_steps=warmup_steps, lr=lr),
         loss=keras.losses.sparse_categorical_crossentropy,
     )
     return model
@@ -143,6 +148,7 @@ def get_custom_objects():
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
     custom_objects['gelu'] = gelu
+    custom_objects['AdamWarmup'] = AdamWarmup
     return custom_objects
 
 
