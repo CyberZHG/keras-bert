@@ -43,6 +43,7 @@ def get_model(token_num,
               custom_layers=None,
               training=True,
               trainable=None,
+              output_layer_num=1,
               decay_steps=100000,
               warmup_steps=10000,
               lr=1e-4):
@@ -67,6 +68,8 @@ def get_model(token_num,
     :param training: The built model will be returned if it is `True`, otherwise the input layers and the last feature
                      extraction layer will be returned.
     :param trainable: Whether the model is trainable.
+    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
+                             Only available when `training` is `False`.
     :param decay_steps: Learning rate will decay linearly to zero in decay steps.
     :param warmup_steps: Learning rate will increase linearly to lr in first warmup steps.
     :param lr: Learning rate.
@@ -101,6 +104,15 @@ def get_model(token_num,
             trainable=trainable,
         )
     if not training:
+        if output_layer_num > 1:
+            if output_layer_num > transformer_num:
+                output_layer_num = transformer_num
+            model = keras.models.Model(inputs=inputs[:2], outputs=transformed)
+            outputs = []
+            for i in range(output_layer_num):
+                layer = model.get_layer(name='Encoder-{}-FeedForward-Norm'.format(transformer_num - i))
+                outputs.append(layer.output)
+            transformed = keras.layers.Concatenate(name='Encoder-Output')(list(reversed(outputs)))
         return inputs[:2], transformed
     mlm_dense_layer = keras.layers.Dense(
         units=embed_dim,
