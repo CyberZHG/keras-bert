@@ -58,6 +58,7 @@ class TestMasked(unittest.TestCase):
             return_masked=True,
             name='Masked',
         )([dense_layer, mask_layer])
+        print([masked_layer, mask_result])
         model = keras.models.Model(
             inputs=[input_layer, mask_layer],
             outputs=[masked_layer, mask_result],
@@ -65,7 +66,6 @@ class TestMasked(unittest.TestCase):
         model.compile(
             optimizer='adam',
             loss='mse',
-            metrics=['mse'],
         )
         model.summary(line_length=150)
         predicts = model.predict([

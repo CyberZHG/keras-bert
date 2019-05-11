@@ -38,7 +38,7 @@ class Masked(keras.layers.Layer):
         token_mask = K.not_equal(inputs[1], 0)
         masked = K.all(K.stack([token_mask, mask[0]], axis=0), axis=0)
         if self.return_masked:
-            return masked, None
+            return [masked, None]
         return masked
 
     def call(self, inputs, mask=None, **kwargs):
