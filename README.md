@@ -116,8 +116,10 @@ inputs, output_layer = get_model(  # `output_layer` is the last feature extracti
     seq_len=20,
     pos_num=20,
     dropout_rate=0.05,
-    training=False,   # The input layers and output layer will be returned if `training` is `False`
-    trainable=False,  # Whether the model is trainable. The default value is the same with `training`
+    training=False,      # The input layers and output layer will be returned if `training` is `False`
+    trainable=False,     # Whether the model is trainable. The default value is the same with `training`
+    output_layer_num=4,  # The number of layers whose outputs will be concatenated as a single output.
+                           Only available when `training` is `False`.
 )
 ```
 

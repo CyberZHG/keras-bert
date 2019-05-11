@@ -21,12 +21,15 @@ def checkpoint_loader(checkpoint_file):
 def build_model_from_config(config_file,
                             training=False,
                             trainable=None,
+                            output_layer_num=1,
                             seq_len=None):
     """Build the model from config file.
 
     :param config_file: The path to the JSON configuration file.
     :param training: If training, the whole model will be returned.
     :param trainable: Whether the model is trainable.
+    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
+                             Only available when `training` is `False`.
     :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
                     position embeddings will be sliced to fit the new length.
     :return: model and config
@@ -47,6 +50,7 @@ def build_model_from_config(config_file,
         feed_forward_dim=config['intermediate_size'],
         training=training,
         trainable=trainable,
+        output_layer_num=output_layer_num,
     )
     if not training:
         inputs, outputs = model
@@ -140,6 +144,7 @@ def load_trained_model_from_checkpoint(config_file,
                                        checkpoint_file,
                                        training=False,
                                        trainable=None,
+                                       output_layer_num=1,
                                        seq_len=None):
     """Load trained official model from checkpoint.
 
@@ -148,10 +153,18 @@ def load_trained_model_from_checkpoint(config_file,
     :param training: If training, the whole model will be returned.
                      Otherwise, the MLM and NSP parts will be ignored.
     :param trainable: Whether the model is trainable. The default value is the same with `training`.
+    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
+                             Only available when `training` is `False`.
     :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
                     position embeddings will be sliced to fit the new length.
     :return: model
     """
-    model, config = build_model_from_config(config_file, training=training, trainable=trainable, seq_len=seq_len)
+    model, config = build_model_from_config(
+        config_file,
+        training=training,
+        trainable=trainable,
+        output_layer_num=output_layer_num,
+        seq_len=seq_len,
+    )
     load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model
