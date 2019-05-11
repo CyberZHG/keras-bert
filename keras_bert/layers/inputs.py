@@ -1,4 +1,4 @@
-import keras
+from keras_bert.backend import keras
 
 
 def get_inputs(seq_len):

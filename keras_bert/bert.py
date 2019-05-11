@@ -1,11 +1,12 @@
 import math
-import keras
-import keras.backend as K
+
 import numpy as np
 from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
+from .backend import keras
+from .backend import backend as K
 from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract
 from .optimizers import AdamWarmup
 
@@ -25,7 +26,8 @@ TOKEN_MASK = '[MASK]'  # Token for masking
 
 def gelu(x):
     if K.backend() == 'tensorflow':
-        return 0.5 * x * (1.0 + K.tf.erf(x / K.tf.sqrt(2.0)))
+        import tensorflow as tf
+        return 0.5 * x * (1.0 + tf.erf(x / tf.sqrt(2.0)))
     return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * K.pow(x, 3))))
 
 

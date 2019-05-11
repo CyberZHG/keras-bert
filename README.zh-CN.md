@@ -126,3 +126,7 @@ inputs, output_layer = get_model(
     output_layer_num=4,  # 最后几层的输出将合并在一起作为最终的输出，只有当`training`是`False`有效
 )
 ```
+
+### 使用`tensorflow.python.keras`
+
+在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。

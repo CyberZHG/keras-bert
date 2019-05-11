@@ -2,10 +2,12 @@ dist: xenial
 language: python
 python:
   - 2.7
-  - 3.7
+  - 3.6
 env:
   - KERAS_BACKEND=tensorflow
+  - KERAS_BACKEND=tensorflow TF_KERAS=1
   - KERAS_BACKEND=theano THEANO_FLAGS=optimizer=fast_compile
+  # - KERAS_BACKEND=cntk PYTHONWARNINGS=ignore
 install:
   - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
       wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
@@ -24,9 +26,17 @@ install:
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
   - if [[ $KERAS_BACKEND == "theano" ]]; then pip install theano && conda install mkl mkl-service; fi
+  - if [[ "$KERAS_BACKEND" == "cntk" ]]; then
+      set -e &&
+      pip install cntk &&
+      mkdir -p ~/mpi &&
+      pushd ~/mpi &&
+      wget http://cntk.ai/PythonWheel/ForKeras/depends/openmpi_1.10-3.zip &&
+      unzip ./openmpi_1.10-3.zip &&
+      sudo dpkg -i openmpi_1.10-3.deb &&
+      popd;
+    fi
   - pip install coveralls
-before_script:
-  - ./lint.sh
 script:
   - ./test.sh
 after_success:

@@ -122,3 +122,7 @@ inputs, output_layer = get_model(
                            Only available when `training` is `False`.
 )
 ```
+
+### Use `tensorflow.python.keras`
+
+Add `TF_KERAS=1` to environment variables to use `tensorflow.python.keras`.
