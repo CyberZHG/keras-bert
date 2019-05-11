@@ -4,24 +4,26 @@
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert?ref=badge_shield)
 
-Implementation of the [BERT](https://arxiv.org/pdf/1810.04805.pdf). Official pre-trained models could be loaded for feature extraction and prediction.
+[BERT](https://arxiv.org/pdf/1810.04805.pdf)的非官方实现，可以加载官方的预训练模型进行特征提取和预测。
 
-## Install
+## 安装
 
 ```bash
 pip install keras-bert
 ```
 
-## Usage
+## 使用
 
-### Load Official Pre-trained Models
+### 官方模型使用
 
-In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction result as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
+[特征提取展示](./demo/load_model/load_and_extract.py)中使用官方预训练好的`chinese_L-12_H-768_A-12`可以得到和官方工具一样的结果。
+
+[预测展示](./demo/load_model/load_and_predict.py)中可以填补出缺失词并预测是否是上下文。
 
 
-### Tokenizer
+### 分词
 
-The `Tokenizer` class is used for splitting texts and generating indices:
+`Tokenizer`类可以用来进行分词工作，包括归一化和英文部分的最大贪心匹配等，在CJK字符集内的中文会以单字分隔。
 
 ```python
 from keras_bert import Tokenizer
@@ -35,25 +37,28 @@ token_dict = {
     '[UNK]': 5,
 }
 tokenizer = Tokenizer(token_dict)
-print(tokenizer.tokenize('unaffable'))  # The result should be `['[CLS]', 'un', '##aff', '##able', '[SEP]']`
+print(tokenizer.tokenize('unaffable'))  # 分词结果是：`['[CLS]', 'un', '##aff', '##able', '[SEP]']`
+
 indices, segments = tokenizer.encode('unaffable')
-print(indices)  # Should be `[0, 2, 3, 4, 1]`
-print(segments)  # Should be `[0, 0, 0, 0, 0]`
+print(indices)   # 词对应的下标：`[0, 2, 3, 4, 1]`
+print(segments)  # 段落对应下标：`[0, 0, 0, 0, 0]`
 
 print(tokenizer.tokenize(first='unaffable', second='钢'))
-# The result should be `['[CLS]', 'un', '##aff', '##able', '[SEP]', '钢', '[SEP]']`
+# 分词结果是：`['[CLS]', 'un', '##aff', '##able', '[SEP]', '钢', '[SEP]']`
 indices, segments = tokenizer.encode(first='unaffable', second='钢', max_len=10)
-print(indices)  # Should be `[0, 2, 3, 4, 1, 5, 1, 0, 0, 0]`
-print(segments)  # Should be `[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
+print(indices)   # 词对应的下标：`[0, 2, 3, 4, 1, 5, 1, 0, 0, 0]`
+print(segments)  # 段落对应下标：`[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
 ```
 
-### Train & Use
+### 训练和使用
+
+训练过程推荐使用官方的代码。这个代码库内包含一个的训练过程，`training`为`True`的情况下使用的是带warmup的Adam优化器：
 
 ```python
 from keras_bert import get_base_dict, get_model, gen_batch_inputs
 
 
-# A toy input example
+# 随便的输入样例：
 sentence_pairs = [
     [['all', 'work', 'and', 'no', 'play'], ['makes', 'jack', 'a', 'dull', 'boy']],
     [['from', 'the', 'day', 'forth'], ['my', 'arm', 'changed']],
@@ -61,8 +66,8 @@ sentence_pairs = [
 ]
 
 
-# Build token dictionary
-token_dict = get_base_dict()  # A dict that contains some special tokens
+# 构建自定义词典
+token_dict = get_base_dict()  # 初始化特殊符号，如`[CLS]`
 for pairs in sentence_pairs:
     for token in pairs[0] + pairs[1]:
         if token not in token_dict:
@@ -70,7 +75,7 @@ for pairs in sentence_pairs:
 token_list = list(token_dict.keys())  # Used for selecting a random word
 
 
-# Build & train the model
+# 构建和训练模型
 model = get_model(
     token_num=len(token_dict),
     head_num=5,
@@ -106,7 +111,7 @@ model.fit_generator(
 )
 
 
-# Use the trained model
+# 使用训练好的模型
 inputs, output_layer = get_model(
     token_num=len(token_dict),
     head_num=5,
@@ -116,9 +121,8 @@ inputs, output_layer = get_model(
     seq_len=20,
     pos_num=20,
     dropout_rate=0.05,
-    training=False,      # The input layers and output layer will be returned if `training` is `False`
-    trainable=False,     # Whether the model is trainable. The default value is the same with `training`
-    output_layer_num=4,  # The number of layers whose outputs will be concatenated as a single output.
-                           Only available when `training` is `False`.
+    training=False,      # 当`training`是`False`，返回值是输入和输出
+    trainable=False,     # 模型是否可训练，默认值和`training`相同
+    output_layer_num=4,  # 最后几层的输出将合并在一起作为最终的输出，只有当`training`是`False`有效
 )
 ```
