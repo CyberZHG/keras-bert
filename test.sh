@@ -1,2 +1,3 @@
 #!/usr/bin/env bash
-nosetests --with-coverage --cover-erase --cover-html --cover-html-dir=htmlcov --cover-package="keras_bert" tests
+pycodestyle --max-line-length=120 keras_bert tests && \
+    nosetests --with-coverage --cover-erase --cover-html --cover-html-dir=htmlcov --cover-package=keras_bert tests

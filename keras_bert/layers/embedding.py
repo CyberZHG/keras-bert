@@ -1,5 +1,5 @@
-import keras
-import keras.backend as K
+from keras_bert.backend import keras
+from keras_bert.backend import backend as K
 from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 
@@ -102,7 +102,7 @@ class EmbeddingSimilarity(keras.layers.Layer):
 
     def build(self, input_shape):
         self.bias = self.add_weight(
-            shape=(input_shape[1][0],),
+            shape=(int(input_shape[1][0]),),
             initializer=self.initializer,
             regularizer=self.regularizer,
             constraint=self.constraint,

@@ -1,7 +1,7 @@
 import json
-import keras
 import numpy as np
 import tensorflow as tf
+from .backend import keras
 from .bert import get_model
 
 

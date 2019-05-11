@@ -1,6 +1,6 @@
 import unittest
-import keras
 import numpy as np
+from keras_bert.backend import keras
 from keras_bert.layers import Extract
 
 

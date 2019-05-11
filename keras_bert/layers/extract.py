@@ -1,4 +1,4 @@
-import keras
+from keras_bert.backend import keras
 
 
 class Extract(keras.layers.Layer):
