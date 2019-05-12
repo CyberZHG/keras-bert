@@ -1,0 +1,11 @@
+export UNZIPPED_MODEL_PATH=/midata/bert/bert_models/multilingual_L-12_H-768_A-12
+export CONFIG_PATH=$UNZIPPED_MODEL_PATH/bert_config.json
+export CHECKPOINT_PATH=$UNZIPPED_MODEL_PATH/bert_model.ckpt
+export DICT_PATH=$UNZIPPED_MODEL_PATH/vocab.txt
+
+conda create -n bert python=3.6
+conda activate bert
+conda install keras==2.0.8
+conda install keras-gpu==2.0.8
+pip install keras-pos-embd==0.10.0
+pip install keras-transformer==0.22.0
