@@ -1,7 +1,15 @@
-export UNZIPPED_MODEL_PATH=/midata/bert/bert_models/multilingual_L-12_H-768_A-12
+
+export BERT_MODELS_DIR=/midata/bert/bert_models
+export UNZIPPED_MODEL_PATH=$BERT_MODELS_DIR/multilingual_L-12_H-768_A-12
 export CONFIG_PATH=$UNZIPPED_MODEL_PATH/bert_config.json
 export CHECKPOINT_PATH=$UNZIPPED_MODEL_PATH/bert_model.ckpt
 export DICT_PATH=$UNZIPPED_MODEL_PATH/vocab.txt
+
+mkdir -p $BERT_MODELS_DIR
+
+wget https://storage.googleapis.com/bert_models/2018_10_18/uncased_L-12_H-768_A-12.zip
+unzip 2018_10_18/uncased_L-12_H-768_A-12.zip
+mv 2018_10_18/uncased_L-12_H-768_A-12 $BERT_MODELS_DIR/
 
 conda create -n bert python=3.6
 conda activate bert
@@ -9,3 +17,4 @@ conda install keras==2.0.8
 conda install keras-gpu==2.0.8
 pip install keras-pos-embd==0.10.0
 pip install keras-transformer==0.22.0
+
