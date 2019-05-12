@@ -18,3 +18,5 @@ conda install keras-gpu==2.0.8
 pip install keras-pos-embd==0.10.0
 pip install keras-transformer==0.22.0
 
+cd demo/load_model/
+python load_and_predict.py 
