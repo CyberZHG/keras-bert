@@ -1,4 +1,6 @@
-numpy
-Keras
+# conda create -n bert python=3.6
+# conda activate bert
+keras==2.0.8
+keras-gpu==2.0.8
 keras-pos-embd==0.10.0
 keras-transformer==0.22.0
