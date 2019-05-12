@@ -139,15 +139,13 @@ def get_model(token_num,
         name='NSP',
     )(nsp_dense_layer)
     model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
-    if weight_decay:
-        weight_decay *= 0.5
-        for layer in model.layers:
-            if hasattr(layer, 'embeddings_regularizer'):
-                layer.embeddings_regularizer = keras.regularizers.l2(weight_decay)
-            if hasattr(layer, 'kernel_regularizer'):
-                layer.kernel_regularizer = keras.regularizers.l2(weight_decay)
     model.compile(
-        optimizer=AdamWarmup(decay_steps=decay_steps, warmup_steps=warmup_steps, lr=lr),
+        optimizer=AdamWarmup(
+            decay_steps=decay_steps,
+            warmup_steps=warmup_steps,
+            lr=lr,
+            kernel_weight_decay=weight_decay,
+        ),
         loss=keras.losses.sparse_categorical_crossentropy,
     )
     return model

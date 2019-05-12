@@ -55,6 +55,7 @@ class TestBERT(unittest.TestCase):
                 lr=1e-3,
                 decay_steps=30000,
                 warmup_steps=10000,
+                weight_decay=1e-3,
             )
         model.summary()
 
