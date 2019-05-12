@@ -9,6 +9,8 @@ class MaskedConv1D(keras.layers.Conv1D):
         self.supports_masking = True
 
     def compute_mask(self, inputs, mask=None):
+        if mask is not None and self.padding == 'valid':
+            mask = mask[:, self.kernel_size[0] // 2 * self.dilation_rate[0] * 2:]
         return mask
 
     def call(self, inputs, mask=None):
