@@ -25,8 +25,7 @@ class TestWarmup(TestCase):
                 lr=1e-3,
                 min_lr=1e-4,
                 amsgrad=True,
-                kernel_weight_decay=1e-3,
-                bias_weight_decay=1e-4,
+                weight_decay=1e-3,
             ),
             loss='sparse_categorical_crossentropy',
         )
