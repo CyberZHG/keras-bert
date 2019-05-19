@@ -7,9 +7,6 @@ __all__ = [
 ]
 
 if 'TF_KERAS' in os.environ and os.environ['TF_KERAS'] != '0':
-    if 'TF_EAGER_MODE' in os.environ and os.environ['TF_EAGER_MODE'] != '0':
-        import tensorflow as tf
-        tf.enable_eager_execution()
     from tensorflow.python import keras
 else:
     import keras
