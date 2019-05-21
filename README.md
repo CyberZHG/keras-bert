@@ -16,7 +16,7 @@ pip install keras-bert
 
 ### Load Official Pre-trained Models
 
-In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction result as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
+In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction results as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
 
 
 ### Run on TPU
@@ -131,3 +131,7 @@ inputs, output_layer = get_model(
 ### Use `tensorflow.python.keras`
 
 Add `TF_KERAS=1` to environment variables to use `tensorflow.python.keras`.
+
+### Use `theano` Backend
+
+Add `KERAS_BACKEND=theano` to environment variables to enable `theano` backend.

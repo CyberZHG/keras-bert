@@ -134,3 +134,7 @@ inputs, output_layer = get_model(
 ### 使用`tensorflow.python.keras`
 
 在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。
+
+### 使用`theano`后端
+
+在环境变量中加入`KERAS_BACKEND=theano`来启用`theano`后端。

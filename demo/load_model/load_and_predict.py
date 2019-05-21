@@ -23,7 +23,7 @@ with codecs.open(dict_path, 'r', 'utf8') as reader:
     for line in reader:
         token = line.strip()
         token_dict[token] = len(token_dict)
-token_dict_rev = {v: k for k, v in token_dict.items()}
+token_dict_inv = {v: k for k, v in token_dict.items()}
 
 tokenizer = Tokenizer(token_dict)
 text = '数学是利用符号语言研究数量、结构、变化以及空间等概念的一门学科'
@@ -36,7 +36,7 @@ segments = np.array([[0] * len(tokens) + [0] * (512 - len(tokens))])
 masks = np.array([[0, 1, 1] + [0] * (512 - 3)])
 
 predicts = model.predict([indices, segments, masks])[0].argmax(axis=-1).tolist()
-print('Fill with: ', list(map(lambda x: token_dict_rev[x], predicts[0][1:3])))
+print('Fill with: ', list(map(lambda x: token_dict_inv[x], predicts[0][1:3])))
 
 
 sentence_1 = '数学是利用符号语言研究數量、结构、变化以及空间等概念的一門学科。'
