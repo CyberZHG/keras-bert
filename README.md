@@ -19,6 +19,10 @@ pip install keras-bert
 In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction result as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
 
 
+### Run on TPU
+
+[Colab demo](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/load_model/keras_bert_load_and_extract_tpu.ipynb) shows how to convert to a model that runs on TPU.
+
 ### Tokenizer
 
 The `Tokenizer` class is used for splitting texts and generating indices:

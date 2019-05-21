@@ -20,6 +20,10 @@ pip install keras-bert
 
 [预测展示](./demo/load_model/load_and_predict.py)中可以填补出缺失词并预测是否是上下文。
 
+### 使用TPU
+
+[Colab示例](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/load_model/keras_bert_load_and_extract_tpu.ipynb)中展示了如何在TPU上进行特征提取。
+
 ### 分词
 
 `Tokenizer`类可以用来进行分词工作，包括归一化和英文部分的最大贪心匹配等，在CJK字符集内的中文会以单字分隔。
