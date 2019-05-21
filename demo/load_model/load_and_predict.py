@@ -31,12 +31,11 @@ tokens = tokenizer.tokenize(text)
 tokens[1] = tokens[2] = '[MASK]'
 print('Tokens:', tokens)
 
-indices = np.asarray([[token_dict[token] for token in tokens] + [0] * (512 - len(tokens))])
-segments = np.asarray([[0] * len(tokens) + [0] * (512 - len(tokens))])
-masks = np.asarray([[0, 1, 1] + [0] * (512 - 3)])
+indices = np.array([[token_dict[token] for token in tokens] + [0] * (512 - len(tokens))])
+segments = np.array([[0] * len(tokens) + [0] * (512 - len(tokens))])
+masks = np.array([[0, 1, 1] + [0] * (512 - 3)])
 
-predicts = model.predict([indices, segments, masks])[0]
-predicts = np.argmax(predicts, axis=-1)
+predicts = model.predict([indices, segments, masks])[0].argmax(axis=-1).tolist()
 print('Fill with: ', list(map(lambda x: token_dict_rev[x], predicts[0][1:3])))
 
 

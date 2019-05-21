@@ -2,7 +2,7 @@
 
 [![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert?ref=badge_shield)
+[![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
 
 [BERT](https://arxiv.org/pdf/1810.04805.pdf)的非官方实现，可以加载官方的预训练模型进行特征提取和预测。
 
@@ -19,7 +19,6 @@ pip install keras-bert
 [特征提取展示](./demo/load_model/load_and_extract.py)中使用官方预训练好的`chinese_L-12_H-768_A-12`可以得到和官方工具一样的结果。
 
 [预测展示](./demo/load_model/load_and_predict.py)中可以填补出缺失词并预测是否是上下文。
-
 
 ### 分词
 

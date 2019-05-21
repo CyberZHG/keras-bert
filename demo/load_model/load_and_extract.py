@@ -28,7 +28,7 @@ tokenizer = Tokenizer(token_dict)
 text = '语言模型'
 tokens = tokenizer.tokenize(text)
 print('Tokens:', tokens)
-indices, segments = tokenizer.encode(first='语言模型', max_len=512)
+indices, segments = tokenizer.encode(first=text, max_len=512)
 
 predicts = model.predict([np.array([indices]), np.array([segments])])[0]
 for i, token in enumerate(tokens):
