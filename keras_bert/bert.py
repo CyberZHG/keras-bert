@@ -77,6 +77,10 @@ def get_model(token_num,
     :param lr: Learning rate.
     :return: The compiled model.
     """
+    if feed_forward_activation == 'gelu':
+        feed_forward_activation = gelu
+    else:
+        keras.activations.get(feed_forward_activation)
     if trainable is None:
         trainable = training
     inputs = get_inputs(seq_len=seq_len)
