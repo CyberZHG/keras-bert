@@ -21,6 +21,7 @@ class Tokenizer(object):
         :param cased: Whether to keep the case.
         """
         self._token_dict = token_dict
+        self._token_dict_inv = {v: k for k, v in token_dict.items()}
         self._token_cls = token_cls
         self._token_sep = token_sep
         self._token_unk = token_unk
@@ -77,6 +78,20 @@ class Tokenizer(object):
             segment_ids += [0] * pad_len
 
         return token_ids, segment_ids
+
+    def decode(self, ids):
+        sep = ids.index(self._token_dict[self._token_sep])
+        try:
+            stop = ids.index(self._pad_index)
+        except ValueError as e:
+            stop = len(ids)
+        tokens = [self._token_dict_inv[i] for i in ids]
+        first = tokens[1:sep]
+        if sep < stop - 1:
+            print(tokens, sep, stop)
+            second = tokens[sep + 1:stop - 1]
+            return first, second
+        return first
 
     def _tokenize(self, text):
         if not self._cased:
@@ -146,4 +161,4 @@ class Tokenizer(object):
 
     @staticmethod
     def _is_control(ch):
-        return unicodedata.category(ch).startswith('C')
+        return unicodedata.category(ch) in ('Cc', 'Cf')
