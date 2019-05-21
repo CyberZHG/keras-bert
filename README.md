@@ -2,7 +2,7 @@
 
 [![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCyberZHG%2Fkeras-bert?ref=badge_shield)
+[![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
 
 Implementation of the [BERT](https://arxiv.org/pdf/1810.04805.pdf). Official pre-trained models could be loaded for feature extraction and prediction.
 
@@ -50,6 +50,7 @@ print(segments)  # Should be `[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
 ### Train & Use
 
 ```python
+import keras
 from keras_bert import get_base_dict, get_model, gen_batch_inputs
 
 
@@ -119,7 +120,7 @@ inputs, output_layer = get_model(
     training=False,      # The input layers and output layer will be returned if `training` is `False`
     trainable=False,     # Whether the model is trainable. The default value is the same with `training`
     output_layer_num=4,  # The number of layers whose outputs will be concatenated as a single output.
-                           Only available when `training` is `False`.
+                         # Only available when `training` is `False`.
 )
 ```
 

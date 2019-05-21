@@ -3,7 +3,7 @@ import os
 import tempfile
 import numpy as np
 from keras_bert.backend import keras
-from keras_bert import gelu, get_model, get_custom_objects, get_base_dict, gen_batch_inputs
+from keras_bert import get_model, get_custom_objects, get_base_dict, gen_batch_inputs
 
 
 class TestBERT(unittest.TestCase):
@@ -51,7 +51,7 @@ class TestBERT(unittest.TestCase):
                 seq_len=20,
                 pos_num=20,
                 dropout_rate=0.05,
-                attention_activation=gelu,
+                attention_activation='gelu',
                 lr=1e-3,
                 decay_steps=30000,
                 warmup_steps=10000,
@@ -116,6 +116,7 @@ class TestBERT(unittest.TestCase):
             token_num=200,
             head_num=3,
             transformer_num=2,
+            attention_activation='gelu',
         )
         data = model.to_json()
         model = keras.models.model_from_json(data, custom_objects=get_custom_objects())

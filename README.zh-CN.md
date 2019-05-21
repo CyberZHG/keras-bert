@@ -55,6 +55,7 @@ print(segments)  # 段落对应下标：`[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
 训练过程推荐使用官方的代码。这个代码库内包含一个的训练过程，`training`为`True`的情况下使用的是带warmup的Adam优化器：
 
 ```python
+import keras
 from keras_bert import get_base_dict, get_model, gen_batch_inputs
 
 
