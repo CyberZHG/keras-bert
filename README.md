@@ -23,7 +23,9 @@ In [feature extraction demo](./demo/load_model/load_and_extract.py), you should 
 
 ### Run on TPU
 
-[Colab demo](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/load_model/keras_bert_load_and_extract_tpu.ipynb) shows how to convert to a model that runs on TPU.
+The [extraction demo](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/load_model/keras_bert_load_and_extract_tpu.ipynb) shows how to convert to a model that runs on TPU.
+
+The [classification demo](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/tune/keras_bert_classification_tpu.ipynb) shows how to apply the model to simple classification tasks.
 
 ### Tokenizer
 

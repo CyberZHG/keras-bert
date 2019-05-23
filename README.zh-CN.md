@@ -24,7 +24,9 @@ pip install keras-bert
 
 ### 使用TPU
 
-[Colab示例](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/load_model/keras_bert_load_and_extract_tpu.ipynb)中展示了如何在TPU上进行特征提取。
+[特征提取示例](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/load_model/keras_bert_load_and_extract_tpu.ipynb)中展示了如何在TPU上进行特征提取。
+
+[分类示例](https://colab.research.google.com/github/CyberZHG/keras-bert/blob/master/demo/tune/keras_bert_classification_tpu.ipynb)中在IMDB数据集上对模型进行了微调以适应新的分类任务。
 
 ### 分词
 
