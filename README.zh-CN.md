@@ -3,6 +3,8 @@
 [![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
 [![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
+![Downloads](https://img.shields.io/pypi/dm/keras-bert.svg)
+![License](https://img.shields.io/pypi/l/keras-bert.svg)
 
 [BERT](https://arxiv.org/pdf/1810.04805.pdf)的非官方实现，可以加载官方的预训练模型进行特征提取和预测。
 
@@ -129,6 +131,26 @@ inputs, output_layer = get_model(
     trainable=False,     # 模型是否可训练，默认值和`training`相同
     output_layer_num=4,  # 最后几层的输出将合并在一起作为最终的输出，只有当`training`是`False`有效
 )
+```
+
+### 使用Warmup
+
+`AdamWarmup`优化器可用于学习率的「热身」与「衰减」。学习率将在`warmpup_steps`步线性增长到`lr`，并在总共`decay_steps`步后线性减少到`min_lr`。辅助函数`calc_train_steps`可用于计算这两个步数：
+
+```python
+import numpy as np
+from keras_bert import AdamWarmup, calc_train_steps
+
+train_x = np.random.standard_normal((1024, 100))
+
+total_steps, warmup_steps = calc_train_steps(
+    num_example=train_x.shape[0],
+    batch_size=32,
+    epochs=10,
+    warmup_proportion=0.1,
+)
+
+optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 ```
 
 ### 使用`tensorflow.python.keras`

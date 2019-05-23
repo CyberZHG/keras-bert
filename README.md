@@ -3,6 +3,8 @@
 [![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
 [![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
+![Downloads](https://img.shields.io/pypi/dm/keras-bert.svg)
+![License](https://img.shields.io/pypi/l/keras-bert.svg)
 
 Implementation of the [BERT](https://arxiv.org/pdf/1810.04805.pdf). Official pre-trained models could be loaded for feature extraction and prediction.
 
@@ -126,6 +128,26 @@ inputs, output_layer = get_model(
     output_layer_num=4,  # The number of layers whose outputs will be concatenated as a single output.
                          # Only available when `training` is `False`.
 )
+```
+
+### Use Warmup
+
+`AdamWarmup` optimizer is provided for warmup and decay. The learning rate will reach `lr` in `warmpup_steps` steps, and decay to `min_lr` in `decay_steps` steps. There is a helper function `calc_train_steps` for calculating the two steps:
+
+```python
+import numpy as np
+from keras_bert import AdamWarmup, calc_train_steps
+
+train_x = np.random.standard_normal((1024, 100))
+
+total_steps, warmup_steps = calc_train_steps(
+    num_example=train_x.shape[0],
+    batch_size=32,
+    epochs=10,
+    warmup_proportion=0.1,
+)
+
+optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 ```
 
 ### Use `tensorflow.python.keras`
