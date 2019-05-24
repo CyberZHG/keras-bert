@@ -3,8 +3,10 @@
 [![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
 [![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
 [![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
-![Downloads](https://img.shields.io/pypi/dm/keras-bert.svg)
-![License](https://img.shields.io/pypi/l/keras-bert.svg)
+
+![Downloads](https://img.shields.io/pypi/dm/keras-bert.svg?style=flat-square)
+![License](https://img.shields.io/pypi/l/keras-bert.svg?style=flat-square)
+![Hit](http://hits.dwyl.io/CyberZHG/keras-bert.svg)
 
 [BERT](https://arxiv.org/pdf/1810.04805.pdf)的非官方实现，可以加载官方的预训练模型进行特征提取和预测。
 
