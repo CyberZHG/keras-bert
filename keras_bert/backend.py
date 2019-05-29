@@ -3,11 +3,17 @@ import os
 __all__ = [
     'keras', 'utils', 'activations', 'applications', 'backend', 'datasets', 'engine',
     'layers', 'preprocessing', 'wrappers', 'callbacks', 'constraints', 'initializers',
-    'metrics', 'models', 'losses', 'optimizers', 'regularizers',
+    'metrics', 'models', 'losses', 'optimizers', 'regularizers', 'EAGER_MODE'
 ]
+
+EAGER_MODE = False
 
 if 'TF_KERAS' in os.environ and os.environ['TF_KERAS'] != '0':
     from tensorflow.python import keras
+    if 'TF_EAGER' in os.environ and os.environ['TF_EAGER'] != '0':
+        import tensorflow as tf
+        tf.enable_eager_execution()
+        EAGER_MODE = True
 else:
     import keras
 

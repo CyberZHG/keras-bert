@@ -6,6 +6,7 @@ python:
 env:
   - KERAS_BACKEND=tensorflow
   - KERAS_BACKEND=tensorflow TF_KERAS=1
+  - KERAS_BACKEND=tensorflow TF_KERAS=1 TF_EAGER=1
   - KERAS_BACKEND=theano THEANO_FLAGS=optimizer=fast_compile
   # - KERAS_BACKEND=cntk PYTHONWARNINGS=ignore
 install:

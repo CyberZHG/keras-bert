@@ -2,7 +2,7 @@ import os
 import tempfile
 from unittest import TestCase
 import numpy as np
-from keras_bert.backend import keras
+from keras_bert.backend import keras, EAGER_MODE
 from keras_bert import AdamWarmup, calc_train_steps
 
 
@@ -31,9 +31,10 @@ class TestWarmup(TestCase):
         )
         model.fit(x, y, batch_size=10, epochs=110)
 
-        model_path = os.path.join(tempfile.gettempdir(), 'keras_warmup_%f.h5' % np.random.random())
-        model.save(model_path)
-        model = keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
+        if not EAGER_MODE:
+            model_path = os.path.join(tempfile.gettempdir(), 'keras_warmup_%f.h5' % np.random.random())
+            model.save(model_path)
+            model = keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
 
         results = model.predict(x).argmax(axis=-1)
         diff = np.sum(np.abs(y - results))
