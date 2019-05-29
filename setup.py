@@ -11,7 +11,7 @@ with codecs.open('requirements.txt', 'r', 'utf8') as reader:
 
 setup(
     name='keras-bert',
-    version='0.54.0',
+    version='0.55.1',
     packages=find_packages(),
     url='https://github.com/CyberZHG/keras-bert',
     license='MIT',

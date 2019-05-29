@@ -29,7 +29,12 @@ class TestWarmup(TestCase):
             ),
             loss='sparse_categorical_crossentropy',
         )
-        model.fit(x, y, batch_size=10, epochs=110)
+        model.fit(
+            x, y,
+            batch_size=10,
+            epochs=110,
+            callbacks=[keras.callbacks.EarlyStopping(monitor='loss', min_delta=1e-4, patience=3)],
+        )
 
         if not EAGER_MODE:
             model_path = os.path.join(tempfile.gettempdir(), 'keras_warmup_%f.h5' % np.random.random())

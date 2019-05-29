@@ -37,11 +37,13 @@ class TestBERT(unittest.TestCase):
                     token_dict[token] = len(token_dict)
         token_list = list(token_dict.keys())
         if os.path.exists(model_path):
+            steps_per_epoch = 10
             model = keras.models.load_model(
                 model_path,
                 custom_objects=get_custom_objects(),
             )
         else:
+            steps_per_epoch = 1000
             model = get_model(
                 token_num=len(token_dict),
                 head_num=5,
@@ -72,10 +74,10 @@ class TestBERT(unittest.TestCase):
 
         model.fit_generator(
             generator=_generator(),
-            steps_per_epoch=1000,
+            steps_per_epoch=steps_per_epoch,
             epochs=1,
             validation_data=_generator(),
-            validation_steps=100,
+            validation_steps=steps_per_epoch // 10,
         )
         # model.save(model_path)
         for inputs, outputs in _generator():

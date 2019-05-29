@@ -8,6 +8,13 @@
 ![License](https://img.shields.io/pypi/l/keras-bert.svg?style=flat-square)
 ![Hit](http://hits.dwyl.io/CyberZHG/keras-bert.svg)
 
+![](https://img.shields.io/badge/keras-tensorflow-blue.svg)
+![](https://img.shields.io/badge/keras-theano-blue.svg)
+![](https://img.shields.io/badge/keras-tf.keras-blue.svg)
+![](https://img.shields.io/badge/keras-tf.keras/eager-blue.svg)
+
+\[[中文](https://github.com/CyberZHG/keras-bert/blob/master/README.zh-CN.md)|[English](https://github.com/CyberZHG/keras-bert/blob/master/README.md)\]
+
 [BERT](https://arxiv.org/pdf/1810.04805.pdf)的非官方实现，可以加载官方的预训练模型进行特征提取和预测。
 
 ## 安装
