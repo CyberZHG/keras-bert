@@ -3,7 +3,7 @@ import tempfile
 from unittest import TestCase
 import numpy as np
 from keras_bert.backend import keras, EAGER_MODE
-from keras_bert import AdamWarmup, calc_train_steps
+from keras_bert import AdamWarmup
 
 
 class TestWarmup(TestCase):
@@ -44,12 +44,3 @@ class TestWarmup(TestCase):
         results = model.predict(x).argmax(axis=-1)
         diff = np.sum(np.abs(y - results))
         self.assertLess(diff, 100)
-
-    def test_calc_train_steps(self):
-        total, warmup = calc_train_steps(
-            num_example=1024,
-            batch_size=32,
-            epochs=10,
-            warmup_proportion=0.1,
-        )
-        self.assertEqual((320, 32), (total, warmup))

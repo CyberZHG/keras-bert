@@ -7,6 +7,9 @@ __all__ = ['AdamWarmup', 'calc_train_steps']
 def calc_train_steps(num_example, batch_size, epochs, warmup_proportion=0.1):
     """Calculate the number of total and warmup steps.
 
+    >>> calc_train_steps(num_example=1024, batch_size=32, epochs=10, warmup_proportion=0.1)
+    (320, 32)
+
     :param num_example: Number of examples in one epoch.
     :param batch_size: Batch size.
     :param epochs: Number of epochs.
