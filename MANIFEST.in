@@ -1,2 +1,4 @@
 include README.md
+include README-zh-CN.md
+include CHANGELOG.md
 include requirements.txt
