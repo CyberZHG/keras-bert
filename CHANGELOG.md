@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+## [0.56.0] - 2019-06-04
+
+### Changed
+
+- Docs about `training` and `trainable`
+
+### Fixed
+
+- Fix missing `trainable=False` when `training=True`
+
 ## [0.54.0] - 2019-05-29
 
 ### Added

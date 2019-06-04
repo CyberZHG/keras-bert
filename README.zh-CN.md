@@ -142,6 +142,10 @@ inputs, output_layer = get_model(
 )
 ```
 
+#### 关于`training`和`trainable`
+
+虽然看起来相似，但这两个参数是不相关的。`training`表示是否在训练BERT语言模型，当为`True`时完整的BERT模型会被返回，当为`False`时没有MLM和NSP相关计算的结构，返回输入层和根据`output_layer_num`合并最后几层的输出。加载的层是否可训练只跟`trainable`有关。
+
 ### 使用Warmup
 
 `AdamWarmup`优化器可用于学习率的「热身」与「衰减」。学习率将在`warmpup_steps`步线性增长到`lr`，并在总共`decay_steps`步后线性减少到`min_lr`。辅助函数`calc_train_steps`可用于计算这两个步数：

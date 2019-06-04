@@ -27,6 +27,7 @@ def build_model_from_config(config_file,
 
     :param config_file: The path to the JSON configuration file.
     :param training: If training, the whole model will be returned.
+                     Otherwise, the MLM and NSP parts will be ignored.
     :param trainable: Whether the model is trainable.
     :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
                              Only available when `training` is `False`.

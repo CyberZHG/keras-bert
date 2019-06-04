@@ -67,8 +67,8 @@ def get_model(token_num,
     :param custom_layers: A function that takes the embedding tensor and returns the tensor after feature extraction.
                           Arguments such as `transformer_num` and `head_num` will be ignored if `custom_layer` is not
                           `None`.
-    :param training: The built model will be returned if it is `True`, otherwise the input layers and the last feature
-                     extraction layer will be returned.
+    :param training: A built model with MLM and NSP outputs will be returned if it is `True`,
+                     otherwise the input layers and the last feature extraction layer will be returned.
     :param trainable: Whether the model is trainable.
     :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
                              Only available when `training` is `False`.
@@ -126,8 +126,8 @@ def get_model(token_num,
         trainable=trainable,
         name='MLM-Dense',
     )(transformed)
-    mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
-    mlm_pred_layer = EmbeddingSimilarity(name='MLM-Sim')([mlm_norm_layer, embed_weights])
+    mlm_norm_layer = LayerNormalization(trainable=trainable, name='MLM-Norm')(mlm_dense_layer)
+    mlm_pred_layer = EmbeddingSimilarity(trainable=trainable, name='MLM-Sim')([mlm_norm_layer, embed_weights])
     masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
     extract_layer = Extract(index=0, name='Extract')(transformed)
     nsp_dense_layer = keras.layers.Dense(
