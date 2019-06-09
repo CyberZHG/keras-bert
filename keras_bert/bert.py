@@ -26,8 +26,11 @@ TOKEN_MASK = '[MASK]'  # Token for masking
 
 def gelu(x):
     if K.backend() == 'tensorflow':
-        import tensorflow as tf
-        return 0.5 * x * (1.0 + tf.erf(x / tf.sqrt(2.0)))
+        try:
+            import tensorflow as tf
+            return 0.5 * x * (1.0 + tf.erf(x / tf.sqrt(2.0)))
+        except AttributeError as e:
+            'tf.erf is missing, use approximation'
     return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * K.pow(x, 3))))
 
 
