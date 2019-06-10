@@ -9,15 +9,13 @@ __all__ = [
 TF_KERAS = False
 EAGER_MODE = False
 
-if 'TF_KERAS' in os.environ and os.environ['TF_KERAS'] != '0':
+if os.environ.get('TF_KERAS', '0') != '0':
     import tensorflow as tf
     from tensorflow.python import keras
     TF_KERAS = True
-    if 'TF_EAGER' in os.environ and os.environ['TF_EAGER'] != '0':
-        if int(tf.version.VERSION.split('.')[0]) < 2:
-            import tensorflow as tf
-            tf.enable_eager_execution()
-        EAGER_MODE = True
+    [tf.enable_eager_execution() for _ in range(1)
+     if not tf.executing_eagerly() and os.environ.get('TF_EAGER', '0') != '0']
+    EAGER_MODE = tf.executing_eagerly()
 else:
     import keras
 

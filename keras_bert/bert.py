@@ -42,7 +42,6 @@ def get_model(token_num,
               weight_decay=0.01,
               attention_activation=None,
               feed_forward_activation='gelu',
-              custom_layers=None,
               training=True,
               trainable=None,
               output_layer_num=1,
@@ -64,9 +63,6 @@ def get_model(token_num,
     :param weight_decay: Weight decay rate.
     :param attention_activation: Activation for attention layers.
     :param feed_forward_activation: Activation for feed-forward layers.
-    :param custom_layers: A function that takes the embedding tensor and returns the tensor after feature extraction.
-                          Arguments such as `transformer_num` and `head_num` will be ignored if `custom_layer` is not
-                          `None`.
     :param training: A built model with MLM and NSP outputs will be returned if it is `True`,
                      otherwise the input layers and the last feature extraction layer will be returned.
     :param trainable: Whether the model is trainable.
@@ -83,6 +79,15 @@ def get_model(token_num,
         feed_forward_activation = gelu
     if trainable is None:
         trainable = training
+
+    def _trainable(_layer):
+        if isinstance(trainable, (list, tuple, set)):
+            for prefix in trainable:
+                if _layer.name.startswith(prefix):
+                    return True
+            return False
+        return trainable
+
     inputs = get_inputs(seq_len=seq_len)
     embed_layer, embed_weights = get_embedding(
         inputs,
@@ -90,70 +95,63 @@ def get_model(token_num,
         embed_dim=embed_dim,
         pos_num=pos_num,
         dropout_rate=dropout_rate,
-        trainable=trainable,
     )
-    transformed = embed_layer
-    if custom_layers is not None:
-        kwargs = {}
-        if keras.utils.generic_utils.has_arg(custom_layers, 'trainable'):
-            kwargs['trainable'] = trainable
-        transformed = custom_layers(transformed, **kwargs)
-    else:
-        transformed = get_encoders(
-            encoder_num=transformer_num,
-            input_layer=transformed,
-            head_num=head_num,
-            hidden_dim=feed_forward_dim,
-            attention_activation=attention_activation,
-            feed_forward_activation=feed_forward_activation,
-            dropout_rate=dropout_rate,
-            trainable=trainable,
+    transformed = get_encoders(
+        encoder_num=transformer_num,
+        input_layer=embed_layer,
+        head_num=head_num,
+        hidden_dim=feed_forward_dim,
+        attention_activation=attention_activation,
+        feed_forward_activation=feed_forward_activation,
+        dropout_rate=dropout_rate,
+    )
+    if training:
+        mlm_dense_layer = keras.layers.Dense(
+            units=embed_dim,
+            activation=feed_forward_activation,
+            name='MLM-Dense',
+        )(transformed)
+        mlm_norm_layer = LayerNormalization(name='MLM-Norm')(mlm_dense_layer)
+        mlm_pred_layer = EmbeddingSimilarity(name='MLM-Sim')([mlm_norm_layer, embed_weights])
+        masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
+        extract_layer = Extract(index=0, name='Extract')(transformed)
+        nsp_dense_layer = keras.layers.Dense(
+            units=embed_dim,
+            activation='tanh',
+            name='NSP-Dense',
+        )(extract_layer)
+        nsp_pred_layer = keras.layers.Dense(
+            units=2,
+            activation='softmax',
+            name='NSP',
+        )(nsp_dense_layer)
+        model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
+        for layer in model.layers:
+            layer.trainable = _trainable(layer)
+        model.compile(
+            optimizer=AdamWarmup(
+                decay_steps=decay_steps,
+                warmup_steps=warmup_steps,
+                lr=lr,
+                weight_decay=weight_decay,
+                weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
+            ),
+            loss=keras.losses.sparse_categorical_crossentropy,
         )
-    if not training:
+        return model
+    else:
+        inputs = inputs[:2]
+        model = keras.models.Model(inputs=inputs, outputs=transformed)
+        for layer in model.layers:
+            layer.trainable = _trainable(layer)
+        output_layer_num = min(output_layer_num, transformer_num)
         if output_layer_num > 1:
-            if output_layer_num > transformer_num:
-                output_layer_num = transformer_num
-            model = keras.models.Model(inputs=inputs[:2], outputs=transformed)
             outputs = []
             for i in range(output_layer_num):
                 layer = model.get_layer(name='Encoder-{}-FeedForward-Norm'.format(transformer_num - i))
                 outputs.append(layer.output)
             transformed = keras.layers.Concatenate(name='Encoder-Output')(list(reversed(outputs)))
-        return inputs[:2], transformed
-    mlm_dense_layer = keras.layers.Dense(
-        units=embed_dim,
-        activation=feed_forward_activation,
-        trainable=trainable,
-        name='MLM-Dense',
-    )(transformed)
-    mlm_norm_layer = LayerNormalization(trainable=trainable, name='MLM-Norm')(mlm_dense_layer)
-    mlm_pred_layer = EmbeddingSimilarity(trainable=trainable, name='MLM-Sim')([mlm_norm_layer, embed_weights])
-    masked_layer = Masked(name='MLM')([mlm_pred_layer, inputs[-1]])
-    extract_layer = Extract(index=0, name='Extract')(transformed)
-    nsp_dense_layer = keras.layers.Dense(
-        units=embed_dim,
-        activation='tanh',
-        trainable=trainable,
-        name='NSP-Dense',
-    )(extract_layer)
-    nsp_pred_layer = keras.layers.Dense(
-        units=2,
-        activation='softmax',
-        trainable=trainable,
-        name='NSP',
-    )(nsp_dense_layer)
-    model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
-    model.compile(
-        optimizer=AdamWarmup(
-            decay_steps=decay_steps,
-            warmup_steps=warmup_steps,
-            lr=lr,
-            weight_decay=weight_decay,
-            weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
-        ),
-        loss=keras.losses.sparse_categorical_crossentropy,
-    )
-    return model
+        return inputs, transformed
 
 
 def get_custom_objects():
