@@ -7,6 +7,7 @@ env:
   - KERAS_BACKEND=tensorflow
   - KERAS_BACKEND=tensorflow TF_KERAS=1
   - KERAS_BACKEND=tensorflow TF_KERAS=1 TF_EAGER=1
+  - KERAS_BACKEND=tensorflow TF_KERAS=1 TF_2=1
   - KERAS_BACKEND=theano THEANO_FLAGS=optimizer=fast_compile
   # - KERAS_BACKEND=cntk PYTHONWARNINGS=ignore
 install:
@@ -26,8 +27,9 @@ install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
+  - if [[ $TF_2 == "1" ]]; then pip install tensorflow==2.0.0-beta0; fi
   - if [[ $KERAS_BACKEND == "theano" ]]; then pip install theano && conda install mkl mkl-service; fi
-  - if [[ "$KERAS_BACKEND" == "cntk" ]]; then
+  - if [[ $KERAS_BACKEND == "cntk" ]]; then
       set -e &&
       pip install cntk &&
       mkdir -p ~/mpi &&

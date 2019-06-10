@@ -2,7 +2,7 @@ import os
 import tempfile
 from unittest import TestCase
 import numpy as np
-from keras_bert.backend import keras, EAGER_MODE
+from keras_bert.backend import keras
 from keras_bert import AdamWarmup
 
 
@@ -36,10 +36,9 @@ class TestWarmup(TestCase):
             callbacks=[keras.callbacks.EarlyStopping(monitor='loss', min_delta=1e-4, patience=3)],
         )
 
-        if not EAGER_MODE:
-            model_path = os.path.join(tempfile.gettempdir(), 'keras_warmup_%f.h5' % np.random.random())
-            model.save(model_path)
-            model = keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
+        model_path = os.path.join(tempfile.gettempdir(), 'keras_warmup_%f.h5' % np.random.random())
+        model.save(model_path)
+        model = keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
 
         results = model.predict(x).argmax(axis=-1)
         diff = np.sum(np.abs(y - results))

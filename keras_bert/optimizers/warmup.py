@@ -1,5 +1,5 @@
 from keras_bert.backend import keras
-from keras_bert.backend import backend as K
+from keras_bert.backend import backend as K, TF_KERAS
 
 __all__ = ['AdamWarmup', 'calc_train_steps']
 
@@ -78,12 +78,12 @@ class AdamWarmup(keras.optimizers.Optimizer):
         lr_t = lr * (K.sqrt(1. - K.pow(self.beta_2, t)) /
                      (1. - K.pow(self.beta_1, t)))
 
-        ms = [K.zeros(K.int_shape(p), dtype=K.dtype(p)) for p in params]
-        vs = [K.zeros(K.int_shape(p), dtype=K.dtype(p)) for p in params]
+        ms = [K.zeros(K.int_shape(p), dtype=K.dtype(p), name='m_{}'.format(i)) for i, p in enumerate(params)]
+        vs = [K.zeros(K.int_shape(p), dtype=K.dtype(p), name='v_{}'.format(i)) for i, p in enumerate(params)]
         if self.amsgrad:
-            vhats = [K.zeros(K.int_shape(p), dtype=K.dtype(p)) for p in params]
+            vhats = [K.zeros(K.int_shape(p), dtype=K.dtype(p), name='vh_{}'.format(i)) for i, p in enumerate(params)]
         else:
-            vhats = [K.zeros(1) for _ in params]
+            vhats = [K.zeros(1, dtype=K.dtype(p), name='vh_{}'.format(i)) for i, p in enumerate(params)]
         self.weights = [self.iterations] + ms + vs + vhats
 
         for p, g, m, v, vhat in zip(params, grads, ms, vs, vhats):
