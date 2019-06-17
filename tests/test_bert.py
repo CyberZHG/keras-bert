@@ -3,7 +3,9 @@ import os
 import tempfile
 import numpy as np
 from keras_bert.backend import keras
-from keras_bert import get_model, get_custom_objects, get_base_dict, gen_batch_inputs
+from keras_bert.backend import backend as K
+from keras_bert import (get_model, get_base_dict, gen_batch_inputs, get_token_embedding,
+                        get_custom_objects, set_custom_objects)
 
 
 class TestBERT(unittest.TestCase):
@@ -30,8 +32,19 @@ class TestBERT(unittest.TestCase):
             attention_activation='gelu',
         )
         data = model.to_json()
-        model = keras.models.model_from_json(data, custom_objects=get_custom_objects())
+        set_custom_objects()
+        model = keras.models.model_from_json(data)
         model.summary()
+
+    def test_get_token_embedding(self):
+        model = get_model(
+            token_num=200,
+            head_num=3,
+            transformer_num=2,
+            attention_activation='gelu',
+        )
+        embed = get_token_embedding(model)
+        self.assertEqual((200, 768), K.int_shape(embed))
 
     def test_fit(self):
         current_path = os.path.dirname(os.path.abspath(__file__))

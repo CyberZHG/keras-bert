@@ -13,7 +13,8 @@ from .optimizers import AdamWarmup
 
 __all__ = [
     'TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK',
-    'gelu', 'get_model', 'get_custom_objects', 'get_base_dict', 'gen_batch_inputs',
+    'gelu', 'get_model', 'get_base_dict', 'gen_batch_inputs', 'get_token_embedding',
+    'get_custom_objects', 'set_custom_objects',
 ]
 
 
@@ -167,6 +168,12 @@ def get_custom_objects():
     return custom_objects
 
 
+def set_custom_objects():
+    """Add custom objects to Keras environments."""
+    for k, v in get_custom_objects().items():
+        keras.utils.get_custom_objects()[k] = v
+
+
 def get_base_dict():
     """Get basic dictionary containing special tokens."""
     return {
@@ -176,6 +183,15 @@ def get_base_dict():
         TOKEN_SEP: 3,
         TOKEN_MASK: 4,
     }
+
+
+def get_token_embedding(model):
+    """Get token embedding from model.
+
+    :param model: The built model.
+    :return: The output weights of embeddings.
+    """
+    return model.get_layer('Embedding-Token').output[1]
 
 
 def gen_batch_inputs(sentence_pairs,
