@@ -169,9 +169,13 @@ total_steps, warmup_steps = calc_train_steps(
 optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 ```
 
+### 关于输入
+
+在`training`为`True`的情况下，输入包含三项：token下标、segment下标、被masked的词的模版。当`training`为`False`时输入只包含前两项。位置下标由于是固定的，会在模型内部生成，不需要手动再输入一遍。被masked的词的模版在输入被masked的词是值为1，否则为0。
+
 ### 使用`tensorflow.python.keras`
 
-在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。
+在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。加入`TF_EAGER=1`可以启用eager execution。在Keras本身没去支持之前，如果想使用tensorflow 2.0则必须使用`TF_KERAS=1`。
 
 ### 使用`theano`后端
 

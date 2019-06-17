@@ -1,6 +1,6 @@
 import unittest
 import os
-from keras_bert import load_trained_model_from_checkpoint
+from keras_bert import load_trained_model_from_checkpoint, load_vocabulary
 
 
 class TestLoader(unittest.TestCase):
@@ -44,3 +44,9 @@ class TestLoader(unittest.TestCase):
             trainable=['Encoder'],
         )
         model.summary()
+
+    def test_load_vocabulary(self):
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        vocab_path = os.path.join(current_path, 'test_checkpoint', 'vocab.txt')
+        token_dict = load_vocabulary(vocab_path)
+        self.assertEqual(15, len(token_dict))

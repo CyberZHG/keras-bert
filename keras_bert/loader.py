@@ -1,4 +1,5 @@
 import json
+import codecs
 import numpy as np
 import tensorflow as tf
 from .backend import keras
@@ -9,6 +10,7 @@ __all__ = [
     'build_model_from_config',
     'load_model_weights_from_checkpoint',
     'load_trained_model_from_checkpoint',
+    'load_vocabulary',
 ]
 
 
@@ -170,3 +172,12 @@ def load_trained_model_from_checkpoint(config_file,
     )
     load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model
+
+
+def load_vocabulary(vocab_path):
+    token_dict = {}
+    with codecs.open(vocab_path, 'r', 'utf8') as reader:
+        for line in reader:
+            token = line.strip()
+            token_dict[token] = len(token_dict)
+    return token_dict

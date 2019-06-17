@@ -1,8 +1,7 @@
 import os
 import sys
-import codecs
 import numpy as np
-from keras_bert import load_trained_model_from_checkpoint, Tokenizer
+from keras_bert import load_vocabulary, load_trained_model_from_checkpoint, Tokenizer
 
 
 if len(sys.argv) != 2:
@@ -19,11 +18,7 @@ dict_path = os.path.join(model_path, 'vocab.txt')
 model = load_trained_model_from_checkpoint(config_path, checkpoint_path, seq_len=10)
 model.summary(line_length=120)
 
-token_dict = {}
-with codecs.open(dict_path, 'r', 'utf8') as reader:
-    for line in reader:
-        token = line.strip()
-        token_dict[token] = len(token_dict)
+token_dict = load_vocabulary(dict_path)
 
 tokenizer = Tokenizer(token_dict)
 text = '语言模型'
