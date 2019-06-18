@@ -27,7 +27,7 @@ install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
-  - if [[ $TF_2 == "1" ]]; then pip install tensorflow==2.0.0-beta0; fi
+  - if [[ $TF_2 == "1" ]]; then pip install tensorflow==2.0.0-beta1; fi
   - if [[ $KERAS_BACKEND == "theano" ]]; then pip install theano && conda install mkl mkl-service; fi
   - if [[ $KERAS_BACKEND == "cntk" ]]; then
       set -e &&
