@@ -59,12 +59,12 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
         tokens, segments = [], []
 
         def _pad_inputs():
-            global tokens, segments
             if seq_len is None:
                 max_len = max(map(len, tokens))
-                tokens = [_token + [0] * (max_len - len(_token)) for _token in tokens]
-                segments = [_segment + [0] * (max_len - len(_segment)) for _segment in segments]
-            tokens, segments = np.array(tokens), np.array(segments)
+                for i in range(len(tokens)):
+                    tokens[i].extend([0] * (max_len - len(tokens[i])))
+                    segments[i].extend([0] * (max_len - len(segments[i])))
+            return [np.array(tokens), np.array(segments)]
 
         for text in texts:
             if isinstance(text, (str, type(u''))):
@@ -74,12 +74,10 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
             tokens.append(token)
             segments.append(segment)
             if len(tokens) == batch_size:
-                _pad_inputs()
-                yield [tokens, segments]
+                yield _pad_inputs()
                 tokens, segments = [], []
         if len(tokens) > 0:
-            _pad_inputs()
-            yield [tokens, segments]
+            yield _pad_inputs()
 
     if poolings is not None:
         if isinstance(poolings, (str, type(u''))):
