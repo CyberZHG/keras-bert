@@ -3,7 +3,9 @@ import os
 import tempfile
 import numpy as np
 from keras_bert.backend import keras
-from keras_bert import get_model, get_custom_objects, get_base_dict, gen_batch_inputs
+from keras_bert.backend import backend as K
+from keras_bert import (get_model, get_base_dict, gen_batch_inputs, get_token_embedding,
+                        get_custom_objects, set_custom_objects)
 
 
 class TestBERT(unittest.TestCase):
@@ -21,6 +23,28 @@ class TestBERT(unittest.TestCase):
             custom_objects=get_custom_objects(),
         )
         model.summary(line_length=200)
+
+    def test_save_load_json(self):
+        model = get_model(
+            token_num=200,
+            head_num=3,
+            transformer_num=2,
+            attention_activation='gelu',
+        )
+        data = model.to_json()
+        set_custom_objects()
+        model = keras.models.model_from_json(data)
+        model.summary()
+
+    def test_get_token_embedding(self):
+        model = get_model(
+            token_num=200,
+            head_num=3,
+            transformer_num=2,
+            attention_activation='gelu',
+        )
+        embed = get_token_embedding(model)
+        self.assertEqual((200, 768), K.int_shape(embed))
 
     def test_fit(self):
         current_path = os.path.dirname(os.path.abspath(__file__))
@@ -91,35 +115,3 @@ class TestBERT(unittest.TestCase):
                         self.assertEqual(outputs[0][i][j], predicts[0][i][j])
             self.assertTrue(np.allclose(outputs[1], predicts[1]))
             break
-
-    def test_get_layers(self):
-
-        def _custom_layers(x, trainable=True):
-            return keras.layers.LSTM(
-                units=768,
-                trainable=trainable,
-                return_sequences=True,
-                name='LSTM',
-            )(x)
-
-        inputs, output_layer = get_model(
-            token_num=200,
-            embed_dim=768,
-            custom_layers=_custom_layers,
-            training=False,
-        )
-        model = keras.models.Model(inputs=inputs, outputs=output_layer)
-        model.compile(optimizer='adam', loss='mse')
-        model.summary()
-        self.assertTrue(model is not None)
-
-    def test_save_load_json(self):
-        model = get_model(
-            token_num=200,
-            head_num=3,
-            transformer_num=2,
-            attention_activation='gelu',
-        )
-        data = model.to_json()
-        model = keras.models.model_from_json(data, custom_objects=get_custom_objects())
-        model.summary()

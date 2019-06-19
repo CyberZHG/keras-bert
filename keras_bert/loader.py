@@ -1,4 +1,5 @@
 import json
+import codecs
 import numpy as np
 import tensorflow as tf
 from .backend import keras
@@ -9,6 +10,7 @@ __all__ = [
     'build_model_from_config',
     'load_model_weights_from_checkpoint',
     'load_trained_model_from_checkpoint',
+    'load_vocabulary',
 ]
 
 
@@ -22,7 +24,7 @@ def build_model_from_config(config_file,
                             training=False,
                             trainable=None,
                             output_layer_num=1,
-                            seq_len=None):
+                            seq_len=int(1e9)):
     """Build the model from config file.
 
     :param config_file: The path to the JSON configuration file.
@@ -38,13 +40,13 @@ def build_model_from_config(config_file,
     with open(config_file, 'r') as reader:
         config = json.loads(reader.read())
     if seq_len is not None:
-        config['max_position_embeddings'] = min(seq_len, config['max_position_embeddings'])
+        config['max_position_embeddings'] = seq_len = min(seq_len, config['max_position_embeddings'])
     if trainable is None:
         trainable = training
     model = get_model(
         token_num=config['vocab_size'],
         pos_num=config['max_position_embeddings'],
-        seq_len=config['max_position_embeddings'],
+        seq_len=seq_len,
         embed_dim=config['hidden_size'],
         transformer_num=config['num_hidden_layers'],
         head_num=config['num_attention_heads'],
@@ -147,7 +149,7 @@ def load_trained_model_from_checkpoint(config_file,
                                        training=False,
                                        trainable=None,
                                        output_layer_num=1,
-                                       seq_len=None):
+                                       seq_len=int(1e9)):
     """Load trained official model from checkpoint.
 
     :param config_file: The path to the JSON configuration file.
@@ -170,3 +172,12 @@ def load_trained_model_from_checkpoint(config_file,
     )
     load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model
+
+
+def load_vocabulary(vocab_path):
+    token_dict = {}
+    with codecs.open(vocab_path, 'r', 'utf8') as reader:
+        for line in reader:
+            token = line.strip()
+            token_dict[token] = len(token_dict)
+    return token_dict

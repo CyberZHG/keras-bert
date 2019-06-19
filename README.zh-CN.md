@@ -147,6 +147,8 @@ inputs, output_layer = get_model(
 
 虽然看起来相似，但这两个参数是不相关的。`training`表示是否在训练BERT语言模型，当为`True`时完整的BERT模型会被返回，当为`False`时没有MLM和NSP相关计算的结构，返回输入层和根据`output_layer_num`合并最后几层的输出。加载的层是否可训练只跟`trainable`有关。
 
+此外，`trainable`可以是一个包含字符串的列表，如果某一层的前缀出现在列表中，则当前层是可训练的。在使用预训练模型时，如果不想再训练嵌入层，可以传入`trainable=['Encoder']`来只对编码层进行调整。
+
 ### 使用Warmup
 
 `AdamWarmup`优化器可用于学习率的「热身」与「衰减」。学习率将在`warmpup_steps`步线性增长到`lr`，并在总共`decay_steps`步后线性减少到`min_lr`。辅助函数`calc_train_steps`可用于计算这两个步数：
@@ -167,9 +169,13 @@ total_steps, warmup_steps = calc_train_steps(
 optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 ```
 
+### 关于输入
+
+在`training`为`True`的情况下，输入包含三项：token下标、segment下标、被masked的词的模版。当`training`为`False`时输入只包含前两项。位置下标由于是固定的，会在模型内部生成，不需要手动再输入一遍。被masked的词的模版在输入被masked的词是值为1，否则为0。
+
 ### 使用`tensorflow.python.keras`
 
-在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。
+在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。加入`TF_EAGER=1`可以启用eager execution。在Keras本身没去支持之前，如果想使用tensorflow 2.0则必须使用`TF_KERAS=1`。
 
 ### 使用`theano`后端
 
