@@ -14,7 +14,7 @@ class TestEmbedding(unittest.TestCase):
             loss='mse',
             metrics={},
         )
-        model.summary(line_length=120)
+        model.summary()
         self.assertEqual((None, 512, 768), model.layers[-1].output_shape)
 
     def test_no_dropout(self):
@@ -26,5 +26,5 @@ class TestEmbedding(unittest.TestCase):
             loss='mse',
             metrics={},
         )
-        model.summary(line_length=120)
+        model.summary()
         self.assertEqual((None, 512, 768), model.layers[-1].output_shape)
