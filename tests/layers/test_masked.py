@@ -17,7 +17,7 @@ class TestMasked(unittest.TestCase):
             loss='mse',
             metrics={},
         )
-        model.summary(line_length=120)
+        model.summary()
         model.predict([
             np.asarray([[1] + [0] * 511]),
             np.asarray([[0] * 512]),
@@ -66,7 +66,7 @@ class TestMasked(unittest.TestCase):
             optimizer='adam',
             loss='mse',
         )
-        model.summary(line_length=150)
+        model.summary()
         predicts = model.predict([
             np.asarray([
                 [1, 2, 3, 4, 5, 6, 7, 8, 0, 0],
