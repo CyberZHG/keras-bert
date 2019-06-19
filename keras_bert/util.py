@@ -1,3 +1,6 @@
+# coding=utf-8
+from __future__ import unicode_literals
+
 import os
 from collections import namedtuple
 
@@ -41,7 +44,7 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
     :param cut_embed: The computed embeddings will be cut based on their input lengths.
     :return: A list of numpy arrays representing the embeddings.
     """
-    if isinstance(model, (type(''), type(u''))):
+    if isinstance(model, (str, type(u''))):
         paths = get_checkpoint_paths(model)
         model = load_trained_model_from_checkpoint(
             config_file=paths.config,
@@ -64,7 +67,7 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
             tokens, segments = np.array(tokens), np.array(segments)
 
         for text in texts:
-            if isinstance(text, (type(''), type(u''))):
+            if isinstance(text, (str, type(u''))):
                 token, segment = tokenizer.encode(text, max_len=seq_len)
             else:
                 token, segment = tokenizer.encode(text[0], text[1], max_len=seq_len)
@@ -79,7 +82,7 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
             yield [tokens, segments]
 
     if poolings is not None:
-        if isinstance(poolings, (type(''), type(u''))):
+        if isinstance(poolings, (str, type(u''))):
             poolings = [poolings]
         outputs = []
         for pooling in poolings:
