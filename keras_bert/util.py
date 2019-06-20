@@ -31,7 +31,14 @@ def get_checkpoint_paths(model_path):
     return CheckpointPaths(config_path, checkpoint_path, vocab_path)
 
 
-def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased=False, batch_size=4, cut_embed=True):
+def extract_embeddings_generator(model,
+                                 texts,
+                                 poolings=None,
+                                 vocabs=None,
+                                 cased=False,
+                                 batch_size=4,
+                                 cut_embed=True,
+                                 output_layer_num=1):
     """Extract embeddings from texts.
 
     :param model: Path to the checkpoint or built model without MLM and NSP.
@@ -42,6 +49,8 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
     :param cased: Whether it is cased for tokenizer.
     :param batch_size: Batch size.
     :param cut_embed: The computed embeddings will be cut based on their input lengths.
+    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
+                             Only available when `model` is a path to checkpoint.
     :return: A list of numpy arrays representing the embeddings.
     """
     if isinstance(model, (str, type(u''))):
@@ -49,6 +58,7 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
         model = load_trained_model_from_checkpoint(
             config_file=paths.config,
             checkpoint_file=paths.checkpoint,
+            output_layer_num=output_layer_num,
         )
         vocabs = load_vocabulary(paths.vocab)
 
@@ -111,7 +121,14 @@ def extract_embeddings_generator(model, texts, poolings=None, vocabs=None, cased
             yield output
 
 
-def extract_embeddings(model, texts, poolings=None, vocabs=None, cased=False, batch_size=4, cut_embed=True):
+def extract_embeddings(model,
+                       texts,
+                       poolings=None,
+                       vocabs=None,
+                       cased=False,
+                       batch_size=4,
+                       cut_embed=True,
+                       output_layer_num=1):
     """Extract embeddings from texts.
 
     :param model: Path to the checkpoint or built model without MLM and NSP.
@@ -122,8 +139,10 @@ def extract_embeddings(model, texts, poolings=None, vocabs=None, cased=False, ba
     :param cased: Whether it is cased for tokenizer.
     :param batch_size: Batch size.
     :param cut_embed: The computed embeddings will be cut based on their input lengths.
+    :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
+                             Only available when `model` is a path to checkpoint.
     :return: A list of numpy arrays representing the embeddings.
     """
     return [embedding for embedding in extract_embeddings_generator(
-        model, texts, poolings, vocabs, cased, batch_size, cut_embed
+        model, texts, poolings, vocabs, cased, batch_size, cut_embed, output_layer_num
     )]

@@ -160,6 +160,50 @@ total_steps, warmup_steps = calc_train_steps(
 optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 ```
 
+### Extract Features
+
+You can use helper function `extract_embeddings` if the features of tokens or sentences (without further tuning) are what you need. To extract the features of all tokens:
+
+```python
+from keras_bert import extract_embeddings
+
+model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
+texts = ['all work and no play', 'makes jack a dull boy~']
+
+embeddings = extract_embeddings(model_path, texts)
+```
+
+The returned result is a list with the same length as texts. Each item in the list is a numpy array truncated by the length of the input. The shapes of outputs in this example are `(8, 768)` and `(9, 768)`.
+
+When the inputs are paired-sentences, and you need the outputs of `NSP` and max-pooling of the last 4 layers:
+
+```python
+from keras_bert import extract_embeddings, POOL_NSP, POOL_MAX
+
+model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
+texts = [
+    ('all work and no play', 'makes jack a dull boy'),
+    ('makes jack a dull boy', 'all work and no play'),
+]
+
+embeddings = extract_embeddings(model_path, texts, output_layer_num=4, poolings=[POOL_NSP, POOL_MAX])
+```
+
+There are no token features in the results. The outputs of `NSP` and max-pooling will be concatenated with the final shape `(768 x 4 x 2,)`.
+
+The second argument in the helper function is a generator. To extract features from file:
+
+```python
+import codecs
+from keras_bert import extract_embeddings
+
+model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
+
+with codecs.open('xxx.txt', 'r', 'utf8') as reader:
+    texts = map(lambda x: x.strip(), reader)
+    embeddings = extract_embeddings(model_path, texts)
+```
+
 ### Use `tensorflow.python.keras`
 
 Add `TF_KERAS=1` to environment variables to use `tensorflow.python.keras`.

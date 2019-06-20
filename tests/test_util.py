@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import unittest
 import os
+import codecs
 from keras_bert.backend import keras
 from keras_bert import get_model, POOL_NSP, POOL_MAX, POOL_AVE, extract_embeddings
 
@@ -59,9 +60,10 @@ class TestUtil(unittest.TestCase):
                 ('makes jack a dull boy', 'all work and no play'),
             ],
             poolings=[POOL_NSP, POOL_MAX, POOL_AVE],
+            output_layer_num=2,
         )
         self.assertEqual(2, len(embeddings))
-        self.assertEqual((12,), embeddings[0].shape)
+        self.assertEqual((24,), embeddings[0].shape)
 
     def test_extract_embeddings_invalid_pooling(self):
         with self.assertRaises(ValueError):
@@ -104,3 +106,9 @@ class TestUtil(unittest.TestCase):
         self.assertEqual(2, len(embeddings))
         self.assertEqual((10, 13), embeddings[0].shape)
         self.assertEqual((14, 13), embeddings[1].shape)
+
+    def test_extract_embeddings_from_file(self):
+        with codecs.open(os.path.join(self.model_path, 'vocab.txt'), 'r', 'utf8') as reader:
+            texts = map(lambda x: x.strip(), reader)
+            embeddings = extract_embeddings(self.model_path, texts)
+        self.assertEqual(15, len(embeddings))

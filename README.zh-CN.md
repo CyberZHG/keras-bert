@@ -173,6 +173,50 @@ optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 
 在`training`为`True`的情况下，输入包含三项：token下标、segment下标、被masked的词的模版。当`training`为`False`时输入只包含前两项。位置下标由于是固定的，会在模型内部生成，不需要手动再输入一遍。被masked的词的模版在输入被masked的词是值为1，否则为0。
 
+### 提取特征
+
+如果不需要微调，只想提取词/句子的特征，则可以使用`extract_embeddings`来简化流程。如提取每个句子对应的全部词的特征：
+
+```python
+from keras_bert import extract_embeddings
+
+model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
+texts = ['all work and no play', 'makes jack a dull boy~']
+
+embeddings = extract_embeddings(model_path, texts)
+```
+
+返回的结果是一个list，长度和输入文本的个数相同，每个元素都是numpy的数组，默认会根据输出的长度进行裁剪，所以在这个例子中输出的大小分别为`(8, 768)`和`(9, 768)`。
+
+如果输入是成对的句子，想使用最后4层特征，且提取`NSP`位输出和max-pooling的结果，则可以用：
+
+```python
+from keras_bert import extract_embeddings, POOL_NSP, POOL_MAX
+
+model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
+texts = [
+    ('all work and no play', 'makes jack a dull boy'),
+    ('makes jack a dull boy', 'all work and no play'),
+]
+
+embeddings = extract_embeddings(model_path, texts, output_layer_num=4, poolings=[POOL_NSP, POOL_MAX])
+```
+
+输出结果中不再包含词的特征，`NSP`和max-pooling的输出会拼接在一起，每个numpy数组的大小为`(768 x 4 x 2,)`。
+
+第二个参数接受的是一个generator，如果想读取文件并生成特征，可以用下面的方法：
+
+```python
+import codecs
+from keras_bert import extract_embeddings
+
+model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
+
+with codecs.open('xxx.txt', 'r', 'utf8') as reader:
+    texts = map(lambda x: x.strip(), reader)
+    embeddings = extract_embeddings(model_path, texts)
+```
+
 ### 使用`tensorflow.python.keras`
 
 在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。加入`TF_EAGER=1`可以启用eager execution。在Keras本身没去支持之前，如果想使用tensorflow 2.0则必须使用`TF_KERAS=1`。
