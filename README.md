@@ -165,9 +165,11 @@ optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 Several download urls has been added. You can get the downloaded and uncompressed path of a checkpoint by:
 
 ```python
-from keras_bert.datasets import get_pretrained, PretrainedList
+from keras_bert import get_pretrained, PretrainedList, get_checkpoint_paths
 
 model_path = get_pretrained(PretrainedList.multi_cased_base)
+paths = get_checkpoint_paths(model_path)
+print(paths.config, paths.checkpoint, paths.vocab)
 ```
 
 ### Extract Features

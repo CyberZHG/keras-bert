@@ -178,9 +178,11 @@ optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 库中记录了一些预训练模型的下载地址，可以通过如下方式获得解压后的checkpoint的路径：
 
 ```python
-from keras_bert.datasets import get_pretrained, PretrainedList
+from keras_bert import get_pretrained, PretrainedList, get_checkpoint_paths
 
 model_path = get_pretrained(PretrainedList.multi_cased_base)
+paths = get_checkpoint_paths(model_path)
+print(paths.config, paths.checkpoint, paths.vocab)
 ```
 
 ### 提取特征
