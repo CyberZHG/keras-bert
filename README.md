@@ -160,6 +160,16 @@ total_steps, warmup_steps = calc_train_steps(
 optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 ```
 
+### Download Pretrained Checkpoints
+
+Several download urls has been added. You can get the downloaded and uncompressed path of a checkpoint by:
+
+```python
+from keras_bert.datasets import get_pretrained, PretrainedList
+
+model_path = get_pretrained(PretrainedList.multi_cased_base)
+```
+
 ### Extract Features
 
 You can use helper function `extract_embeddings` if the features of tokens or sentences (without further tuning) are what you need. To extract the features of all tokens:
