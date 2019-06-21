@@ -173,6 +173,18 @@ optimizer = AdamWarmup(total_steps, warmup_steps, lr=1e-3, min_lr=1e-5)
 
 在`training`为`True`的情况下，输入包含三项：token下标、segment下标、被masked的词的模版。当`training`为`False`时输入只包含前两项。位置下标由于是固定的，会在模型内部生成，不需要手动再输入一遍。被masked的词的模版在输入被masked的词是值为1，否则为0。
 
+### 下载预训练模型
+
+库中记录了一些预训练模型的下载地址，可以通过如下方式获得解压后的checkpoint的路径：
+
+```python
+from keras_bert import get_pretrained, PretrainedList, get_checkpoint_paths
+
+model_path = get_pretrained(PretrainedList.multi_cased_base)
+paths = get_checkpoint_paths(model_path)
+print(paths.config, paths.checkpoint, paths.vocab)
+```
+
 ### 提取特征
 
 如果不需要微调，只想提取词/句子的特征，则可以使用`extract_embeddings`来简化流程。如提取每个句子对应的全部词的特征：

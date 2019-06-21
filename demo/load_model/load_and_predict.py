@@ -1,24 +1,21 @@
-import os
 import sys
 import numpy as np
-from keras_bert import load_vocabulary, load_trained_model_from_checkpoint, Tokenizer
-
-
-if len(sys.argv) != 2:
-    print('python load_model.py UNZIPPED_MODEL_PATH')
-    sys.exit(-1)
+from keras_bert import load_vocabulary, load_trained_model_from_checkpoint, Tokenizer, get_checkpoint_paths
 
 print('This demo demonstrates how to load the pre-trained model and check whether the two sentences are continuous')
 
-model_path = sys.argv[1]
-config_path = os.path.join(model_path, 'bert_config.json')
-checkpoint_path = os.path.join(model_path, 'bert_model.ckpt')
-dict_path = os.path.join(model_path, 'vocab.txt')
+if len(sys.argv) == 2:
+    model_path = sys.argv[1]
+else:
+    from keras_bert.datasets import get_pretrained, PretrainedList
+    model_path = get_pretrained(PretrainedList.chinese_base)
 
-model = load_trained_model_from_checkpoint(config_path, checkpoint_path, training=True, seq_len=None)
+paths = get_checkpoint_paths(model_path)
+
+model = load_trained_model_from_checkpoint(paths.config, paths.checkpoint, training=True, seq_len=None)
 model.summary(line_length=120)
 
-token_dict = load_vocabulary(dict_path)
+token_dict = load_vocabulary(paths.vocab)
 token_dict_inv = {v: k for k, v in token_dict.items()}
 
 tokenizer = Tokenizer(token_dict)
