@@ -58,6 +58,12 @@ class Tokenizer(object):
         return [self._token_dict.get(token, unk_id) for token in tokens]
 
     def tokenize(self, first, second=None):
+        """Split text to tokens.
+
+        :param first: First text.
+        :param second: Second text.
+        :return: A list of strings.
+        """
         first_tokens = self._tokenize(first)
         second_tokens = self._tokenize(second) if second is not None else None
         tokens, _, _ = self._pack(first_tokens, second_tokens)
@@ -88,7 +94,6 @@ class Tokenizer(object):
         tokens = [self._token_dict_inv[i] for i in ids]
         first = tokens[1:sep]
         if sep < stop - 1:
-            print(tokens, sep, stop)
             second = tokens[sep + 1:stop - 1]
             return first, second
         return first
