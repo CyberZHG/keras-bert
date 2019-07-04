@@ -25,11 +25,19 @@ TOKEN_SEP = '[SEP]'  # Token for separation
 TOKEN_MASK = '[MASK]'  # Token for masking
 
 
-def gelu(x):
-    if K.backend() == 'tensorflow':
-        from tensorflow.python.ops.math_ops import erf, sqrt
-        return 0.5 * x * (1.0 + erf(x / sqrt(2.0)))
+def gelu_tensorflow(x):
+    from tensorflow.python.ops.math_ops import erf, sqrt
+    return 0.5 * x * (1.0 + erf(x / sqrt(2.0)))
+
+
+def gelu_fallback(x):
     return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * K.pow(x, 3))))
+
+
+if K.backend() == 'tensorflow':
+    gelu = gelu_tensorflow
+else:
+    gelu = gelu_fallback
 
 
 def get_model(token_num,
@@ -164,6 +172,8 @@ def get_custom_objects():
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
     custom_objects['gelu'] = gelu
+    custom_objects['gelu_tensorflow'] = gelu_tensorflow
+    custom_objects['gelu_fallback'] = gelu_fallback
     custom_objects['AdamWarmup'] = AdamWarmup
     return custom_objects
 
