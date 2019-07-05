@@ -32,6 +32,16 @@ class TestLoader(unittest.TestCase):
         model_path = os.path.join(current_path, 'test_checkpoint', 'bert_model.ckpt')
         model = load_trained_model_from_checkpoint(config_path, model_path, training=False, output_layer_num=4)
         model.summary()
+        model = load_trained_model_from_checkpoint(config_path, model_path, training=False, output_layer_num=[0])
+        model.summary()
+        model = load_trained_model_from_checkpoint(config_path, model_path, training=False, output_layer_num=[1])
+        model.summary()
+        model = load_trained_model_from_checkpoint(config_path, model_path, training=False, output_layer_num=[-1])
+        model.summary()
+        model = load_trained_model_from_checkpoint(config_path, model_path, training=False, output_layer_num=[-2])
+        model.summary()
+        model = load_trained_model_from_checkpoint(config_path, model_path, training=False, output_layer_num=[0, -1])
+        model.summary()
 
     def test_load_with_trainable_prefixes(self):
         current_path = os.path.dirname(os.path.abspath(__file__))

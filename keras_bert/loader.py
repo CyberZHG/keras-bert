@@ -5,7 +5,6 @@ import tensorflow as tf
 from .backend import keras
 from .bert import get_model
 
-
 __all__ = [
     'build_model_from_config',
     'load_model_weights_from_checkpoint',
@@ -94,6 +93,10 @@ def load_model_weights_from_checkpoint(model,
         loader('bert/embeddings/LayerNorm/beta'),
     ])
     for i in range(config['num_hidden_layers']):
+        try:
+            model.get_layer(name='Encoder-%d-MultiHeadSelfAttention' % (i + 1))
+        except ValueError as e:
+            continue
         model.get_layer(name='Encoder-%d-MultiHeadSelfAttention' % (i + 1)).set_weights([
             loader('bert/encoder/layer_%d/attention/self/query/kernel' % i),
             loader('bert/encoder/layer_%d/attention/self/query/bias' % i),

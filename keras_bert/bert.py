@@ -153,13 +153,20 @@ def get_model(token_num,
         model = keras.models.Model(inputs=inputs, outputs=transformed)
         for layer in model.layers:
             layer.trainable = _trainable(layer)
-        output_layer_num = min(output_layer_num, transformer_num)
-        if output_layer_num > 1:
-            outputs = []
-            for i in range(output_layer_num):
-                layer = model.get_layer(name='Encoder-{}-FeedForward-Norm'.format(transformer_num - i))
-                outputs.append(layer.output)
+        if isinstance(output_layer_num, int):
+            output_layer_num = min(output_layer_num, transformer_num)
+            output_layer_num = [-i for i in range(1, output_layer_num + 1)]
+        outputs = []
+        for layer_index in output_layer_num:
+            if layer_index < 0:
+                layer_index = transformer_num + layer_index
+            layer_index += 1
+            layer = model.get_layer(name='Encoder-{}-FeedForward-Norm'.format(layer_index))
+            outputs.append(layer.output)
+        if len(outputs) > 1:
             transformed = keras.layers.Concatenate(name='Encoder-Output')(list(reversed(outputs)))
+        else:
+            transformed = outputs[0]
         return inputs, transformed
 
 
