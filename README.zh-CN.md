@@ -24,6 +24,10 @@ pip install keras-bert
 
 ## 使用
 
+### External Links
+
+* [当Bert遇上Keras：这可能是Bert最简单的打开姿势](https://spaces.ac.cn/archives/6736)
+
 ### 官方模型使用
 
 [特征提取展示](./demo/load_model/load_and_extract.py)中使用官方预训练好的`chinese_L-12_H-768_A-12`可以得到和官方工具一样的结果。
@@ -227,6 +231,16 @@ model_path = 'xxx/yyy/uncased_L-12_H-768_A-12'
 with codecs.open('xxx.txt', 'r', 'utf8') as reader:
     texts = map(lambda x: x.strip(), reader)
     embeddings = extract_embeddings(model_path, texts)
+```
+
+### 模型存储与加载
+
+```python
+from keras_bert import load_trained_model_from_checkpoint, get_custom_objects
+
+model = load_trained_model_from_checkpoint('xxx', 'yyy')
+model.save('save_path.h5')
+model.load('save_path.h5', custom_objects=get_custom_objects())
 ```
 
 ### 使用`tensorflow.python.keras`
