@@ -13,7 +13,8 @@ from .optimizers import AdamWarmup
 
 __all__ = [
     'TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK',
-    'gelu', 'get_model', 'get_base_dict', 'gen_batch_inputs', 'get_token_embedding',
+    'gelu', 'gelu_tensorflow', 'gelu_fallback',
+    'get_model', 'compile_model', 'get_base_dict', 'gen_batch_inputs', 'get_token_embedding',
     'get_custom_objects', 'set_custom_objects',
 ]
 
@@ -48,15 +49,11 @@ def get_model(token_num,
               head_num=12,
               feed_forward_dim=3072,
               dropout_rate=0.1,
-              weight_decay=0.01,
               attention_activation=None,
               feed_forward_activation='gelu',
               training=True,
               trainable=None,
-              output_layer_num=1,
-              decay_steps=100000,
-              warmup_steps=10000,
-              lr=1e-4):
+              output_layer_num=1):
     """Get BERT model.
 
     See: https://arxiv.org/pdf/1810.04805.pdf
@@ -69,7 +66,6 @@ def get_model(token_num,
     :param head_num: Number of heads in multi-head attention in each transformer.
     :param feed_forward_dim: Dimension of the feed forward layer in each transformer.
     :param dropout_rate: Dropout rate.
-    :param weight_decay: Weight decay rate.
     :param attention_activation: Activation for attention layers.
     :param feed_forward_activation: Activation for feed-forward layers.
     :param training: A built model with MLM and NSP outputs will be returned if it is `True`,
@@ -77,10 +73,7 @@ def get_model(token_num,
     :param trainable: Whether the model is trainable.
     :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
                              Only available when `training` is `False`.
-    :param decay_steps: Learning rate will decay linearly to zero in decay steps.
-    :param warmup_steps: Learning rate will increase linearly to lr in first warmup steps.
-    :param lr: Learning rate.
-    :return: The compiled model.
+    :return: The built model.
     """
     if attention_activation == 'gelu':
         attention_activation = gelu
@@ -137,16 +130,6 @@ def get_model(token_num,
         model = keras.models.Model(inputs=inputs, outputs=[masked_layer, nsp_pred_layer])
         for layer in model.layers:
             layer.trainable = _trainable(layer)
-        model.compile(
-            optimizer=AdamWarmup(
-                decay_steps=decay_steps,
-                warmup_steps=warmup_steps,
-                lr=lr,
-                weight_decay=weight_decay,
-                weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
-            ),
-            loss=keras.losses.sparse_categorical_crossentropy,
-        )
         return model
     else:
         inputs = inputs[:2]
@@ -168,6 +151,32 @@ def get_model(token_num,
         else:
             transformed = outputs[0]
         return inputs, transformed
+
+
+def compile_model(model,
+                  weight_decay=0.01,
+                  decay_steps=100000,
+                  warmup_steps=10000,
+                  lr=1e-4):
+    """Compile the model with warmup optimizer and sparse cross-entropy loss.
+
+    :param model: The built model.
+    :param weight_decay: Weight decay rate.
+    :param decay_steps: Learning rate will decay linearly to zero in decay steps.
+    :param warmup_steps: Learning rate will increase linearly to lr in first warmup steps.
+    :param lr: Learning rate.
+    :return: The compiled model.
+    """
+    model.compile(
+        optimizer=AdamWarmup(
+            decay_steps=decay_steps,
+            warmup_steps=warmup_steps,
+            lr=lr,
+            weight_decay=weight_decay,
+            weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
+        ),
+        loss=keras.losses.sparse_categorical_crossentropy,
+    )
 
 
 def get_custom_objects():

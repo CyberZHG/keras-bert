@@ -58,10 +58,6 @@ def build_model_from_config(config_file,
     if not training:
         inputs, outputs = model
         model = keras.models.Model(inputs=inputs, outputs=outputs)
-        model.compile(
-            optimizer=keras.optimizers.Adam(),
-            loss=keras.losses.sparse_categorical_crossentropy,
-        )
     return model, config
 
 

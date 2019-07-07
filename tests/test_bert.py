@@ -4,7 +4,7 @@ import tempfile
 import numpy as np
 from keras_bert.backend import keras
 from keras_bert.backend import backend as K
-from keras_bert import (get_model, get_base_dict, gen_batch_inputs, get_token_embedding,
+from keras_bert import (get_model, compile_model, get_base_dict, gen_batch_inputs, get_token_embedding,
                         get_custom_objects, set_custom_objects)
 
 
@@ -31,6 +31,7 @@ class TestBERT(unittest.TestCase):
             transformer_num=2,
             attention_activation='gelu',
         )
+        compile_model(model)
         data = model.to_json()
         set_custom_objects()
         model = keras.models.model_from_json(data)
@@ -78,6 +79,9 @@ class TestBERT(unittest.TestCase):
                 pos_num=20,
                 dropout_rate=0.05,
                 attention_activation='gelu',
+            )
+            compile_model(
+                model,
                 lr=1e-3,
                 decay_steps=30000,
                 warmup_steps=10000,
