@@ -1,3 +1,4 @@
+import os
 import sys
 import codecs
 import numpy as np
@@ -6,18 +7,18 @@ from keras_bert import load_trained_model_from_checkpoint, Tokenizer
 from keras_bert.layers import MaskedGlobalMaxPool1D
 
 
-if len(sys.argv) != 4:
-    print('python load_model.py CONFIG_PATH CHECKPOINT_PATH DICT_PATH')
-    print('CONFIG_PATH:     $UNZIPPED_MODEL_PATH/bert_config.json')
-    print('CHECKPOINT_PATH: $UNZIPPED_MODEL_PATH/bert_model.ckpt')
-    print('DICT_PATH:       $UNZIPPED_MODEL_PATH/vocab.txt')
+if len(sys.argv) != 2:
+    print('python load_model.py UNZIPPED_MODEL_PATH')
     sys.exit(-1)
 
 print('This demo demonstrates how to load the pre-trained model and extract the sentence embedding with pooling.')
 
-config_path, checkpoint_path, dict_path = tuple(sys.argv[1:])
+model_path = sys.argv[1]
+config_path = os.path.join(model_path, 'bert_config.json')
+checkpoint_path = os.path.join(model_path, 'bert_model.ckpt')
+dict_path = os.path.join(model_path, 'vocab.txt')
 
-model = load_trained_model_from_checkpoint(config_path, checkpoint_path)
+model = load_trained_model_from_checkpoint(config_path, checkpoint_path, seq_len=10)
 pool_layer = MaskedGlobalMaxPool1D(name='Pooling')(model.output)
 model = keras.models.Model(inputs=model.inputs, outputs=pool_layer)
 model.summary(line_length=120)
@@ -32,7 +33,7 @@ tokenizer = Tokenizer(token_dict)
 text = '语言模型'
 tokens = tokenizer.tokenize(text)
 print('Tokens:', tokens)
-indices, segments = tokenizer.encode(first=text, max_len=512)
+indices, segments = tokenizer.encode(first=text, max_len=10)
 
 predicts = model.predict([np.array([indices]), np.array([segments])])[0]
 print('Pooled:', predicts.tolist()[:5])

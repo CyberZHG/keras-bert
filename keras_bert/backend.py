@@ -13,8 +13,12 @@ if os.environ.get('TF_KERAS', '0') != '0':
     import tensorflow as tf
     from tensorflow.python import keras
     TF_KERAS = True
-    [tf.enable_eager_execution() for _ in range(1)
-     if not tf.executing_eagerly() and os.environ.get('TF_EAGER', '0') != '0']
+    if os.environ.get('TF_EAGER', '0') != '0':
+        try:
+            tf.enable_eager_execution()
+            raise AttributeError()
+        except AttributeError as e:
+            pass
     EAGER_MODE = tf.executing_eagerly()
 else:
     import keras
