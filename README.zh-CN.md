@@ -202,7 +202,7 @@ texts = ['all work and no play', 'makes jack a dull boy~']
 embeddings = extract_embeddings(model_path, texts)
 ```
 
-返回的结果是一个list，长度和输入文本的个数相同，每个元素都是numpy的数组，默认会根据输出的长度进行裁剪，所以在这个例子中输出的大小分别为`(8, 768)`和`(9, 768)`。
+返回的结果是一个list，长度和输入文本的个数相同，每个元素都是numpy的数组，默认会根据输出的长度进行裁剪，所以在这个例子中输出的大小分别为`(7, 768)`和`(8, 768)`。
 
 如果输入是成对的句子，想使用最后4层特征，且提取`NSP`位输出和max-pooling的结果，则可以用：
 

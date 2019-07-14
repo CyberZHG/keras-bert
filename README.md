@@ -185,7 +185,7 @@ texts = ['all work and no play', 'makes jack a dull boy~']
 embeddings = extract_embeddings(model_path, texts)
 ```
 
-The returned result is a list with the same length as texts. Each item in the list is a numpy array truncated by the length of the input. The shapes of outputs in this example are `(8, 768)` and `(9, 768)`.
+The returned result is a list with the same length as texts. Each item in the list is a numpy array truncated by the length of the input. The shapes of outputs in this example are `(7, 768)` and `(8, 768)`.
 
 When the inputs are paired-sentences, and you need the outputs of `NSP` and max-pooling of the last 4 layers:
 
