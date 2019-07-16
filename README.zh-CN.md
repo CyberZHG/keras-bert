@@ -243,6 +243,31 @@ model.save('save_path.h5')
 model.load('save_path.h5', custom_objects=get_custom_objects())
 ```
 
+### 使用Adapter
+
+可以使用[adapter](https://arxiv.org/pdf/1902.00751.pdf)来对预训练模型进行微调，下面的代码只让adapter和layer normalization成为可训练的层：
+
+```python
+import os
+from keras_bert import load_trained_model_from_checkpoint
+
+layer_num = 12
+checkpoint_path = '.../uncased_L-12_H-768_A-12'
+
+config_path = os.path.join(checkpoint_path, 'bert_config.json')
+model_path = os.path.join(checkpoint_path, 'bert_model.ckpt')
+model = load_trained_model_from_checkpoint(
+    config_path,
+    model_path,
+    training=False,
+    use_adapter=True,
+    trainable=['Encoder-{}-MultiHeadSelfAttention-Adapter'.format(i + 1) for i in range(layer_num)] +
+    ['Encoder-{}-FeedForward-Adapter'.format(i + 1) for i in range(layer_num)] +
+    ['Encoder-{}-MultiHeadSelfAttention-Norm'.format(i + 1) for i in range(layer_num)] +
+    ['Encoder-{}-FeedForward-Norm'.format(i + 1) for i in range(layer_num)],
+)
+```
+
 ### 使用`tensorflow.python.keras`
 
 在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。加入`TF_EAGER=1`可以启用eager execution。在Keras本身没去支持之前，如果想使用tensorflow 2.0则必须使用`TF_KERAS=1`。

@@ -216,6 +216,31 @@ with codecs.open('xxx.txt', 'r', 'utf8') as reader:
     embeddings = extract_embeddings(model_path, texts)
 ```
 
+### Use Adapter
+
+You can use [adapters](https://arxiv.org/pdf/1902.00751.pdf) for fine-tuning:
+
+```python
+import os
+from keras_bert import load_trained_model_from_checkpoint
+
+layer_num = 12
+checkpoint_path = '.../uncased_L-12_H-768_A-12'
+
+config_path = os.path.join(checkpoint_path, 'bert_config.json')
+model_path = os.path.join(checkpoint_path, 'bert_model.ckpt')
+model = load_trained_model_from_checkpoint(
+    config_path,
+    model_path,
+    training=False,
+    use_adapter=True,
+    trainable=['Encoder-{}-MultiHeadSelfAttention-Adapter'.format(i + 1) for i in range(layer_num)] +
+    ['Encoder-{}-FeedForward-Adapter'.format(i + 1) for i in range(layer_num)] +
+    ['Encoder-{}-MultiHeadSelfAttention-Norm'.format(i + 1) for i in range(layer_num)] +
+    ['Encoder-{}-FeedForward-Norm'.format(i + 1) for i in range(layer_num)],
+)
+```
+
 ### Use `tensorflow.python.keras`
 
 Add `TF_KERAS=1` to environment variables to use `tensorflow.python.keras`.
