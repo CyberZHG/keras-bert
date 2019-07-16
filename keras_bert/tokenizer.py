@@ -1,5 +1,7 @@
+# coding=utf-8
+from __future__ import unicode_literals
 import unicodedata
-from .bert import TOKEN_CLS, TOKEN_SEP, TOKEN_UNK
+from keras_bert.bert import TOKEN_CLS, TOKEN_SEP, TOKEN_UNK
 
 
 class Tokenizer(object):
@@ -167,3 +169,108 @@ class Tokenizer(object):
     @staticmethod
     def _is_control(ch):
         return unicodedata.category(ch) in ('Cc', 'Cf')
+
+    @staticmethod
+    def rematch(text, tokens, cased=False, unknown_token=TOKEN_UNK):
+        """Try to find the indices of tokens in the original text.
+
+        >>> Tokenizer.rematch("All rights reserved.", ["all", "rights", "re", "##ser", "##ved", "."])
+        [(0, 3), (4, 10), (11, 13), (13, 16), (16, 19), (19, 20)]
+        >>> Tokenizer.rematch("All rights reserved.", ["all", "rights", "re", "##ser", "[UNK]", "."])
+        [(0, 3), (4, 10), (11, 13), (13, 16), (16, 19), (19, 20)]
+        >>> Tokenizer.rematch("All rights reserved.", ["[UNK]", "rights", "[UNK]", "##ser", "[UNK]", "[UNK]"])
+        [(0, 3), (4, 10), (11, 13), (13, 16), (16, 19), (19, 20)]
+        >>> Tokenizer.rematch("All rights reserved.", ["[UNK]", "righs", "[UNK]", "ser", "[UNK]", "[UNK]"])
+        [(0, 3), (4, 10), (11, 13), (13, 16), (16, 19), (19, 20)]
+        >>> Tokenizer.rematch("All rights reserved.",
+        ...                  ["[UNK]", "rights", "[UNK]", "[UNK]", "[UNK]", "[UNK]"])  # doctest:+ELLIPSIS
+        [(0, 3), (4, 10), (11, ... 19), (19, 20)]
+        >>> Tokenizer.rematch("All rights reserved.", ["all rights", "reserved", "."])
+        [(0, 10), (11, 19), (19, 20)]
+        >>> Tokenizer.rematch("#hash tag ##", ["#", "hash", "tag", "##"])
+        [(0, 1), (1, 5), (6, 9), (10, 12)]
+        >>> Tokenizer.rematch(u"嘛呢，吃了吗？", ["[UNK]", u"呢", u"，", "[UNK]", u"了", u"吗"])
+        [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
+
+        :param text: Original text.
+        :param tokens: Decoded list of tokens.
+        :param cased: Whether it is cased.
+        :param unknown_token: The representation of unknown token.
+        :return: A list of tuples represents the start and stop locations in the original text.
+        """
+        decoded, token_offsets = '', []
+        for token in tokens:
+            token_offsets.append([len(decoded), 0])
+            if token == unknown_token:
+                token = '#'
+            if not cased:
+                token = token.lower()
+            if len(token) > 2 and token.startswith('##'):
+                token = token[2:]
+            elif len(decoded) > 0:
+                token = ' ' + token
+                token_offsets[-1][0] += 1
+            decoded += token
+            token_offsets[-1][1] = len(decoded)
+
+        len_text, len_decode = len(text), len(decoded)
+        costs = [[0] * (len_decode + 1) for _ in range(len_text + 1)]
+        paths = [[(-1, -1)] * (len_decode + 1) for _ in range(len_text + 1)]
+
+        costs[0][0] = 0
+        for i in range(len_text + 1):
+            costs[i][0] = i
+        for j in range(len_decode + 1):
+            costs[0][j] = j
+        for i in range(1, len_text + 1):
+            ch = text[i - 1]
+            if not cased:
+                ch = ch.lower()
+            for j in range(1, len_decode + 1):
+                costs[i][j] = costs[i - 1][j - 1]
+                paths[i][j] = (i - 1, j - 1)
+                if ch != decoded[j - 1]:
+                    costs[i][j] = costs[i - 1][j - 1] + 1
+                    paths[i][j] = (i - 1, j - 1)
+                    if costs[i - 1][j] < costs[i][j]:
+                        costs[i][j] = costs[i - 1][j]
+                        paths[i][j] = (i - 1, j)
+                    if costs[i][j - 1] < costs[i][j]:
+                        costs[i][j] = costs[i][j - 1]
+                        paths[i][j] = (i, j - 1)
+                    costs[i][j] += 1
+
+        matches = [0] * (len_decode + 1)
+        position = (len_text, len_decode)
+        while position != (-1, -1):
+            i, j = position
+            matches[j] = i
+            position = paths[i][j]
+
+        intervals = [[matches[offset[0]], matches[offset[1]]] for offset in token_offsets]
+        for i, interval in enumerate(intervals):
+            token_a, token_b = text[interval[0]:interval[1]], tokens[i]
+            if len(token_b) > 2 and token_b.startswith('##'):
+                token_b = token_b[2:]
+            if not cased:
+                token_a, token_b = token_a.lower(), token_b.lower()
+            if token_a == token_b:
+                continue
+            if i == 0:
+                border = 0
+            else:
+                border = intervals[i - 1][1]
+            for j in range(interval[0] - 1, border - 1, -1):
+                if Tokenizer._is_space(text[j]):
+                    break
+                interval[0] -= 1
+            if i + 1 == len(intervals):
+                border = len_text
+            else:
+                border = intervals[i + 1][0]
+            for j in range(interval[1], border):
+                if Tokenizer._is_space(text[j]):
+                    break
+                interval[1] += 1
+        intervals = [tuple(interval) for interval in intervals]
+        return intervals

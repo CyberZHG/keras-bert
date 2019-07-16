@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.70.0] - 2019-07-16
+
+### Added
+
+- Try to find the indices of tokens in the original text.
+
 ## [0.69.0] - 2019-07-16
 
 ### Added

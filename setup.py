@@ -11,12 +11,12 @@ with codecs.open('requirements.txt', 'r', 'utf8') as reader:
 
 setup(
     name='keras-bert',
-    version='0.69.0',
+    version='0.70.0',
     packages=find_packages(),
     url='https://github.com/CyberZHG/keras-bert',
     license='MIT',
     author='CyberZHG',
-    author_email='CyberZHG@gmail.com',
+    author_email='CyberZHG@users.noreply.github.com',
     description='BERT implemented in Keras',
     long_description=long_description,
     long_description_content_type='text/markdown',

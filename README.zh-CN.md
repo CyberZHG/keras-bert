@@ -81,6 +81,15 @@ print(indices)   # 词对应的下标：`[0, 2, 3, 4, 1, 5, 1, 0, 0, 0]`
 print(segments)  # 段落对应下标：`[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
 ```
 
+`Tokenizer`也提供了尝试去寻找分词后的结果在原始文本中的起始和终止下标的功能，输入可以是decode后的结果，包含少量的错词：
+
+```python
+from keras_bert import Tokenizer
+
+intervals = Tokenizer.rematch("All rights reserved.", ["[UNK]", "righs", "[UNK]", "ser", "[UNK]", "[UNK]"])
+# 结果是：[(0, 3), (4, 10), (11, 13), (13, 16), (16, 19), (19, 20)]
+```
+
 ### 训练和使用
 
 训练过程推荐使用官方的代码。这个代码库内包含一个的训练过程，`training`为`True`的情况下使用的是带warmup的Adam优化器：
