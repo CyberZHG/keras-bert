@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.69.0] - 2019-07-16
+
+### Added
+
+- [Adapter](https://arxiv.org/pdf/1902.00751.pdf)
+
 ## [0.60.0] - 2019-06-10
 
 ### Added

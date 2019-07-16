@@ -24,11 +24,23 @@ pip install keras-bert
 
 ## 使用
 
+* [使用官方模型](#使用官方模型)
+* [分词](#分词)
+* [训练和使用](#训练和使用)
+* [关于`training`和`trainable`](#关于training和trainable)
+* [使用Warmup](#使用Warmup)
+* [关于输入](#关于输入)
+* [下载预训练模型](#下载预训练模型)
+* [提取特征](#提取特征)
+* [模型存储与加载](#模型存储与加载)
+* [使用Adapter](#使用Adapter)
+* [使用`tf.keras`](#使用tensorflowpythonkeras)
+
 ### External Links
 
 * [当Bert遇上Keras：这可能是Bert最简单的打开姿势](https://spaces.ac.cn/archives/6736)
 
-### 官方模型使用
+### 使用官方模型
 
 [特征提取展示](./demo/load_model/load_and_extract.py)中使用官方预训练好的`chinese_L-12_H-768_A-12`可以得到和官方工具一样的结果。
 

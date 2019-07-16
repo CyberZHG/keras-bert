@@ -24,6 +24,14 @@ pip install keras-bert
 
 ## Usage
 
+* [Load Official Pre-trained Models](#Load-Official-Pre-trained-Models)
+* [Tokenizer](#Tokenizer)
+* [Train & Use](#Train-&-Use)
+* [Use Warmup](#Use-Warmup)
+* [Download Pretrained Checkpoints](#Download-Pretrained-Checkpoints)
+* [Extract Features](#Extract-Features)
+* [Use Adapter](#Use-Adapter)
+
 ### Load Official Pre-trained Models
 
 In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction results as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.
