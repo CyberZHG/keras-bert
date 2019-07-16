@@ -23,7 +23,9 @@ def build_model_from_config(config_file,
                             training=False,
                             trainable=None,
                             output_layer_num=1,
-                            seq_len=int(1e9)):
+                            seq_len=int(1e9),
+                            use_adapter=False,
+                            adapter_units=None):
     """Build the model from config file.
 
     :param config_file: The path to the JSON configuration file.
@@ -34,6 +36,8 @@ def build_model_from_config(config_file,
                              Only available when `training` is `False`.
     :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
                     position embeddings will be sliced to fit the new length.
+    :param use_adapter: Whether to use feed-forward adapters before each residual connections.
+    :param adapter_units: The dimension of the first transformation in feed-forward adapter.
     :return: model and config
     """
     with open(config_file, 'r') as reader:
@@ -54,6 +58,8 @@ def build_model_from_config(config_file,
         training=training,
         trainable=trainable,
         output_layer_num=output_layer_num,
+        use_adapter=use_adapter,
+        adapter_units=adapter_units,
     )
     if not training:
         inputs, outputs = model
@@ -148,7 +154,9 @@ def load_trained_model_from_checkpoint(config_file,
                                        training=False,
                                        trainable=None,
                                        output_layer_num=1,
-                                       seq_len=int(1e9)):
+                                       seq_len=int(1e9),
+                                       use_adapter=False,
+                                       adapter_units=None):
     """Load trained official model from checkpoint.
 
     :param config_file: The path to the JSON configuration file.
@@ -160,6 +168,8 @@ def load_trained_model_from_checkpoint(config_file,
                              Only available when `training` is `False`.
     :param seq_len: If it is not None and it is shorter than the value in the config file, the weights in
                     position embeddings will be sliced to fit the new length.
+    :param use_adapter: Whether to use feed-forward adapters before each residual connections.
+    :param adapter_units: The dimension of the first transformation in feed-forward adapter.
     :return: model
     """
     model, config = build_model_from_config(
@@ -168,6 +178,8 @@ def load_trained_model_from_checkpoint(config_file,
         trainable=trainable,
         output_layer_num=output_layer_num,
         seq_len=seq_len,
+        use_adapter=use_adapter,
+        adapter_units=adapter_units,
     )
     load_model_weights_from_checkpoint(model, config, checkpoint_file, training=training)
     return model

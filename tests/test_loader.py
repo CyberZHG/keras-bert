@@ -26,6 +26,22 @@ class TestLoader(unittest.TestCase):
         model = load_trained_model_from_checkpoint(config_path, model_path, training=True)
         model.summary()
 
+    def test_load_adapter(self):
+        current_path = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(current_path, 'test_checkpoint', 'bert_config.json')
+        model_path = os.path.join(current_path, 'test_checkpoint', 'bert_model.ckpt')
+        model = load_trained_model_from_checkpoint(
+            config_path,
+            model_path,
+            training=False,
+            use_adapter=True,
+            trainable=['Encoder-{}-MultiHeadSelfAttention-Adapter'.format(i + 1) for i in range(2)] +
+            ['Encoder-{}-FeedForward-Adapter'.format(i + 1) for i in range(2)] +
+            ['Encoder-{}-MultiHeadSelfAttention-Norm'.format(i + 1) for i in range(2)] +
+            ['Encoder-{}-FeedForward-Norm'.format(i + 1) for i in range(2)],
+        )
+        model.summary()
+
     def test_load_output_layer_num(self):
         current_path = os.path.dirname(os.path.abspath(__file__))
         config_path = os.path.join(current_path, 'test_checkpoint', 'bert_config.json')

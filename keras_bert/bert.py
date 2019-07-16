@@ -32,7 +32,7 @@ def gelu_tensorflow(x):
 
 
 def gelu_fallback(x):
-    return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * K.pow(x, 3))))
+    return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * x * x * x)))
 
 
 if K.backend() == 'tensorflow':
@@ -53,7 +53,9 @@ def get_model(token_num,
               feed_forward_activation='gelu',
               training=True,
               trainable=None,
-              output_layer_num=1):
+              output_layer_num=1,
+              use_adapter=False,
+              adapter_units=None):
     """Get BERT model.
 
     See: https://arxiv.org/pdf/1810.04805.pdf
@@ -73,6 +75,8 @@ def get_model(token_num,
     :param trainable: Whether the model is trainable.
     :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
                              Only available when `training` is `False`.
+    :param use_adapter: Whether to use feed-forward adapters before each residual connections.
+    :param adapter_units: The dimension of the first transformation in feed-forward adapter.
     :return: The built model.
     """
     if attention_activation == 'gelu':
@@ -81,6 +85,8 @@ def get_model(token_num,
         feed_forward_activation = gelu
     if trainable is None:
         trainable = training
+    if adapter_units is None:
+        adapter_units = max(1, embed_dim // 100)
 
     def _trainable(_layer):
         if isinstance(trainable, (list, tuple, set)):
@@ -106,6 +112,9 @@ def get_model(token_num,
         attention_activation=attention_activation,
         feed_forward_activation=feed_forward_activation,
         dropout_rate=dropout_rate,
+        use_adapter=use_adapter,
+        adapter_units=adapter_units,
+        adapter_activation=gelu,
     )
     if training:
         mlm_dense_layer = keras.layers.Dense(
