@@ -38,6 +38,7 @@ pip install keras-bert
 
 ### External Links
 
+* [Kashgari是一个极简且强大的 NLP 框架，可用于文本分类和标注的学习，研究及部署上线](https://github.com/BrikerMan/Kashgari)
 * [当Bert遇上Keras：这可能是Bert最简单的打开姿势](https://spaces.ac.cn/archives/6736)
 
 ### 使用官方模型

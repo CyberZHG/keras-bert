@@ -32,6 +32,10 @@ pip install keras-bert
 * [Extract Features](#Extract-Features)
 * [Use Adapter](#Use-Adapter)
 
+### External Links
+
+* [Kashgari is a Production-ready NLP Transfer learning framework for text-labeling and text-classification](https://github.com/BrikerMan/Kashgari)
+
 ### Load Official Pre-trained Models
 
 In [feature extraction demo](./demo/load_model/load_and_extract.py), you should be able to get the same extraction results as the official model `chinese_L-12_H-768_A-12`. And in [prediction demo](./demo/load_model/load_and_predict.py), the missing word in the sentence could be predicted.

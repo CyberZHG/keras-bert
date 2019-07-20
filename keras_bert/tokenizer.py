@@ -187,6 +187,8 @@ class Tokenizer(object):
         [(0, 3), (4, 10), (11, ... 19), (19, 20)]
         >>> Tokenizer.rematch("All rights reserved.", ["all rights", "reserved", "."])
         [(0, 10), (11, 19), (19, 20)]
+        >>> Tokenizer.rematch("All rights reserved.", ["all rights", "reserved", "."], cased=True)
+        [(0, 10), (11, 19), (19, 20)]
         >>> Tokenizer.rematch("#hash tag ##", ["#", "hash", "tag", "##"])
         [(0, 1), (1, 5), (6, 9), (10, 12)]
         >>> Tokenizer.rematch(u"嘛呢，吃了吗？", ["[UNK]", u"呢", u"，", "[UNK]", u"了", u"吗"])
