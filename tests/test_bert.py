@@ -33,7 +33,7 @@ class TestBERT(unittest.TestCase):
             use_task_embed=True,
             task_num=10,
             training=False,
-            dropout_rate=0.1,
+            dropout_rate=0.0,
         )
         model = keras.models.Model(inputs, outputs)
         model_path = os.path.join(tempfile.gettempdir(), 'keras_bert_%f.h5' % np.random.random())
