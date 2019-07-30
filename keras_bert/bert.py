@@ -229,15 +229,6 @@ def get_token_embedding(model):
     return model.get_layer('Embedding-Token').output[1]
 
 
-def random_choice(arr):
-    """
-    faster random sample method
-    """
-
-    s = np.random.random(len(arr))
-    return arr[s.argmin()]
-
-
 def gen_batch_inputs(sentence_pairs,
                      token_dict,
                      token_list,
@@ -295,7 +286,7 @@ def gen_batch_inputs(sentence_pairs,
                     token_input.append(token_dict[TOKEN_MASK])
                 elif r < mask_mask_rate + mask_random_rate:
                     while True:
-                        token = random_choice(token_list)
+                        token = token_list[np.random.randint(0, len(token_list))]
                         if token not in base_dict:
                             token_input.append(token_dict[token])
                             break
