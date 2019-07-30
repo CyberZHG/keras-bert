@@ -228,6 +228,7 @@ def get_token_embedding(model):
     """
     return model.get_layer('Embedding-Token').output[1]
 
+
 def random_choice(arr):
     """
     faster random sample method
