@@ -97,7 +97,7 @@ intervals = Tokenizer.rematch("All rights reserved.", ["[UNK]", "righs", "[UNK]"
 
 ```python
 import keras
-from keras_bert import get_base_dict, get_model, gen_batch_inputs
+from keras_bert import get_base_dict, get_model, compile_model, gen_batch_inputs
 
 
 # 随便的输入样例：
@@ -128,6 +128,7 @@ model = get_model(
     pos_num=20,
     dropout_rate=0.05,
 )
+compile_model(model)
 model.summary()
 
 def _generator():

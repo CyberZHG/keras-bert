@@ -79,7 +79,7 @@ print(segments)  # Should be `[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
 
 ```python
 import keras
-from keras_bert import get_base_dict, get_model, gen_batch_inputs
+from keras_bert import get_base_dict, get_model, compile_model, gen_batch_inputs
 
 
 # A toy input example
@@ -110,6 +110,7 @@ model = get_model(
     pos_num=20,
     dropout_rate=0.05,
 )
+compile_model(model)
 model.summary()
 
 def _generator():
