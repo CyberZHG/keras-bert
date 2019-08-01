@@ -54,18 +54,7 @@ def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1, train
         trainable=trainable,
         name='Embedding-Position',
     )(embed_layer)
-    if dropout_rate > 0.0:
-        dropout_layer = keras.layers.Dropout(
-            rate=dropout_rate,
-            name='Embedding-Dropout',
-        )(embed_layer)
-    else:
-        dropout_layer = embed_layer
-    norm_layer = LayerNormalization(
-        trainable=trainable,
-        name='Embedding-Norm',
-    )(dropout_layer)
-    return norm_layer, embed_weights
+    return embed_layer, embed_weights
 
 
 class EmbeddingSimilarity(keras.layers.Layer):

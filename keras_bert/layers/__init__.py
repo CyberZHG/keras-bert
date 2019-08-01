@@ -4,3 +4,4 @@ from .masked import Masked
 from .extract import Extract
 from .pooling import MaskedGlobalMaxPool1D
 from .conv import MaskedConv1D
+from .task_embed import TaskEmbedding

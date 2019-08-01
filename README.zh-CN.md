@@ -34,6 +34,7 @@ pip install keras-bert
 * [提取特征](#提取特征)
 * [模型存储与加载](#模型存储与加载)
 * [使用Adapter](#使用Adapter)
+* [使用任务嵌入](#使用任务嵌入)
 * [使用`tf.keras`](#使用tensorflowpythonkeras)
 
 ### External Links
@@ -288,6 +289,25 @@ model = load_trained_model_from_checkpoint(
     ['Encoder-{}-FeedForward-Adapter'.format(i + 1) for i in range(layer_num)] +
     ['Encoder-{}-MultiHeadSelfAttention-Norm'.format(i + 1) for i in range(layer_num)] +
     ['Encoder-{}-FeedForward-Norm'.format(i + 1) for i in range(layer_num)],
+)
+```
+
+### 使用任务嵌入
+
+如果有多任务训练的需求，可以启用任务嵌入层，针对不同任务将嵌入的结果加上不同的编码，注意要让`Embedding-Task`层可训练：
+
+```python
+from keras_bert import get_pretrained, PretrainedList, get_checkpoint_paths, load_trained_model_from_checkpoint
+
+model_path = get_pretrained(PretrainedList.multi_cased_base)
+paths = get_checkpoint_paths(model_path)
+model = load_trained_model_from_checkpoint(
+    config_file=paths.config,
+    checkpoint_file=paths.checkpoint,
+    training=False,
+    trainable=True,
+    use_task_embed=True,
+    task_num=10,
 )
 ```
 

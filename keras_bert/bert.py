@@ -7,7 +7,7 @@ from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
 from .backend import keras
 from .backend import backend as K
-from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract
+from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract, TaskEmbedding
 from .optimizers import AdamWarmup
 
 
@@ -54,6 +54,8 @@ def get_model(token_num,
               training=True,
               trainable=None,
               output_layer_num=1,
+              use_task_embed=False,
+              task_num=10,
               use_adapter=False,
               adapter_units=None):
     """Get BERT model.
@@ -75,6 +77,8 @@ def get_model(token_num,
     :param trainable: Whether the model is trainable.
     :param output_layer_num: The number of layers whose outputs will be concatenated as a single output.
                              Only available when `training` is `False`.
+    :param use_task_embed: Whether to add task embeddings to existed embeddings.
+    :param task_num: The number of tasks.
     :param use_adapter: Whether to use feed-forward adapters before each residual connections.
     :param adapter_units: The dimension of the first transformation in feed-forward adapter.
     :return: The built model.
@@ -104,6 +108,29 @@ def get_model(token_num,
         pos_num=pos_num,
         dropout_rate=dropout_rate,
     )
+    if use_task_embed:
+        task_input = keras.layers.Input(
+            shape=(1,),
+            name='Input-Task',
+        )
+        embed_layer = TaskEmbedding(
+            input_dim=task_num,
+            output_dim=embed_dim,
+            mask_zero=False,
+            name='Embedding-Task',
+        )([embed_layer, task_input])
+        inputs = inputs[:2] + [task_input, inputs[-1]]
+    if dropout_rate > 0.0:
+        dropout_layer = keras.layers.Dropout(
+            rate=dropout_rate,
+            name='Embedding-Dropout',
+        )(embed_layer)
+    else:
+        dropout_layer = embed_layer
+    embed_layer = LayerNormalization(
+        trainable=trainable,
+        name='Embedding-Norm',
+    )(dropout_layer)
     transformed = get_encoders(
         encoder_num=transformer_num,
         input_layer=embed_layer,
@@ -141,7 +168,10 @@ def get_model(token_num,
             layer.trainable = _trainable(layer)
         return model
     else:
-        inputs = inputs[:2]
+        if use_task_embed:
+            inputs = inputs[:3]
+        else:
+            inputs = inputs[:2]
         model = keras.models.Model(inputs=inputs, outputs=transformed)
         for layer in model.layers:
             layer.trainable = _trainable(layer)
@@ -194,6 +224,7 @@ def get_custom_objects():
     custom_objects['PositionEmbedding'] = PositionEmbedding
     custom_objects['TokenEmbedding'] = TokenEmbedding
     custom_objects['EmbeddingSimilarity'] = EmbeddingSimilarity
+    custom_objects['TaskEmbedding'] = TaskEmbedding
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
     custom_objects['gelu'] = gelu

@@ -24,6 +24,26 @@ class TestBERT(unittest.TestCase):
         )
         model.summary(line_length=200)
 
+    def test_task_embed(self):
+        inputs, outputs = get_model(
+            token_num=20,
+            embed_dim=12,
+            head_num=3,
+            transformer_num=2,
+            use_task_embed=True,
+            task_num=10,
+            training=False,
+            dropout_rate=0.0,
+        )
+        model = keras.models.Model(inputs, outputs)
+        model_path = os.path.join(tempfile.gettempdir(), 'keras_bert_%f.h5' % np.random.random())
+        model.save(model_path)
+        model = keras.models.load_model(
+            model_path,
+            custom_objects=get_custom_objects(),
+        )
+        model.summary(line_length=200)
+
     def test_save_load_json(self):
         model = get_model(
             token_num=200,
