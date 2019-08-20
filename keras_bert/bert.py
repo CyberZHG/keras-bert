@@ -1,20 +1,17 @@
-import math
-
 import numpy as np
 from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
 from .backend import keras
-from .backend import backend as K
+from .activations import gelu
 from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract, TaskEmbedding
 from .optimizers import AdamWarmup
 
 
 __all__ = [
     'TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK',
-    'gelu', 'gelu_tensorflow', 'gelu_fallback',
-    'get_model', 'compile_model', 'get_base_dict', 'gen_batch_inputs', 'get_token_embedding',
+    'gelu', 'get_model', 'compile_model', 'get_base_dict', 'gen_batch_inputs', 'get_token_embedding',
     'get_custom_objects', 'set_custom_objects',
 ]
 
@@ -24,21 +21,6 @@ TOKEN_UNK = '[UNK]'  # Token for unknown words
 TOKEN_CLS = '[CLS]'  # Token for classification
 TOKEN_SEP = '[SEP]'  # Token for separation
 TOKEN_MASK = '[MASK]'  # Token for masking
-
-
-def gelu_tensorflow(x):
-    from tensorflow.python.ops.math_ops import erf, sqrt
-    return 0.5 * x * (1.0 + erf(x / sqrt(2.0)))
-
-
-def gelu_fallback(x):
-    return 0.5 * x * (1.0 + K.tanh(math.sqrt(2.0 / math.pi) * (x + 0.044715 * x * x * x)))
-
-
-if K.backend() == 'tensorflow':
-    gelu = gelu_tensorflow
-else:
-    gelu = gelu_fallback
 
 
 def get_model(token_num,
@@ -228,8 +210,8 @@ def get_custom_objects():
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
     custom_objects['gelu'] = gelu
-    custom_objects['gelu_tensorflow'] = gelu_tensorflow
-    custom_objects['gelu_fallback'] = gelu_fallback
+    custom_objects['gelu_tensorflow'] = gelu
+    custom_objects['gelu_fallback'] = gelu
     custom_objects['AdamWarmup'] = AdamWarmup
     return custom_objects
 

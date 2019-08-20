@@ -117,6 +117,55 @@ class AdamWarmup(OptimizerV2):
             updates.append(v_hat_t)
         return control_flow_ops.group(*updates)
 
+    def _resource_apply_sparse(self, grad, var, indices):
+        var_dtype = var.dtype.base_dtype
+        lr_t = self._decayed_lr(var_dtype)
+        beta_1_t = self._get_hyper('beta_1', var_dtype)
+        beta_2_t = self._get_hyper('beta_2', var_dtype)
+        epsilon_t = ops.convert_to_tensor(self.epsilon, var_dtype)
+        local_step = math_ops.cast(self.iterations + 1, var_dtype)
+        beta_1_power = math_ops.pow(beta_1_t, local_step)
+        beta_2_power = math_ops.pow(beta_2_t, local_step)
+
+        decay_steps = self._get_hyper('decay_steps', var_dtype)
+        warmup_steps = self._get_hyper('warmup_steps', var_dtype)
+        min_lr = self._get_hyper('min_lr', var_dtype)
+        lr_t = tf.where(
+            local_step <= warmup_steps,
+            lr_t * (local_step / warmup_steps),
+            min_lr + (lr_t - min_lr) * (1.0 - tf.minimum(local_step, decay_steps) / decay_steps),
+        )
+        lr_t = (lr_t * math_ops.sqrt(1 - beta_2_power) / (1 - beta_1_power))
+
+        m = self.get_slot(var, 'm')
+        m_scaled_g_values = grad * (1 - beta_1_t)
+        m_t = state_ops.assign(m, m * beta_1_t, use_locking=self._use_locking)
+        with ops.control_dependencies([m_t]):
+            m_t = self._resource_scatter_add(m, indices, m_scaled_g_values)
+
+        v = self.get_slot(var, 'v')
+        v_scaled_g_values = (grad * grad) * (1 - beta_2_t)
+        v_t = state_ops.assign(v, v * beta_2_t, use_locking=self._use_locking)
+        with ops.control_dependencies([v_t]):
+            v_t = self._resource_scatter_add(v, indices, v_scaled_g_values)
+
+        if self.amsgrad:
+            v_hat = self.get_slot(var, 'vhat')
+            v_hat_t = math_ops.maximum(v_hat, v_t)
+            var_update = m_t / (math_ops.sqrt(v_hat_t) + epsilon_t)
+        else:
+            var_update = m_t / (math_ops.sqrt(v_t) + epsilon_t)
+
+        if self._initial_weight_decay > 0.0:
+            weight_decay = self._get_hyper('weight_decay', var_dtype)
+            var_update += weight_decay * var
+        var_update = state_ops.assign_sub(var, lr_t * var_update, use_locking=self._use_locking)
+
+        updates = [var_update, m_t, v_t]
+        if self.amsgrad:
+            updates.append(v_hat_t)
+        return control_flow_ops.group(*updates)
+
     def get_config(self):
         config = super(AdamWarmup, self).get_config()
         config.update({
