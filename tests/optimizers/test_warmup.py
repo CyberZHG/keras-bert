@@ -56,3 +56,30 @@ class TestWarmup(TestCase):
             amsgrad=True,
             weight_decay=1e-3,
         ))
+
+    def test_fit_embed(self):
+        model = keras.models.Sequential()
+        model.add(keras.layers.Embedding(
+            input_shape=(None,),
+            input_dim=5,
+            output_dim=16,
+            mask_zero=True,
+        ))
+        model.add(keras.layers.Bidirectional(keras.layers.LSTM(units=8)))
+        model.add(keras.layers.Dense(units=2, activation='softmax'))
+        model.compile(AdamWarmup(
+            decay_steps=10000,
+            warmup_steps=5000,
+            lr=1e-3,
+            min_lr=1e-4,
+            amsgrad=True,
+            weight_decay=1e-3,
+        ), loss='sparse_categorical_crossentropy')
+
+        x = np.random.randint(0, 5, (1024, 15))
+        y = (x[:, 1] > 2).astype('int32')
+        model.fit(x, y, epochs=10)
+
+        model_path = os.path.join(tempfile.gettempdir(), 'test_warmup_%f.h5' % np.random.random())
+        model.save(model_path)
+        keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
