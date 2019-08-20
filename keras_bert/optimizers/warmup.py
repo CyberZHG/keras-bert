@@ -1,25 +1,7 @@
 from keras_bert.backend import keras
-from keras_bert.backend import backend as K, TF_KERAS
+from keras_bert.backend import backend as K
 
-__all__ = ['AdamWarmup', 'calc_train_steps']
-
-
-def calc_train_steps(num_example, batch_size, epochs, warmup_proportion=0.1):
-    """Calculate the number of total and warmup steps.
-
-    >>> calc_train_steps(num_example=1024, batch_size=32, epochs=10, warmup_proportion=0.1)
-    (320, 32)
-
-    :param num_example: Number of examples in one epoch.
-    :param batch_size: Batch size.
-    :param epochs: Number of epochs.
-    :param warmup_proportion: The proportion of warmup steps.
-    :return: Total steps and warmup steps.
-    """
-    steps = (num_example + batch_size - 1) // batch_size
-    total = steps * epochs
-    warmup = int(total * warmup_proportion)
-    return total, warmup
+__all__ = ['AdamWarmup']
 
 
 class AdamWarmup(keras.optimizers.Optimizer):
@@ -72,7 +54,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
         lr = K.switch(
             t <= self.warmup_steps,
             self.lr * (t / self.warmup_steps),
-            self.lr * (1.0 - K.minimum(t, self.decay_steps) / self.decay_steps),
+            self.min_lr + (self.lr - self.min_lr) * (1.0 - K.minimum(t, self.decay_steps) / self.decay_steps),
         )
 
         lr_t = lr * (K.sqrt(1. - K.pow(self.beta_2, t)) /
