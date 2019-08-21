@@ -72,7 +72,7 @@ print(tokenizer.tokenize(first='unaffable', second='钢'))
 # The result should be `['[CLS]', 'un', '##aff', '##able', '[SEP]', '钢', '[SEP]']`
 indices, segments = tokenizer.encode(first='unaffable', second='钢', max_len=10)
 print(indices)  # Should be `[0, 2, 3, 4, 1, 5, 1, 0, 0, 0]`
-print(segments)  # Should be `[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
+print(segments)  # Should be `[0, 0, 0, 0, 0, 1, 1, 0, 0, 0]`
 ```
 
 ### Train & Use
