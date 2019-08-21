@@ -80,7 +80,7 @@ print(tokenizer.tokenize(first='unaffable', second='钢'))
 # 分词结果是：`['[CLS]', 'un', '##aff', '##able', '[SEP]', '钢', '[SEP]']`
 indices, segments = tokenizer.encode(first='unaffable', second='钢', max_len=10)
 print(indices)   # 词对应的下标：`[0, 2, 3, 4, 1, 5, 1, 0, 0, 0]`
-print(segments)  # 段落对应下标：`[0, 0, 0, 0, 0, 1, 1, 1, 1, 1]`
+print(segments)  # 段落对应下标：`[0, 0, 0, 0, 0, 1, 1, 0, 0, 0]`
 ```
 
 `Tokenizer`也提供了尝试去寻找分词后的结果在原始文本中的起始和终止下标的功能，输入可以是decode后的结果，包含少量的错词：
