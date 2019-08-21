@@ -41,8 +41,8 @@ class AdamWarmup(OptimizerV2):
         """
 
         super(AdamWarmup, self).__init__(name, **kwargs)
-        self._set_hyper('decay_steps', decay_steps)
-        self._set_hyper('warmup_steps', warmup_steps)
+        self._set_hyper('decay_steps', float(decay_steps))
+        self._set_hyper('warmup_steps', float(warmup_steps))
         self._set_hyper('min_lr', min_lr)
         self._set_hyper('learning_rate', kwargs.get('lr', learning_rate))
         self._set_hyper('decay', self._initial_decay)
