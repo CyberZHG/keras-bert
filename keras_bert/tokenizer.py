@@ -1,5 +1,3 @@
-# coding=utf-8
-from __future__ import unicode_literals
 import unicodedata
 from keras_bert.bert import TOKEN_CLS, TOKEN_SEP, TOKEN_UNK
 
@@ -191,8 +189,10 @@ class Tokenizer(object):
         [(0, 10), (11, 19), (19, 20)]
         >>> Tokenizer.rematch("#hash tag ##", ["#", "hash", "tag", "##"])
         [(0, 1), (1, 5), (6, 9), (10, 12)]
-        >>> Tokenizer.rematch(u"嘛呢，吃了吗？", ["[UNK]", u"呢", u"，", "[UNK]", u"了", u"吗"])
+        >>> Tokenizer.rematch("嘛呢，吃了吗？", ["[UNK]", "呢", "，", "[UNK]", "了", "吗"])
         [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
+        >>> Tokenizer.rematch("  吃了吗？    ", ["吃", "了", "吗", "？"])
+        [(2, 3), (3, 4), (4, 5), (5, 6)]
 
         :param text: Original text.
         :param tokens: Decoded list of tokens.
@@ -215,32 +215,39 @@ class Tokenizer(object):
             decoded += token
             token_offsets[-1][1] = len(decoded)
 
+        heading = 0
+        text = text.rstrip()
+        for i in range(len(text)):
+            if not Tokenizer._is_space(text[i]):
+                break
+            heading += 1
+        text = text[heading:]
         len_text, len_decode = len(text), len(decoded)
-        costs = [[0] * (len_decode + 1) for _ in range(len_text + 1)]
+        costs = [[0] * (len_decode + 1) for _ in range(2)]
         paths = [[(-1, -1)] * (len_decode + 1) for _ in range(len_text + 1)]
+        curr, prev = 0, 1
 
-        costs[0][0] = 0
-        for i in range(len_text + 1):
-            costs[i][0] = i
         for j in range(len_decode + 1):
-            costs[0][j] = j
+            costs[curr][j] = j
         for i in range(1, len_text + 1):
+            curr, prev = prev, curr
+            costs[curr][0] = i
             ch = text[i - 1]
             if not cased:
                 ch = ch.lower()
             for j in range(1, len_decode + 1):
-                costs[i][j] = costs[i - 1][j - 1]
+                costs[curr][j] = costs[prev][j - 1]
                 paths[i][j] = (i - 1, j - 1)
                 if ch != decoded[j - 1]:
-                    costs[i][j] = costs[i - 1][j - 1] + 1
+                    costs[curr][j] = costs[prev][j - 1] + 1
                     paths[i][j] = (i - 1, j - 1)
-                    if costs[i - 1][j] < costs[i][j]:
-                        costs[i][j] = costs[i - 1][j]
+                    if costs[prev][j] < costs[curr][j]:
+                        costs[curr][j] = costs[prev][j]
                         paths[i][j] = (i - 1, j)
-                    if costs[i][j - 1] < costs[i][j]:
-                        costs[i][j] = costs[i][j - 1]
+                    if costs[curr][j - 1] < costs[curr][j]:
+                        costs[curr][j] = costs[curr][j - 1]
                         paths[i][j] = (i, j - 1)
-                    costs[i][j] += 1
+                    costs[curr][j] += 1
 
         matches = [0] * (len_decode + 1)
         position = (len_text, len_decode)
@@ -274,5 +281,5 @@ class Tokenizer(object):
                 if Tokenizer._is_space(text[j]):
                     break
                 interval[1] += 1
-        intervals = [tuple(interval) for interval in intervals]
+        intervals = [(interval[0] + heading, interval[1] + heading) for interval in intervals]
         return intervals
