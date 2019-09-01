@@ -1,7 +1,8 @@
 import unittest
 import numpy as np
 from keras_transformer import gelu, get_encoders
-from keras_bert.backend import keras
+from keras_bert.backend import keras, TF_KERAS
+from keras_bert.backend import backend as K
 from keras_bert.layers import get_inputs, get_embedding, Masked
 
 
@@ -82,3 +83,32 @@ class TestMasked(unittest.TestCase):
             [0, 1, 0, 1, 0, 0, 0, 0, 0, 0],
         ])
         self.assertTrue(np.allclose(expect, predicts[1]))
+
+    def test_mask_loss(self):
+        def _loss(y_true, _):
+            return K.sum(y_true, axis=-1)
+
+        inputs = [keras.layers.Input((5,)), keras.layers.Input((5,))]
+        embed = keras.layers.Embedding(input_dim=2, output_dim=3, mask_zero=True)(inputs[0])
+        masked = Masked()([embed, inputs[1]])
+
+        model = keras.models.Model(inputs, masked)
+        model.compile(
+            optimizer='sgd',
+            loss=_loss,
+        )
+
+        token_input = np.array([
+            [1, 1, 1, 0, 0],
+            [1, 1, 1, 1, 0],
+        ])
+        mask_input = np.array([
+            [0, 1, 0, 0, 0],
+            [1, 0, 0, 0, 0],
+        ])
+        outputs = np.arange(30).reshape((2, 5, 3))
+        if TF_KERAS:
+            expected = 6.0
+        else:
+            expected = 30.0
+        self.assertAlmostEqual(expected, model.evaluate([token_input, mask_input], outputs), places=3)

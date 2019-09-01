@@ -189,8 +189,8 @@ class Tokenizer(object):
         [(0, 10), (11, 19), (19, 20)]
         >>> Tokenizer.rematch("#hash tag ##", ["#", "hash", "tag", "##"])
         [(0, 1), (1, 5), (6, 9), (10, 12)]
-        >>> Tokenizer.rematch("嘛呢，吃了吗？", ["[UNK]", "呢", "，", "[UNK]", "了", "吗"])
-        [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6)]
+        >>> Tokenizer.rematch("嘛呢，吃了吗？", ["[UNK]", "呢", "，", "[UNK]", "了", "吗", "？"])
+        [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7)]
         >>> Tokenizer.rematch("  吃了吗？    ", ["吃", "了", "吗", "？"])
         [(2, 3), (3, 4), (4, 5), (5, 6)]
 
@@ -239,7 +239,7 @@ class Tokenizer(object):
                 costs[curr][j] = costs[prev][j - 1]
                 paths[i][j] = (i - 1, j - 1)
                 if ch != decoded[j - 1]:
-                    costs[curr][j] = costs[prev][j - 1] + 1
+                    costs[curr][j] = costs[prev][j - 1]
                     paths[i][j] = (i - 1, j - 1)
                     if costs[prev][j] < costs[curr][j]:
                         costs[curr][j] = costs[prev][j]
