@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from keras_transformer import gelu, get_encoders
-from keras_bert.backend import keras, TF_KERAS
+from keras_bert.backend import keras
 from keras_bert.backend import backend as K
 from keras_bert.layers import get_inputs, get_embedding, Masked
 
@@ -107,8 +107,5 @@ class TestMasked(unittest.TestCase):
             [1, 0, 0, 0, 0],
         ])
         outputs = np.arange(30).reshape((2, 5, 3))
-        if TF_KERAS:
-            expected = 6.0
-        else:
-            expected = 30.0
-        self.assertAlmostEqual(expected, model.evaluate([token_input, mask_input], outputs), places=3)
+        actual = model.evaluate([token_input, mask_input], outputs)
+        self.assertTrue(np.abs(actual - 6.0) < 1e-6 or np.abs(actual - 30.0) < 1e-6, actual)

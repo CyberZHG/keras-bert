@@ -12,7 +12,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
     # Arguments
         decay_steps: Learning rate will decay linearly to zero in decay steps.
         warmup_steps: Learning rate will increase linearly to lr in first warmup steps.
-        lr: float >= 0. Learning rate.
+        learning_rate: float >= 0. Learning rate.
         beta_1: float, 0 < beta < 1. Generally close to 1.
         beta_2: float, 0 < beta < 1. Generally close to 1.
         epsilon: float >= 0. Fuzz factor. If `None`, defaults to `K.epsilon()`.
@@ -25,16 +25,17 @@ class AdamWarmup(keras.optimizers.Optimizer):
     """
 
     def __init__(self, decay_steps, warmup_steps, min_lr=0.0,
-                 lr=0.001, beta_1=0.9, beta_2=0.999,
+                 learning_rate=0.001, beta_1=0.9, beta_2=0.999,
                  epsilon=None, weight_decay=0., weight_decay_pattern=None,
                  amsgrad=False, **kwargs):
+        learning_rate = kwargs.pop('lr', learning_rate)
         super(AdamWarmup, self).__init__(**kwargs)
         with K.name_scope(self.__class__.__name__):
             self.decay_steps = K.variable(decay_steps, name='decay_steps')
             self.warmup_steps = K.variable(warmup_steps, name='warmup_steps')
             self.min_lr = K.variable(min_lr, name='min_lr')
             self.iterations = K.variable(0, dtype='int64', name='iterations')
-            self.lr = K.variable(lr, name='lr')
+            self.learning_rate = K.variable(learning_rate, name='lr')
             self.beta_1 = K.variable(beta_1, name='beta_1')
             self.beta_2 = K.variable(beta_2, name='beta_2')
             self.weight_decay = K.variable(weight_decay, name='weight_decay')
@@ -44,6 +45,14 @@ class AdamWarmup(keras.optimizers.Optimizer):
         self.initial_weight_decay = weight_decay
         self.weight_decay_pattern = weight_decay_pattern
         self.amsgrad = amsgrad
+
+    @property
+    def lr(self):
+        return self.learning_rate
+
+    @lr.setter
+    def lr(self, learning_rate):
+        self.learning_rate = learning_rate
 
     def get_updates(self, loss, params):
         grads = self.get_gradients(loss, params)
@@ -103,7 +112,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
             'decay_steps': float(K.get_value(self.decay_steps)),
             'warmup_steps': float(K.get_value(self.warmup_steps)),
             'min_lr': float(K.get_value(self.min_lr)),
-            'lr': float(K.get_value(self.lr)),
+            'learning_rate': float(K.get_value(self.learning_rate)),
             'beta_1': float(K.get_value(self.beta_1)),
             'beta_2': float(K.get_value(self.beta_2)),
             'epsilon': self.epsilon,

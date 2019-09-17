@@ -178,21 +178,21 @@ def compile_model(model,
                   weight_decay=0.01,
                   decay_steps=100000,
                   warmup_steps=10000,
-                  lr=1e-4):
+                  learning_rate=1e-4):
     """Compile the model with warmup optimizer and sparse cross-entropy loss.
 
     :param model: The built model.
     :param weight_decay: Weight decay rate.
     :param decay_steps: Learning rate will decay linearly to zero in decay steps.
-    :param warmup_steps: Learning rate will increase linearly to lr in first warmup steps.
-    :param lr: Learning rate.
+    :param warmup_steps: Learning rate will increase linearly to learning_rate in first warmup steps.
+    :param learning_rate: Learning rate.
     :return: The compiled model.
     """
     model.compile(
         optimizer=AdamWarmup(
             decay_steps=decay_steps,
             warmup_steps=warmup_steps,
-            lr=lr,
+            learning_rate=learning_rate,
             weight_decay=weight_decay,
             weight_decay_pattern=['embeddings', 'kernel', 'W1', 'W2', 'Wk', 'Wq', 'Wv', 'Wo'],
         ),

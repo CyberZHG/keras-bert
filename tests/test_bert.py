@@ -102,7 +102,7 @@ class TestBERT(unittest.TestCase):
             )
             compile_model(
                 model,
-                lr=1e-3,
+                learning_rate=1e-3,
                 decay_steps=30000,
                 warmup_steps=10000,
                 weight_decay=1e-3,

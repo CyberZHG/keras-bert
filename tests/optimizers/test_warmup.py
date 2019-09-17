@@ -2,7 +2,7 @@ import os
 import tempfile
 from unittest import TestCase
 import numpy as np
-from keras_bert.backend import keras
+from keras_bert.backend import keras, TF_KERAS
 from keras_bert import AdamWarmup
 
 
@@ -41,7 +41,7 @@ class TestWarmup(TestCase):
         self._test_fit(AdamWarmup(
             decay_steps=10000,
             warmup_steps=5000,
-            lr=1e-3,
+            learning_rate=1e-3,
             min_lr=1e-4,
             amsgrad=False,
             weight_decay=1e-3,
@@ -51,7 +51,7 @@ class TestWarmup(TestCase):
         self._test_fit(AdamWarmup(
             decay_steps=10000,
             warmup_steps=5000,
-            lr=1e-3,
+            learning_rate=1e-3,
             min_lr=1e-4,
             amsgrad=True,
             weight_decay=1e-3,
@@ -70,7 +70,7 @@ class TestWarmup(TestCase):
         model.compile(AdamWarmup(
             decay_steps=10000,
             warmup_steps=5000,
-            lr=1e-3,
+            learning_rate=1e-3,
             min_lr=1e-4,
             amsgrad=True,
             weight_decay=1e-3,
@@ -83,3 +83,12 @@ class TestWarmup(TestCase):
         model_path = os.path.join(tempfile.gettempdir(), 'test_warmup_%f.h5' % np.random.random())
         model.save(model_path)
         keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
+
+    def test_legacy(self):
+        opt = AdamWarmup(
+            decay_steps=10000,
+            warmup_steps=5000,
+            learning_rate=1e-3,
+        )
+        if not TF_KERAS:
+            opt.lr = opt.lr
