@@ -108,10 +108,6 @@ def load_model_weights_from_checkpoint(model,
             loader('bert/encoder/layer_%d/attention/output/LayerNorm/gamma' % i),
             loader('bert/encoder/layer_%d/attention/output/LayerNorm/beta' % i),
         ])
-        model.get_layer(name='Encoder-%d-MultiHeadSelfAttention-Norm' % (i + 1)).set_weights([
-            loader('bert/encoder/layer_%d/attention/output/LayerNorm/gamma' % i),
-            loader('bert/encoder/layer_%d/attention/output/LayerNorm/beta' % i),
-        ])
         model.get_layer(name='Encoder-%d-FeedForward' % (i + 1)).set_weights([
             loader('bert/encoder/layer_%d/intermediate/dense/kernel' % i),
             loader('bert/encoder/layer_%d/intermediate/dense/bias' % i),

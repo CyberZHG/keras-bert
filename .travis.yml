@@ -4,15 +4,8 @@ python: "3.6"
 env:
   - KERAS_BACKEND=tensorflow
   - KERAS_BACKEND=tensorflow TF_KERAS=1
-  - KERAS_BACKEND=tensorflow TF_KERAS=1 TF_EAGER=1
-  - KERAS_BACKEND=tensorflow TF_KERAS=1 TF_2=1
-  - KERAS_BACKEND=theano THEANO_FLAGS=optimizer=fast_compile
 install:
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      wget https://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
-    else
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-    fi
+  - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda config --set always_yes yes --set changeps1 no
@@ -24,8 +17,6 @@ install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
   - pip install -r requirements-dev.txt
-  - if [[ $TF_2 == "1" ]]; then pip install tensorflow==2.0.0-beta1; fi
-  - if [[ $KERAS_BACKEND == "theano" ]]; then pip install theano && conda install mkl mkl-service; fi
   - pip install coveralls
 script:
   - ./test.sh

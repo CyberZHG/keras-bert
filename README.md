@@ -7,10 +7,7 @@
 ![License](https://img.shields.io/pypi/l/keras-bert.svg)
 
 ![](https://img.shields.io/badge/keras-tensorflow-blue.svg)
-![](https://img.shields.io/badge/keras-theano-blue.svg)
 ![](https://img.shields.io/badge/keras-tf.keras-blue.svg)
-![](https://img.shields.io/badge/keras-tf.keras/eager-blue.svg)
-![](https://img.shields.io/badge/keras-tf.keras/2.0_beta-blue.svg)
 
 \[[中文](https://github.com/CyberZHG/keras-bert/blob/master/README.zh-CN.md)|[English](https://github.com/CyberZHG/keras-bert/blob/master/README.md)\]
 
@@ -35,6 +32,7 @@ pip install keras-bert
 ### External Links
 
 * [Kashgari is a Production-ready NLP Transfer learning framework for text-labeling and text-classification](https://github.com/BrikerMan/Kashgari)
+* [Keras ALBERT](https://github.com/TinkerMob/keras_albert_model)
 
 ### Load Official Pre-trained Models
 

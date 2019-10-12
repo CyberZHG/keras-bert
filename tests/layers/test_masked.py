@@ -106,6 +106,6 @@ class TestMasked(unittest.TestCase):
             [0, 1, 0, 0, 0],
             [1, 0, 0, 0, 0],
         ])
-        outputs = np.arange(30).reshape((2, 5, 3))
+        outputs = np.arange(30, dtype=K.floatx()).reshape((2, 5, 3))
         actual = model.evaluate([token_input, mask_input], outputs)
         self.assertTrue(np.abs(actual - 6.0) < 1e-6 or np.abs(actual - 30.0) < 1e-6, actual)

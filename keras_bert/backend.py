@@ -4,23 +4,13 @@ from distutils.util import strtobool
 __all__ = [
     'keras', 'utils', 'activations', 'applications', 'backend', 'datasets', 'engine',
     'layers', 'preprocessing', 'wrappers', 'callbacks', 'constraints', 'initializers',
-    'metrics', 'models', 'losses', 'optimizers', 'regularizers', 'TF_KERAS', 'EAGER_MODE'
+    'metrics', 'models', 'losses', 'optimizers', 'regularizers', 'TF_KERAS',
 ]
 
-TF_KERAS = False
-EAGER_MODE = False
+TF_KERAS = strtobool(os.environ.get('TF_KERAS', '0'))
 
-if strtobool(os.environ.get('TF_KERAS', '0')):
-    import tensorflow as tf
+if TF_KERAS:
     from tensorflow.python import keras
-    TF_KERAS = True
-    if strtobool(os.environ.get('TF_EAGER', '0')):
-        try:
-            tf.enable_eager_execution()
-            raise AttributeError()
-        except AttributeError as e:
-            pass
-    EAGER_MODE = tf.executing_eagerly()
 else:
     import keras
 

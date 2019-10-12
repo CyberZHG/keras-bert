@@ -4,6 +4,15 @@ from keras_bert.backend import backend as K
 __all__ = ['AdamWarmup']
 
 
+def identity(x):
+    return x
+
+
+symbolic = identity
+if hasattr(K, 'symbolic'):
+    symbolic = K.symbolic
+
+
 class AdamWarmup(keras.optimizers.Optimizer):
     """Adam optimizer with warmup.
 
@@ -35,7 +44,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
             self.warmup_steps = K.variable(warmup_steps, name='warmup_steps')
             self.min_lr = K.variable(min_lr, name='min_lr')
             self.iterations = K.variable(0, dtype='int64', name='iterations')
-            self.learning_rate = K.variable(learning_rate, name='lr')
+            self.learning_rate = K.variable(learning_rate, name='learning_rate')
             self.beta_1 = K.variable(beta_1, name='beta_1')
             self.beta_2 = K.variable(beta_2, name='beta_2')
             self.weight_decay = K.variable(weight_decay, name='weight_decay')
@@ -54,6 +63,7 @@ class AdamWarmup(keras.optimizers.Optimizer):
     def lr(self, learning_rate):
         self.learning_rate = learning_rate
 
+    @symbolic
     def get_updates(self, loss, params):
         grads = self.get_gradients(loss, params)
         self.updates = [K.update_add(self.iterations, 1)]
