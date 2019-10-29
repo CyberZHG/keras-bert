@@ -2,8 +2,11 @@ dist: xenial
 language: python
 python: "3.6"
 env:
-  - KERAS_BACKEND=tensorflow
-  - KERAS_BACKEND=tensorflow TF_KERAS=1
+  global:
+    - COVERALLS_PARALLEL=true
+  matrix:
+    - KERAS_BACKEND=tensorflow
+    - KERAS_BACKEND=tensorflow TF_KERAS=1
 install:
   - wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
   - bash miniconda.sh -b -p $HOME/miniconda
@@ -22,3 +25,5 @@ script:
   - ./test.sh
 after_success:
   coveralls
+notifications:
+  webhooks: https://coveralls.io/webhook
