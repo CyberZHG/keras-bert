@@ -2,9 +2,9 @@ from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_multi_head import MultiHeadAttention
 from keras_position_wise_feed_forward import FeedForward
-from .backend import keras
-from .activations import gelu
-from .layers import TokenEmbedding, EmbeddingSimilarity, Masked, Extract
+from keras_bert.backend import keras
+from keras_bert.activations import gelu
+from keras_bert.layers import TokenEmbedding, EmbeddingSimilarity, Masked, Extract
 
 
 __all__ = [

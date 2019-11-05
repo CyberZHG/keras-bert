@@ -14,7 +14,7 @@ class TokenEmbedding(keras.layers.Embedding):
         return [super(TokenEmbedding, self).compute_mask(inputs, mask), None]
 
     def call(self, inputs):
-        return [super(TokenEmbedding, self).call(inputs), K.identity(self.embeddings)]
+        return [super(TokenEmbedding, self).call(inputs), self.embeddings + 0.0]
 
 
 def get_embedding(inputs, token_num, pos_num, embed_dim, dropout_rate=0.1, trainable=True):
