@@ -10,7 +10,8 @@ __all__ = [
 TF_KERAS = strtobool(os.environ.get('TF_KERAS', '0'))
 
 if TF_KERAS:
-    from tensorflow.python import keras
+    import tensorflow as tf
+    keras = tf.keras
 else:
     import keras
 
@@ -19,7 +20,6 @@ activations = keras.activations
 applications = keras.applications
 backend = keras.backend
 datasets = keras.datasets
-engine = keras.engine
 layers = keras.layers
 preprocessing = keras.preprocessing
 wrappers = keras.wrappers
