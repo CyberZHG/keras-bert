@@ -42,7 +42,7 @@ class Masked(keras.layers.Layer):
         return masked
 
     def call(self, inputs, mask=None, **kwargs):
-        output = K.identity(inputs[0])
+        output = inputs[0] + 0
         if self.return_masked:
             return [output, K.cast(self.compute_mask(inputs, mask)[0], K.floatx())]
         return output
