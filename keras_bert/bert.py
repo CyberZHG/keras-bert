@@ -37,9 +37,7 @@ def get_model(token_num,
               trainable=None,
               output_layer_num=1,
               use_task_embed=False,
-              task_num=10,
-              use_adapter=False,
-              adapter_units=None):
+              task_num=10):
     """Get BERT model.
 
     See: https://arxiv.org/pdf/1810.04805.pdf
@@ -61,8 +59,6 @@ def get_model(token_num,
                              Only available when `training` is `False`.
     :param use_task_embed: Whether to add task embeddings to existed embeddings.
     :param task_num: The number of tasks.
-    :param use_adapter: Whether to use feed-forward adapters before each residual connections.
-    :param adapter_units: The dimension of the first transformation in feed-forward adapter.
     :return: The built model.
     """
     if attention_activation == 'gelu':
@@ -71,8 +67,6 @@ def get_model(token_num,
         feed_forward_activation = gelu
     if trainable is None:
         trainable = training
-    if adapter_units is None:
-        adapter_units = max(1, embed_dim // 100)
 
     def _trainable(_layer):
         if isinstance(trainable, (list, tuple, set)):
@@ -121,9 +115,6 @@ def get_model(token_num,
         attention_activation=attention_activation,
         feed_forward_activation=feed_forward_activation,
         dropout_rate=dropout_rate,
-        use_adapter=use_adapter,
-        adapter_units=adapter_units,
-        adapter_activation=gelu,
     )
     if training:
         mlm_dense_layer = keras.layers.Dense(

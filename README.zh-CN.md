@@ -30,7 +30,6 @@ pip install keras-bert
 * [下载预训练模型](#下载预训练模型)
 * [提取特征](#提取特征)
 * [模型存储与加载](#模型存储与加载)
-* [使用Adapter](#使用Adapter)
 * [使用任务嵌入](#使用任务嵌入)
 * [使用`tf.keras`](#使用tensorflowpythonkeras)
 
@@ -263,31 +262,6 @@ from keras_bert import load_trained_model_from_checkpoint, get_custom_objects
 model = load_trained_model_from_checkpoint('xxx', 'yyy')
 model.save('save_path.h5')
 model.load('save_path.h5', custom_objects=get_custom_objects())
-```
-
-### 使用Adapter
-
-可以使用[adapter](https://arxiv.org/pdf/1902.00751.pdf)来对预训练模型进行微调，下面的代码只让adapter和layer normalization成为可训练的层：
-
-```python
-import os
-from keras_bert import load_trained_model_from_checkpoint
-
-layer_num = 12
-checkpoint_path = '.../uncased_L-12_H-768_A-12'
-
-config_path = os.path.join(checkpoint_path, 'bert_config.json')
-model_path = os.path.join(checkpoint_path, 'bert_model.ckpt')
-model = load_trained_model_from_checkpoint(
-    config_path,
-    model_path,
-    training=False,
-    use_adapter=True,
-    trainable=['Encoder-{}-MultiHeadSelfAttention-Adapter'.format(i + 1) for i in range(layer_num)] +
-    ['Encoder-{}-FeedForward-Adapter'.format(i + 1) for i in range(layer_num)] +
-    ['Encoder-{}-MultiHeadSelfAttention-Norm'.format(i + 1) for i in range(layer_num)] +
-    ['Encoder-{}-FeedForward-Norm'.format(i + 1) for i in range(layer_num)],
-)
 ```
 
 ### 使用任务嵌入
