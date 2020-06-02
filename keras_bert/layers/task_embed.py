@@ -68,8 +68,6 @@ class TaskEmbedding(keras.layers.Layer):
         task_embed = K.gather(self.embeddings, tasks)
         if self.mask_zero:
             task_embed = task_embed * K.expand_dims(K.cast(K.not_equal(tasks, 0), K.floatx()), axis=-1)
-        if K.backend() == 'theano':
-            task_embed = K.tile(task_embed, (1, K.shape(inputs)[1], 1))
         return inputs + task_embed
 
     def get_config(self):

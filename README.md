@@ -229,7 +229,3 @@ with codecs.open('xxx.txt', 'r', 'utf8') as reader:
 ### Use `tensorflow.python.keras`
 
 Add `TF_KERAS=1` to environment variables to use `tensorflow.python.keras`.
-
-### Use `theano` Backend
-
-Add `KERAS_BACKEND=theano` to environment variables to enable `theano` backend.

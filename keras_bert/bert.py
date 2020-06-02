@@ -1,10 +1,9 @@
 import numpy as np
 from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
-from keras_transformer import get_encoders
+from keras_transformer import get_encoders, gelu
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
 from .backend import keras
-from .activations import gelu
 from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract, TaskEmbedding
 from .optimizers import AdamWarmup
 
@@ -200,9 +199,6 @@ def get_custom_objects():
     custom_objects['TaskEmbedding'] = TaskEmbedding
     custom_objects['Masked'] = Masked
     custom_objects['Extract'] = Extract
-    custom_objects['gelu'] = gelu
-    custom_objects['gelu_tensorflow'] = gelu
-    custom_objects['gelu_fallback'] = gelu
     custom_objects['AdamWarmup'] = AdamWarmup
     return custom_objects
 

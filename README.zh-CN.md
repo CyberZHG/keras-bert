@@ -285,8 +285,4 @@ model = load_trained_model_from_checkpoint(
 
 ### 使用`tensorflow.python.keras`
 
-在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。加入`TF_EAGER=1`可以启用eager execution。在Keras本身没去支持之前，如果想使用tensorflow 2.0则必须使用`TF_KERAS=1`。
-
-### 使用`theano`后端
-
-在环境变量中加入`KERAS_BACKEND=theano`来启用`theano`后端。
+在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。

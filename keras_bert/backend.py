@@ -2,7 +2,7 @@ import os
 from distutils.util import strtobool
 
 __all__ = [
-    'keras', 'utils', 'activations', 'applications', 'backend', 'datasets', 'engine',
+    'keras', 'utils', 'activations', 'applications', 'backend', 'datasets',
     'layers', 'preprocessing', 'wrappers', 'callbacks', 'constraints', 'initializers',
     'metrics', 'models', 'losses', 'optimizers', 'regularizers', 'TF_KERAS',
 ]
