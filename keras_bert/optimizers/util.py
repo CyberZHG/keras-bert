@@ -1,4 +1,4 @@
-from keras_bert.backend import TF_KERAS
+from .warmup_v2 import AdamWarmup
 
 __all__ = ['AdamWarmup', 'calc_train_steps']
 
@@ -19,9 +19,3 @@ def calc_train_steps(num_example, batch_size, epochs, warmup_proportion=0.1):
     total = steps * epochs
     warmup = int(total * warmup_proportion)
     return total, warmup
-
-
-if TF_KERAS:
-    from .warmup_v2 import AdamWarmup
-else:
-    from .warmup import AdamWarmup

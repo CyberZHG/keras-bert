@@ -21,7 +21,7 @@ class AdamWarmup(OptimizerV2):
                  weight_decay=0.,
                  weight_decay_pattern=None,
                  amsgrad=False,
-                 name='Adam',
+                 name='AdamWarmup',
                  **kwargs):
         r"""Construct a new Adam optimizer.
 

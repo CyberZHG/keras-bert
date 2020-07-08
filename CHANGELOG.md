@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.85.0] - 2020-07-09
+
+### Fixed
+
+- Compatible with Keras 2.4.3
+
 ## [0.82.0] - 2020-06-02
 
 ### Removed
