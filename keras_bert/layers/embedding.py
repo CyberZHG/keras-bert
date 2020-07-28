@@ -7,9 +7,6 @@ from keras_layer_normalization import LayerNormalization
 class TokenEmbedding(keras.layers.Embedding):
     """Embedding layer with weights returned."""
 
-    def compute_output_shape(self, input_shape):
-        return [super(TokenEmbedding, self).compute_output_shape(input_shape), (self.input_dim, self.output_dim)]
-
     def compute_mask(self, inputs, mask=None):
         return [super(TokenEmbedding, self).compute_mask(inputs, mask), None]
 
@@ -98,9 +95,6 @@ class EmbeddingSimilarity(keras.layers.Layer):
             name='bias',
         )
         super(EmbeddingSimilarity, self).build(input_shape)
-
-    def compute_output_shape(self, input_shape):
-        return input_shape[0][:2] + (input_shape[1][0],)
 
     def compute_mask(self, inputs, mask=None):
         return mask[0]

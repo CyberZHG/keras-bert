@@ -19,9 +19,6 @@ class Extract(keras.layers.Layer):
         base_config = super(Extract, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
-    def compute_output_shape(self, input_shape):
-        return input_shape[:1] + input_shape[2:]
-
     def compute_mask(self, inputs, mask=None):
         return None
 

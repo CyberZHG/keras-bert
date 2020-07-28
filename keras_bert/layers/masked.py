@@ -29,11 +29,6 @@ class Masked(keras.layers.Layer):
         base_config = super(Masked, self).get_config()
         return dict(list(base_config.items()) + list(config.items()))
 
-    def compute_output_shape(self, input_shape):
-        if self.return_masked:
-            return [input_shape[0], input_shape[0][:-1]]
-        return input_shape[0]
-
     def compute_mask(self, inputs, mask=None):
         token_mask = K.not_equal(inputs[1], 0)
         masked = K.all(K.stack([token_mask, mask[0]], axis=0), axis=0)

@@ -58,9 +58,6 @@ class TaskEmbedding(keras.layers.Layer):
             output_mask = mask[0]
         return output_mask
 
-    def compute_output_shape(self, input_shape):
-        return input_shape[0]
-
     def call(self, inputs, **kwargs):
         inputs, tasks = inputs
         if K.dtype(tasks) != 'int32':

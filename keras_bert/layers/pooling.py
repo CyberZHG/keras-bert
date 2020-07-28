@@ -11,9 +11,6 @@ class MaskedGlobalMaxPool1D(keras.layers.Layer):
     def compute_mask(self, inputs, mask=None):
         return None
 
-    def compute_output_shape(self, input_shape):
-        return input_shape[:-2] + (input_shape[-1],)
-
     def call(self, inputs, mask=None):
         if mask is not None:
             mask = K.cast(mask, K.floatx())
