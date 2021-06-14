@@ -11,7 +11,7 @@ from .optimizers import AdamWarmup
 __all__ = [
     'TOKEN_PAD', 'TOKEN_UNK', 'TOKEN_CLS', 'TOKEN_SEP', 'TOKEN_MASK',
     'gelu', 'get_model', 'compile_model', 'get_base_dict', 'gen_batch_inputs', 'get_token_embedding',
-    'get_custom_objects', 'set_custom_objects',
+    'get_custom_objects',
 ]
 
 
@@ -201,12 +201,6 @@ def get_custom_objects():
     custom_objects['Extract'] = Extract
     custom_objects['AdamWarmup'] = AdamWarmup
     return custom_objects
-
-
-def set_custom_objects():
-    """Add custom objects to Keras environments."""
-    for k, v in get_custom_objects().items():
-        keras.utils.get_custom_objects()[k] = v
 
 
 def get_base_dict():

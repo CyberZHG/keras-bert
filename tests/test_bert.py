@@ -5,7 +5,7 @@ import numpy as np
 from keras_bert.backend import keras
 from keras_bert.backend import backend as K
 from keras_bert import (get_model, compile_model, get_base_dict, gen_batch_inputs, get_token_embedding,
-                        get_custom_objects, set_custom_objects)
+                        get_custom_objects)
 
 
 class TestBERT(unittest.TestCase):
@@ -53,8 +53,7 @@ class TestBERT(unittest.TestCase):
         )
         compile_model(model)
         data = model.to_json()
-        set_custom_objects()
-        model = keras.models.model_from_json(data)
+        model = keras.models.model_from_json(data, custom_objects=get_custom_objects())
         model.summary()
 
     def test_get_token_embedding(self):
