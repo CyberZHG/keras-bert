@@ -1,8 +1,10 @@
 import os
 import tempfile
 from unittest import TestCase
+
 import numpy as np
-from keras_bert.backend import keras, TF_KERAS
+
+from keras_bert.backend import keras
 from keras_bert import AdamWarmup
 
 
@@ -31,7 +33,10 @@ class TestWarmup(TestCase):
 
         model_path = os.path.join(tempfile.gettempdir(), 'keras_warmup_%f.h5' % np.random.random())
         model.save(model_path)
-        model = keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
+
+        from tensorflow.python.keras.utils.generic_utils import CustomObjectScope
+        with CustomObjectScope({'AdamWarmup': AdamWarmup}):  # Workaround for incorrect global variable used in keras
+            model = keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
 
         results = model.predict(x).argmax(axis=-1)
         diff = np.sum(np.abs(y - results))
@@ -78,17 +83,10 @@ class TestWarmup(TestCase):
 
         x = np.random.randint(0, 5, (1024, 15))
         y = (x[:, 1] > 2).astype('int32')
-        model.fit(x, y, epochs=10)
+        model.fit(x, y, epochs=10, verbose=1)
 
         model_path = os.path.join(tempfile.gettempdir(), 'test_warmup_%f.h5' % np.random.random())
         model.save(model_path)
-        keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})
-
-    def test_legacy(self):
-        opt = AdamWarmup(
-            decay_steps=10000,
-            warmup_steps=5000,
-            learning_rate=1e-3,
-        )
-        if not TF_KERAS:
-            opt.lr = opt.lr
+        from tensorflow.python.keras.utils.generic_utils import CustomObjectScope
+        with CustomObjectScope({'AdamWarmup': AdamWarmup}):  # Workaround for incorrect global variable used in keras
+            keras.models.load_model(model_path, custom_objects={'AdamWarmup': AdamWarmup})

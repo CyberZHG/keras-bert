@@ -18,10 +18,12 @@ class TestBERT(unittest.TestCase):
         )
         model_path = os.path.join(tempfile.gettempdir(), 'keras_bert_%f.h5' % np.random.random())
         model.save(model_path)
-        model = keras.models.load_model(
-            model_path,
-            custom_objects=get_custom_objects(),
-        )
+        from tensorflow.python.keras.utils.generic_utils import CustomObjectScope
+        with CustomObjectScope(get_custom_objects()):  # Workaround for incorrect global variable used in keras
+            model = keras.models.load_model(
+                model_path,
+                custom_objects=get_custom_objects(),
+            )
         model.summary(line_length=200)
 
     def test_task_embed(self):
@@ -38,10 +40,12 @@ class TestBERT(unittest.TestCase):
         model = keras.models.Model(inputs, outputs)
         model_path = os.path.join(tempfile.gettempdir(), 'keras_bert_%f.h5' % np.random.random())
         model.save(model_path)
-        model = keras.models.load_model(
-            model_path,
-            custom_objects=get_custom_objects(),
-        )
+        from tensorflow.python.keras.utils.generic_utils import CustomObjectScope
+        with CustomObjectScope(get_custom_objects()):  # Workaround for incorrect global variable used in keras
+            model = keras.models.load_model(
+                model_path,
+                custom_objects=get_custom_objects(),
+            )
         model.summary(line_length=200)
 
     def test_save_load_json(self):
@@ -82,10 +86,12 @@ class TestBERT(unittest.TestCase):
         token_list = list(token_dict.keys())
         if os.path.exists(model_path):
             steps_per_epoch = 10
-            model = keras.models.load_model(
-                model_path,
-                custom_objects=get_custom_objects(),
-            )
+            from tensorflow.python.keras.utils.generic_utils import CustomObjectScope
+            with CustomObjectScope(get_custom_objects()):  # Workaround for incorrect global variable used in keras
+                model = keras.models.load_model(
+                    model_path,
+                    custom_objects=get_custom_objects(),
+                )
         else:
             steps_per_epoch = 1000
             model = get_model(

@@ -5,6 +5,7 @@ import os
 import shutil
 from collections import namedtuple
 from keras_bert.backend import keras
+from tensorflow.keras.utils import get_file
 
 __all__ = ['PretrainedInfo', 'PretrainedList', 'get_pretrained']
 
@@ -35,7 +36,7 @@ def get_pretrained(info):
     path = info
     if isinstance(info, PretrainedInfo):
         path = info.url
-    path = keras.utils.get_file(fname=os.path.split(path)[-1], origin=path, extract=True)
+    path = get_file(fname=os.path.split(path)[-1], origin=path, extract=True)
     base_part, file_part = os.path.split(path)
     file_part = file_part.split('.')[0]
     if isinstance(info, PretrainedInfo):
