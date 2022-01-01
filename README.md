@@ -219,7 +219,3 @@ with codecs.open('xxx.txt', 'r', 'utf8') as reader:
     texts = map(lambda x: x.strip(), reader)
     embeddings = extract_embeddings(model_path, texts)
 ```
-
-### Use `tensorflow.python.keras`
-
-Add `TF_KERAS=1` to environment variables to use `tensorflow.python.keras`.

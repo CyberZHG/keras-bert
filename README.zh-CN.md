@@ -276,7 +276,3 @@ model = load_trained_model_from_checkpoint(
     task_num=10,
 )
 ```
-
-### 使用`tensorflow.python.keras`
-
-在环境变量里加入`TF_KERAS=1`可以启用`tensorflow.python.keras`。
