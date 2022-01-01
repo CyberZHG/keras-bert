@@ -1,9 +1,9 @@
-# coding=utf-8
-from __future__ import unicode_literals
 import unittest
 import os
 import codecs
-from keras_bert.backend import keras
+
+from tensorflow import keras
+
 from keras_bert import get_model, POOL_NSP, POOL_MAX, POOL_AVE, extract_embeddings
 
 

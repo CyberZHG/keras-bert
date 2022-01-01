@@ -1,8 +1,10 @@
 import json
 import codecs
+
 import numpy as np
 import tensorflow as tf
-from .backend import keras
+from tensorflow import keras
+
 from .bert import get_model
 
 __all__ = [

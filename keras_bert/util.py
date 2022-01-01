@@ -1,13 +1,10 @@
-# coding=utf-8
-from __future__ import unicode_literals
-
 import os
 from collections import namedtuple
 
 import numpy as np
+from tensorflow import keras
+from tensorflow.keras import backend as K
 
-from .backend import keras
-from .backend import backend as K
 from .layers import Extract, MaskedGlobalMaxPool1D
 from .loader import load_trained_model_from_checkpoint, load_vocabulary
 from .tokenizer import Tokenizer

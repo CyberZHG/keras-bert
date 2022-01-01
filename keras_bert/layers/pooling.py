@@ -1,5 +1,5 @@
-from keras_bert.backend import keras
-from keras_bert.backend import backend as K
+from tensorflow import keras
+from tensorflow.keras import backend as K
 
 
 class MaskedGlobalMaxPool1D(keras.layers.Layer):

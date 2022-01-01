@@ -1,9 +1,10 @@
 import numpy as np
+from tensorflow import keras
+
 from keras_pos_embd import PositionEmbedding
 from keras_layer_normalization import LayerNormalization
 from keras_transformer import get_encoders, gelu
 from keras_transformer import get_custom_objects as get_encoder_custom_objects
-from .backend import keras
 from .layers import get_inputs, get_embedding, TokenEmbedding, EmbeddingSimilarity, Masked, Extract, TaskEmbedding
 from .optimizers import AdamWarmup
 

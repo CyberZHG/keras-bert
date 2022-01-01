@@ -1,13 +1,7 @@
 # Keras BERT
 
-[![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
-[![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
 [![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
-![Downloads](https://img.shields.io/pypi/dm/keras-bert.svg)
 ![License](https://img.shields.io/pypi/l/keras-bert.svg)
-
-![](https://img.shields.io/badge/keras-tensorflow-blue.svg)
-![](https://img.shields.io/badge/keras-tf.keras-blue.svg)
 
 \[[中文](https://github.com/CyberZHG/keras-bert/blob/master/README.zh-CN.md)|[English](https://github.com/CyberZHG/keras-bert/blob/master/README.md)\]
 
@@ -75,7 +69,7 @@ print(segments)  # Should be `[0, 0, 0, 0, 0, 1, 1, 0, 0, 0]`
 ### Train & Use
 
 ```python
-import keras
+from tensorflow import keras
 from keras_bert import get_base_dict, get_model, compile_model, gen_batch_inputs
 
 

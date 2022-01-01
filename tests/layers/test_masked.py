@@ -1,8 +1,10 @@
 import unittest
+
 import numpy as np
+from tensorflow import keras
+from tensorflow.keras import backend as K
+
 from keras_transformer import gelu, get_encoders
-from keras_bert.backend import keras
-from keras_bert.backend import backend as K
 from keras_bert.layers import get_inputs, get_embedding, Masked
 
 

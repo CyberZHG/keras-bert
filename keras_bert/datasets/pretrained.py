@@ -1,10 +1,6 @@
-# coding=utf-8
-from __future__ import unicode_literals
-
 import os
 import shutil
 from collections import namedtuple
-from keras_bert.backend import keras
 from tensorflow.keras.utils import get_file
 
 __all__ = ['PretrainedInfo', 'PretrainedList', 'get_pretrained']

@@ -1,5 +1,5 @@
-from keras_bert.backend import keras, initializers, regularizers, constraints
-from keras_bert.backend import backend as K
+from tensorflow import keras
+from tensorflow.keras import backend as K
 
 __all__ = ['TaskEmbedding']
 
@@ -35,9 +35,9 @@ class TaskEmbedding(keras.layers.Layer):
         self.supports_masking = True
         self.input_dim = input_dim
         self.output_dim = output_dim
-        self.embeddings_initializer = initializers.get(embeddings_initializer)
-        self.embeddings_regularizer = regularizers.get(embeddings_regularizer)
-        self.embeddings_constraint = constraints.get(embeddings_constraint)
+        self.embeddings_initializer = keras.initializers.get(embeddings_initializer)
+        self.embeddings_regularizer = keras.regularizers.get(embeddings_regularizer)
+        self.embeddings_constraint = keras.constraints.get(embeddings_constraint)
         self.mask_zero = mask_zero
 
         self.embeddings = None
@@ -71,9 +71,9 @@ class TaskEmbedding(keras.layers.Layer):
         config = {
             'input_dim': self.input_dim,
             'output_dim': self.output_dim,
-            'embeddings_initializer': initializers.serialize(self.embeddings_initializer),
-            'embeddings_regularizer': regularizers.serialize(self.embeddings_regularizer),
-            'embeddings_constraint': constraints.serialize(self.embeddings_constraint),
+            'embeddings_initializer': keras.initializers.serialize(self.embeddings_initializer),
+            'embeddings_regularizer': keras.regularizers.serialize(self.embeddings_regularizer),
+            'embeddings_constraint': keras.constraints.serialize(self.embeddings_constraint),
             'mask_zero': self.mask_zero,
         }
         base_config = super(TaskEmbedding, self).get_config()

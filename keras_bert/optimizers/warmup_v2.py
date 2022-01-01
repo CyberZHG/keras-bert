@@ -1,5 +1,5 @@
 import tensorflow as tf
-from tensorflow.python.keras.optimizer_v2.optimizer_v2 import OptimizerV2
+from tensorflow.keras.optimizers import Optimizer
 from tensorflow.python.ops import state_ops, control_flow_ops
 from tensorflow.python.keras import backend_config
 
@@ -7,7 +7,7 @@ from tensorflow.python.keras import backend_config
 __all__ = ['AdamWarmup']
 
 
-class AdamWarmup(OptimizerV2):
+class AdamWarmup(Optimizer):
     """Adam optimizer with warmup."""
 
     def __init__(self,

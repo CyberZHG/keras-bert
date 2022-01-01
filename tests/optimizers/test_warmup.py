@@ -3,8 +3,8 @@ import tempfile
 from unittest import TestCase
 
 import numpy as np
+from tensorflow import keras
 
-from keras_bert.backend import keras
 from keras_bert import AdamWarmup
 
 

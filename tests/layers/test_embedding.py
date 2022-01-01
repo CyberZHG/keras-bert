@@ -1,5 +1,7 @@
 import unittest
-from keras_bert.backend import keras
+
+from tensorflow import keras
+
 from keras_bert.layers import get_inputs, get_embedding
 
 

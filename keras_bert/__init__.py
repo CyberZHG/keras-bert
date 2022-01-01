@@ -5,4 +5,4 @@ from .optimizers import *
 from .util import *
 from .datasets import *
 
-__version__ = '0.88.0'
+__version__ = '0.89.0'

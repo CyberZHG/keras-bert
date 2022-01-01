@@ -1,3 +1,2 @@
 numpy
-Keras>=2.4.3
-keras-transformer>=0.39.0
+keras-transformer==0.40.0

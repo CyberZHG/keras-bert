@@ -1,13 +1,7 @@
 # Keras BERT
 
-[![Travis](https://travis-ci.org/CyberZHG/keras-bert.svg)](https://travis-ci.org/CyberZHG/keras-bert)
-[![Coverage](https://coveralls.io/repos/github/CyberZHG/keras-bert/badge.svg?branch=master)](https://coveralls.io/github/CyberZHG/keras-bert)
 [![Version](https://img.shields.io/pypi/v/keras-bert.svg)](https://pypi.org/project/keras-bert/)
-![Downloads](https://img.shields.io/pypi/dm/keras-bert.svg)
 ![License](https://img.shields.io/pypi/l/keras-bert.svg)
-
-![](https://img.shields.io/badge/keras-tensorflow-blue.svg)
-![](https://img.shields.io/badge/keras-tf.keras-blue.svg)
 
 \[[中文](https://github.com/CyberZHG/keras-bert/blob/master/README.zh-CN.md)|[English](https://github.com/CyberZHG/keras-bert/blob/master/README.md)\]
 
@@ -94,7 +88,7 @@ intervals = Tokenizer.rematch("All rights reserved.", ["[UNK]", "righs", "[UNK]"
 训练过程推荐使用官方的代码。这个代码库内包含一个的训练过程，`training`为`True`的情况下使用的是带warmup的Adam优化器：
 
 ```python
-import keras
+from tensorflow import keras
 from keras_bert import get_base_dict, get_model, compile_model, gen_batch_inputs
 
 

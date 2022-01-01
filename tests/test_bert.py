@@ -1,9 +1,11 @@
 import unittest
 import os
 import tempfile
+
 import numpy as np
-from keras_bert.backend import keras
-from keras_bert.backend import backend as K
+from tensorflow import keras
+from tensorflow.keras import backend as K
+
 from keras_bert import (get_model, compile_model, get_base_dict, gen_batch_inputs, get_token_embedding,
                         get_custom_objects)
 
